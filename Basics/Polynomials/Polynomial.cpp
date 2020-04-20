@@ -17,6 +17,7 @@ Polynomial::Polynomial(const std::vector<std::pair<int, int>>& vec)
 }
 
 Polynomial::Polynomial(const Polynomial& obj)
+	:m_head(nullptr)
 {
 	Allocate(obj);
 }
