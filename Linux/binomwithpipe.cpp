@@ -53,16 +53,19 @@ int ReadValue(int fd)
 {
 	const int size = 10;
 	char buffer[size];
-	int r = read(fd, buffer, size);
-	if(r == -1)
+	int r = -1;
+	int readsize = 0;
+	while(r != 0)
 	{
-		failure();
-		return -1;
+		r = read(fd, buffer + readsize, size);
+		readsize += r;
+		if(r == -1)
+		{
+			failure();
+			return -1;
+		}
 	}
-	else
-	{
-		return std::stoi(buffer);
-	}
+	return std::stoi(buffer);
 }	
 int main()
 {
