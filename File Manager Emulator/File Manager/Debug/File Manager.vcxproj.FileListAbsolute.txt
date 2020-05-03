@@ -1,2 +1,0 @@
-C:\Users\Lenovo\Source\Repos\File Manager Emulator\Debug\File Manager.pdb
-C:\Users\Lenovo\Source\Repos\File Manager Emulator\File Manager\Debug\File Manager.pdb
