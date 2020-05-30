@@ -13,21 +13,27 @@ class Directory;
 class File
 {
 public:
-	File(const std::string& filename)
+	File(const std::string& filename, Directory* const root)
 		:m_name(filename)
+		,m_root(root)
 	{}
 	const std::string& GetName() const { return m_name; }
+//	virtual void allocate(const File* const) = 0;
 	virtual ~File() {}
 protected:
+	Directory* const GetRoot();
+	const Directory* const GetRoot() const;
+protected:
 	std::string m_name;
+	Directory* const m_root;
 };
 
 
 class Document :public File
 {
 public:
-	Document(const std::string& name)
-		:File(name)
+	Document(const std::string& name, Directory* const root)
+		:File(name, root)
 		, m_HardLinkCount(0)
 	{}
 	~Document() { Deallocate(); }
@@ -48,7 +54,7 @@ private:
 class Directory :public File
 {
 public:
-	Directory(const std::string&);
+	Directory(const std::string&, Directory* const = nullptr);
 	~Directory();
 private:
 	void Deallocate();
@@ -66,12 +72,15 @@ public:
 	void RemoveDynamicLink(const Document*);
 	void IncrementHardLinkCount(const std::string&);
 	void DecrementHardLinkCount(const std::string&);
+	void Copy(const File* const);
 	Directory* SearchFolder(const std::string&);
 	Document* SearchDocument(const std::string&);
 	DynamicLink* SearchDynamicLink(const std::string&);
+	const File* const SearchFile(const std::string&) const;
 	bool SearchDynamicLink(const DynamicLink* const);
 private:
 	void DeleteObject(int);
+	bool HasFileWithSameName(const std::string&) const;
 	bool CheckTree(const Directory*, const Directory*);
 	void IncrementHardLinkCount(const std::vector<std::string>&, int = 1);
 	void DecrementHardLinkCount(const std::vector<std::string>&, int = 1);
@@ -85,9 +94,8 @@ class Link : public File
 {
 public:
 	Link(const std::string& name, Document* file, Directory* const root)
-		:File(name)
+		:File(name, root)
 		, m_file(file)
-		, m_root(root)
 	{}
 	const std::string GetPath() const
 	{
@@ -98,8 +106,6 @@ public:
 	Document* GetFile() const { return m_file; }
 private:
 	Document* const m_file;
-protected:
-	Directory* const m_root;
 };
 
 class DynamicLink :public Link 
@@ -124,7 +130,6 @@ public:
 		:Link("hlink[" + path + "]", file, root)
 	{
 		root->IncrementHardLinkCount(path);
-		file->AddHardLink();
 	}
 	~HardLink() { Deallocate(); }
 private:

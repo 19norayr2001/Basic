@@ -295,7 +295,16 @@ void FileManager::Delete(const std::string& path)
 	parent->RemoveFile(FileName, m_root);
 }
 
-void FileManager::Copy(const std::string& file_path, const std::string& loc_path){} //TODO
+void FileManager::Copy(const std::string& file_path, const std::string& loc_path)
+{
+	if (file_path == "C:")
+		throw std::exception("Not allowed make directories with name C:");
+	std::string FileName;
+	Directory* parent = GetParent(file_path, FileName);
+	const File* const file = parent->SearchFile(FileName);
+	Directory* location = GetParent(loc_path);
+	location->Copy(file);
+}
 void FileManager::Move(const std::string& file_path, const std::string& loc_path){} //TODO
 
 void FileManager::LinkCase(
@@ -343,10 +352,18 @@ Directory* FileManager::GetParent(const std::string& path)
 
 
 
+Directory* const File::GetRoot() 
+{ 
+	return (m_root == nullptr ? dynamic_cast<Directory* const>(this) : m_root); 
+}
 
+const Directory* const File::GetRoot() const 
+{ 
+	return (m_root == nullptr ? dynamic_cast<const Directory* const>(this) : m_root); 
+}
 
-Directory::Directory(const std::string& filename)
-	:File(filename)
+Directory::Directory(const std::string& filename, Directory* const root)
+	:File(filename, root)
 	, m_CountOfHardLinks(0)
 {}
 
@@ -379,35 +396,23 @@ void Directory::AddFolder(const std::string& name)
 		throw std::exception("Not allowed make directories with name C:");
 	if (name.empty())
 		throw std::exception("Not allowed make directories with empty names");
-	for (File* file : m_Files)
+	if (!HasFileWithSameName(name))
 	{
-		if (file->GetName() == name)
-		{
-			if (dynamic_cast<Directory*>(file) == nullptr)
-				throw std::exception("File exists");
-			else
-				return;
-		}
+		m_Files.push_back(new Directory(name, GetRoot()));
 	}
-	m_Files.push_back(new Directory(name));
 }
 
 void Directory::AddFile(const std::string& name)
 {
-	for (File* file : m_Files)
+	if (!HasFileWithSameName(name))
 	{
-		if (file->GetName() == name)
-		{
-			return;
-		}
+		m_Files.push_back(new Document(name, GetRoot()));
 	}
-	m_Files.push_back(new Document(name));
 }
 
 void Directory::AddHardLink(const std::string& path, Document* file, Directory* root)
 {
 	m_Files.push_back(new HardLink(path, file, root));
-	file->AddHardLink();
 }
 
 void Directory::AddDynamicLink(const std::string& path, Document* file, Directory* const root)
@@ -513,17 +518,67 @@ void Directory::DecrementHardLinkCount(const std::string& path)
 	DecrementHardLinkCount(pathvector);
 }
 
+void Directory::Copy(const File* const file)
+{
+	if (HasFileWithSameName(file->GetName())) 
+	{
+		return;
+	}
+	const Document* const doc = dynamic_cast<const Document* const>(file);
+	if (doc != nullptr)
+	{
+		this->AddFile(doc->GetName());
+		return;
+	}
+	const DynamicLink* const dlink = dynamic_cast<const DynamicLink* const>(file);
+	if (dlink != nullptr)
+	{
+		this->AddDynamicLink(dlink->GetPath(), dlink->GetFile(), m_root);
+		return;
+	}
+	const HardLink* const hlink = dynamic_cast<const HardLink* const>(file);
+	if (hlink != nullptr)
+	{
+		this->AddHardLink(hlink->GetPath(), hlink->GetFile(), m_root);
+		return;
+	}
+	const Directory* const folder = dynamic_cast<const Directory* const>(file);
+	if (folder != nullptr)
+	{
+		if (!HasFileWithSameName(folder->GetName()))
+		{
+			this->AddFolder(folder->GetName());
+			Directory* loc = this->SearchFolder(folder->GetName());
+			for (const File* const myfile : folder->m_Files)
+			{
+				loc->Copy(myfile);
+			}
+		}
+		return;
+	}
+	throw std::exception("Something went wrong");
+}
+
+Directory* Directory::SearchFolder(const std::string& path)
+{
+	VectorString path_vector;
+	GetPathArgs(path_vector, path);
+	return SearchFolder(path_vector);
+}
+
 void Directory::IncrementHardLinkCount(const std::vector<std::string>& pathvector, int ind)
 {
 	m_CountOfHardLinks++;
 	if (ind == pathvector.size() - 1)
 	{
+		Document* doc = this->SearchDocument(pathvector.back());
+		doc->AddHardLink();
 		return;
 	}
 	for (File* file : m_Files)
 	{
 		Directory* folder = dynamic_cast<Directory*>(file);
-		if (folder != nullptr)
+		if (folder != nullptr && pathvector[ind] == folder->GetName())
 		{
 			folder->IncrementHardLinkCount(pathvector, ind + 1);
 			return;
@@ -543,25 +598,30 @@ void Directory::DecrementHardLinkCount(const std::vector<std::string>& pathvecto
 	for (File* file : m_Files)
 	{
 		Directory* folder = dynamic_cast<Directory*>(file);
-		if (folder != nullptr)
+		if (folder != nullptr && pathvector[ind] == folder->GetName())
 		{
-			folder->IncrementHardLinkCount(pathvector, ind + 1);
+			folder->DecrementHardLinkCount(pathvector, ind + 1);
 			return;
 		}
 	}
-}
-
-Directory* Directory::SearchFolder(const std::string& path)
-{
-	VectorString path_vector;
-	GetPathArgs(path_vector, path);
-	return SearchFolder(path_vector);
 }
 
 void Directory::DeleteObject(int i)
 {
 	delete m_Files[i];
 	m_Files.erase(m_Files.begin() + i);
+}
+
+bool Directory::HasFileWithSameName(const std::string& name) const
+{
+	for (const File* const file : m_Files)
+	{
+		if (file->GetName() == name)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 bool Directory::CheckTree(const Directory* folder, const Directory* cur)
@@ -628,6 +688,18 @@ DynamicLink* Directory::SearchDynamicLink(const std::string& path)
 	throw std::exception("No such file or directory");
 }
 
+const File* const Directory::SearchFile(const std::string& path) const
+{
+	for (File* file : m_Files)
+	{
+		if (file->GetName() == path)
+		{
+			return file;
+		}
+	}
+	throw std::exception("Something went wrong");
+}
+
 bool Directory::SearchDynamicLink(const DynamicLink* const link)
 {
 	for (File* file : m_Files)
@@ -684,5 +756,4 @@ void DynamicLink::Deallocate()
 void HardLink::Deallocate()
 {
 	m_root->DecrementHardLinkCount(GetPath());
-	GetFile()->RemoveHardLink();
 }
