@@ -34,10 +34,10 @@ public:
 public:
 	void AddHardLink() { ++m_HardLinkCount; }
 	void RemoveHardLink() { --m_HardLinkCount; }
-	void AddDynamicLink(Directory* link) { m_DynamicLinks.push_back(link); }
+	void AddDynamicLink(Directory* parent) { m_DynamicLinks.push_back(parent); }
 	void RemoveDynamicLink(Directory*);
 	bool CheckHardLinkCount() const { return m_HardLinkCount == 0; }
-
+	Directory* FindParentDynamicLink(const DynamicLink* const) const;
 private:
 	void Deallocate();
 private:
@@ -58,20 +58,23 @@ public:
 	bool empty() const { return m_Files.size() == 0; }
 	void AddFolder(const std::string&);
 	void AddFile(const std::string&);
-	void AddHardLink(const std::string&, const Document*);
-	void AddDynamicLink(const std::string&, const Document*);
+	void AddHardLink(const std::string&, Document*, Directory*);
+	void AddDynamicLink(const std::string&, Document*, Directory*);
 	void RemoveFolder(const std::string&, const Directory*);
 	void RemoveTree(const std::string&, const Directory*);
 	void RemoveFile(const std::string&, Directory*);
 	void RemoveDynamicLink(const Document*);
-	void IncrementHardLinkCount(const std::string& path);
-	void DecrementHardLinkCount(const std::vector<std::string>&, int = 1);
-	Directory* SearchFolder(const std::string& path);
+	void IncrementHardLinkCount(const std::string&);
+	void DecrementHardLinkCount(const std::string&);
+	Directory* SearchFolder(const std::string&);
 	Document* SearchDocument(const std::string&);
 	DynamicLink* SearchDynamicLink(const std::string&);
+	bool SearchDynamicLink(const DynamicLink* const);
 private:
+	void DeleteObject(int);
 	bool CheckTree(const Directory*, const Directory*);
 	void IncrementHardLinkCount(const std::vector<std::string>&, int = 1);
+	void DecrementHardLinkCount(const std::vector<std::string>&, int = 1);
 	Directory* SearchFolder(const std::vector<std::string>&, int = 0);
 private:
 	std::vector<File*> m_Files;
@@ -81,9 +84,10 @@ private:
 class Link : public File
 {
 public:
-	Link(const std::string& name, const Document* file)
+	Link(const std::string& name, Document* file, Directory* const root)
 		:File(name)
 		, m_file(file)
+		, m_root(root)
 	{}
 	const std::string GetPath() const
 	{
@@ -91,29 +95,40 @@ public:
 		int len = name.size();
 		return name.substr(6, len - 7);
 	}
-	const Document* GetFile() const { return m_file; }
+	Document* GetFile() const { return m_file; }
 private:
-	const Document* m_file;
+	Document* const m_file;
+protected:
+	Directory* const m_root;
 };
 
 class DynamicLink :public Link 
 {
 public:
-	DynamicLink(const std::string& path, const Document* file)
-		:Link("dlink[" + path + "]", file)
+	DynamicLink(const std::string& path, Document* file, Directory* const root)
+		:Link("dlink[" + path + "]", file, root)
 	{}
+	~DynamicLink() { Deallocate(); }
 	void ChangePath(const std::string& path)
 	{
 		m_name = "dlink[" + path + "]";
 	}
+private:
+	void Deallocate();
 };
 
 class HardLink :public Link
 {
 public:
-	HardLink(const std::string& path, const Document* file)
-		:Link("hlink[" + path + "]", file)
-	{}
+	HardLink(const std::string& path, Document* file, Directory* const root)
+		:Link("hlink[" + path + "]", file, root)
+	{
+		root->IncrementHardLinkCount(path);
+		file->AddHardLink();
+	}
+	~HardLink() { Deallocate(); }
+private:
+	void Deallocate();
 };
 
 class FileManager
@@ -152,14 +167,14 @@ private:
 
 private:
 
-	void LinkCase(const std::string&, const std::string&, Directory*&, Document*&, Directory*&);
+	void LinkCase(const std::string&, const std::string&, Directory*&, Document*&);
 	const std::string GetFullPath(const std::string&);
 	Directory* GetParent(const std::string&, std::string&);
 	Directory* GetParent(const std::string&);
 
 private:
 
-	Directory* m_root;
+	Directory*const m_root;
 	Directory* m_CurrentDirectory;
 	std::string m_CurrentDirectoryPath;
 };

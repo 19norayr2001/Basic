@@ -32,13 +32,20 @@ namespace
 		return path.size() >= 2 && path[0] == 'C' && path[1] == ':';
 	}
 
-	const std::string GetLastComponent(const std::string& path)
+	std::string GetLastComponent(const std::string& path)
 	{
 		int len = path.size();
 		std::string ret;
 		int i = len - 1;
+		bool bracket = false;
 		for (; i >= 0; --i)
 		{
+			if (path[i] == ']')
+				bracket = true;
+			if (path[i] == '[')
+				bracket = false;
+			if (bracket)
+				continue;
 			if (path[i] == '/')
 				break;
 		}
@@ -47,7 +54,7 @@ namespace
 		return ret;
 	}
 
-	const std::string SubString(const std::string& str, int left, int right)
+	std::string SubString(const std::string& str, int left, int right)
 	{
 		return str.substr(left, str.size() - left - right);
 	}
@@ -56,9 +63,14 @@ namespace
 	{
 		std::string next_command;
 		int len = str.size();
+		bool flag = false;
 		for (int i = 0; i < len; ++i)
 		{
-			if (!predicat(str[i]))
+			if (str[i] == ']')
+				flag = true;
+			if(str[i] == '[')
+				flag = false;
+			if (!predicat(str[i]) || flag)
 			{
 				next_command += str[i];
 			}
@@ -221,7 +233,7 @@ void FileManager::ChangeDirectory(const std::string& path)
 	if (pathflag)
 		m_CurrentDirectoryPath = path;
 	else
-		m_CurrentDirectoryPath += path;
+		m_CurrentDirectoryPath += "/" + path;
 }
 
 void FileManager::MakeDirectory(const std::string& path)
@@ -260,23 +272,18 @@ void FileManager::MakeHardLink(const std::string& document_path, const std::stri
 {
 	Document* document{};
 	Directory* link_location{};
-	Directory* parent{};
 	const std::string& full_path = GetFullPath(document_path);
-	LinkCase(document_path, link_path, link_location, document, parent);
-	link_location->AddHardLink(full_path, document);
-	document->AddHardLink();
-	m_root->IncrementHardLinkCount(full_path);
+	LinkCase(document_path, link_path, link_location, document);
+	link_location->AddHardLink(full_path, document, m_root);
 }
 
 void FileManager::MakeDynamicLink(const std::string& document_path, const std::string& link_path)
 {
 	Document* document{};
 	Directory* link_location{};
-	Directory* parent{};
 	const std::string& full_path = GetFullPath(document_path);
-	LinkCase(document_path, link_path, link_location, document, parent);
-	link_location->AddDynamicLink(full_path, document);
-	document->AddDynamicLink(parent);
+	LinkCase(document_path, link_path, link_location, document);
+	link_location->AddDynamicLink(full_path, document, m_root);
 }
 
 void FileManager::Delete(const std::string& path)
@@ -295,19 +302,17 @@ void FileManager::LinkCase(
 	const std::string& document_path,
 	const std::string& link_path,
 	Directory*& link_location,
-	Document*& document,
-	Directory*& parent)
+	Document*& document)
 {
 	std::string FileName;
-	parent = GetParent(document_path, FileName);
+	Directory* parent = GetParent(document_path, FileName);
 	document = parent->SearchDocument(FileName);
-
 	link_location = GetParent(link_path);
 }
 
 const std::string FileManager::GetFullPath(const std::string& path)
 {
-	return (IsFullPath(path) ? "" : m_CurrentDirectoryPath) + path;
+	return (IsFullPath(path) ? "" : m_CurrentDirectoryPath) + "/" + path;
 }
 
 Directory* FileManager::GetParent(const std::string& path, std::string& FileName)
@@ -370,6 +375,10 @@ void Directory::print(std::ostream& out, int layer) const
 
 void Directory::AddFolder(const std::string& name)
 {
+	if (name == "C:")
+		throw std::exception("Not allowed make directories with name C:");
+	if (name.empty())
+		throw std::exception("Not allowed make directories with empty names");
 	for (File* file : m_Files)
 	{
 		if (file->GetName() == name)
@@ -395,14 +404,16 @@ void Directory::AddFile(const std::string& name)
 	m_Files.push_back(new Document(name));
 }
 
-void Directory::AddHardLink(const std::string& path, const Document* file)
+void Directory::AddHardLink(const std::string& path, Document* file, Directory* root)
 {
-	m_Files.push_back(new HardLink(path, file));
+	m_Files.push_back(new HardLink(path, file, root));
+	file->AddHardLink();
 }
 
-void Directory::AddDynamicLink(const std::string& path, const Document* file)
+void Directory::AddDynamicLink(const std::string& path, Document* file, Directory* const root)
 {
-	m_Files.push_back(new DynamicLink(path, file));
+	m_Files.push_back(new DynamicLink(path, file, root));
+	file->AddDynamicLink(this);
 }
 
 void Directory::RemoveFolder(const std::string& name, const Directory* cur)
@@ -421,10 +432,7 @@ void Directory::RemoveFolder(const std::string& name, const Directory* cur)
 			else if (myfolder == cur)
 				throw std::exception("Not allowed remove current directory");
 			else
-			{
-				delete myfolder;
-				m_Files.erase(m_Files.begin() + i);
-			}
+				DeleteObject(i);
 			return;
 		}
 	}
@@ -447,10 +455,7 @@ void Directory::RemoveTree(const std::string& name, const Directory* cur)
 			else if (m_CountOfHardLinks > 0)
 				throw std::exception("Not allowed remove folder containing hard links");
 			else
-			{
-				delete myfolder;
-				m_Files.erase(m_Files.begin() + i);
-			}
+				DeleteObject(i);
 			return;
 		}
 	}
@@ -466,43 +471,16 @@ void Directory::RemoveFile(const std::string& name, Directory* root)
 		{
 			Directory* folderptr = dynamic_cast<Directory*>(m_Files[i]);
 			if (folderptr != nullptr)
+			{
 				throw std::exception("Is a directory");
-			HardLink* hlink = dynamic_cast<HardLink*>(m_Files[i]);
-			if (hlink != nullptr)
-			{
-				const std::string& path = hlink->GetPath();
-				std::vector<std::string> path_vector;
-				GetPathArgs(path_vector, path);
-				root->DecrementHardLinkCount(path_vector);
-				delete m_Files[i];
-				m_Files.erase(m_Files.begin() + i);
-				return;
-			}
-			DynamicLink* dlink = dynamic_cast<DynamicLink*>(m_Files[i]);
-			if (dlink != nullptr)
-			{
-				const std::string& path = dlink->GetPath();
-				std::vector<std::string> path_vector;
-				GetPathArgs(path_vector, path);
-				const std::string& filename = path_vector.back();
-				path_vector.pop_back();
-				Directory* parent = root->SearchFolder(path_vector, 1);
-				Document* doc = parent->SearchDocument(filename);
-				doc->RemoveDynamicLink(this);
-				delete m_Files[i];
-				m_Files.erase(m_Files.begin() + i);
 			}
 			Document* doc = dynamic_cast<Document*>(m_Files[i]);
-			if (doc != nullptr)
+			if (doc != nullptr && !doc->CheckHardLinkCount()) 
 			{
-				if (doc->CheckHardLinkCount())
-				{
-					delete m_Files[i];
-					m_Files.erase(m_Files.begin() + i);
-					return;
-				}
 				throw std::exception("File contains hard links");
 			}
+			DeleteObject(i);
+			return;
 		}
 	}
 }
@@ -515,8 +493,7 @@ void Directory::RemoveDynamicLink(const Document* file)
 		DynamicLink* dlink = dynamic_cast<DynamicLink*>(m_Files[i]);
 		if (dlink != nullptr && dlink->GetFile() == file)
 		{
-			delete dlink;
-			m_Files.erase(m_Files.begin() + i);
+			DeleteObject(i);
 			return;
 		}
 	}
@@ -527,6 +504,13 @@ void Directory::IncrementHardLinkCount(const std::string& path)
 	VectorString pathvector;
 	GetPathArgs(pathvector, path);
 	IncrementHardLinkCount(pathvector);
+}
+
+void Directory::DecrementHardLinkCount(const std::string& path)
+{
+	std::vector<std::string> pathvector;
+	GetPathArgs(pathvector, path);
+	DecrementHardLinkCount(pathvector);
 }
 
 void Directory::IncrementHardLinkCount(const std::vector<std::string>& pathvector, int ind)
@@ -572,6 +556,12 @@ Directory* Directory::SearchFolder(const std::string& path)
 	VectorString path_vector;
 	GetPathArgs(path_vector, path);
 	return SearchFolder(path_vector);
+}
+
+void Directory::DeleteObject(int i)
+{
+	delete m_Files[i];
+	m_Files.erase(m_Files.begin() + i);
 }
 
 bool Directory::CheckTree(const Directory* folder, const Directory* cur)
@@ -638,6 +628,17 @@ DynamicLink* Directory::SearchDynamicLink(const std::string& path)
 	throw std::exception("No such file or directory");
 }
 
+bool Directory::SearchDynamicLink(const DynamicLink* const link)
+{
+	for (File* file : m_Files)
+	{
+		if (file == link)
+		{
+			return true;
+		}
+	}
+	return false;
+}
 
 void Document::RemoveDynamicLink(Directory* parent)
 {
@@ -652,12 +653,36 @@ void Document::RemoveDynamicLink(Directory* parent)
 	}
 }
 
+Directory* Document::FindParentDynamicLink(const DynamicLink* const link) const
+{
+	for (size_t i = 0; i < m_DynamicLinks.size(); ++i)
+	{
+		if (m_DynamicLinks[i]->SearchDynamicLink(link))
+		{
+			return m_DynamicLinks[i];
+		}
+	}
+	throw std::exception("Something went wrong");
+}
+
 void Document::Deallocate()
 {
 	int len = m_DynamicLinks.size();
 	for (int i = 0; i < len; ++i)
 	{
-		Directory* parent = m_DynamicLinks[i];
+		Directory* parent = m_DynamicLinks[0];
 		parent->RemoveDynamicLink(this);
 	}
+}
+
+void DynamicLink::Deallocate()
+{
+	Directory* parent = GetFile()->FindParentDynamicLink(this);
+	GetFile()->RemoveDynamicLink(parent);
+}
+
+void HardLink::Deallocate()
+{
+	m_root->DecrementHardLinkCount(GetPath());
+	GetFile()->RemoveHardLink();
 }
