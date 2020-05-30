@@ -32,6 +32,20 @@ namespace
 		return path.size() >= 2 && path[0] == 'C' && path[1] == ':';
 	}
 
+	bool IsPrefix(const std::string& first, const std::string& second)
+	{
+		if (first.size() > second.size())
+			return false;
+		for (size_t i = 0; i < first.size(); ++i)
+		{
+			if (first[i] != second[i])
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
 	std::string GetLastComponent(const std::string& path)
 	{
 		int len = path.size();
@@ -249,7 +263,7 @@ void FileManager::RemoveDirectory(const std::string& path)
 		throw std::exception("Not allowed remove root");
 	std::string FileName;
 	Directory* parent = GetParent(path, FileName);
-	parent->RemoveFolder(FileName, m_CurrentDirectory);
+	parent->DeleteFolder(FileName, m_CurrentDirectory);
 }
 
 void FileManager::DeleteTree(const std::string& path)
@@ -258,7 +272,7 @@ void FileManager::DeleteTree(const std::string& path)
 		throw std::exception("Not allowed remove root");
 	std::string FileName;
 	Directory* parent = GetParent(path, FileName);
-	parent->RemoveTree(FileName, m_CurrentDirectory);
+	parent->DeleteTree(FileName, m_CurrentDirectory);
 }
 
 void FileManager::MakeFile(const std::string& path)
@@ -292,7 +306,7 @@ void FileManager::Delete(const std::string& path)
 		throw std::exception("Is a directory");
 	std::string FileName;
 	Directory* parent = GetParent(path, FileName);
-	parent->RemoveFile(FileName, m_root);
+	parent->DeleteFile(FileName, m_root);
 }
 
 void FileManager::Copy(const std::string& file_path, const std::string& loc_path)
@@ -305,7 +319,21 @@ void FileManager::Copy(const std::string& file_path, const std::string& loc_path
 	Directory* location = GetParent(loc_path);
 	location->Copy(file);
 }
-void FileManager::Move(const std::string& file_path, const std::string& loc_path){} //TODO
+void FileManager::Move(const std::string& file_path, const std::string& loc_path)
+{
+	if (file_path == "C:")
+		throw std::exception("Not allowed move root directory");
+	if (file_path == loc_path)
+		return;
+	if (IsPrefix(GetFullPath(file_path), GetFullPath(loc_path)))
+		throw std::exception("Command not allowed");
+	std::string FileName;
+	Directory* parent = GetParent(file_path, FileName);
+	File* file = parent->SearchFile(FileName);
+	Directory* location = GetParent(loc_path);
+	location->Move(file, GetFullPath(loc_path));
+	parent->RemoveFile(file);
+}
 
 void FileManager::LinkCase(
 	const std::string& document_path,
@@ -364,7 +392,7 @@ const Directory* const File::GetRoot() const
 
 Directory::Directory(const std::string& filename, Directory* const root)
 	:File(filename, root)
-	, m_CountOfHardLinks(0)
+	, m_HardLinkCount(0)
 {}
 
 Directory::~Directory()
@@ -387,6 +415,14 @@ void Directory::print(std::ostream& out, int layer) const
 	for (int i = 0; i < len; ++i)
 	{
 		PrintNode(m_Files[i], out, layer);
+	}
+}
+
+void Directory::AddAnyFile(File* file)
+{
+	if (!HasFileWithSameName(file->GetName()))
+	{
+		m_Files.push_back(file);
 	}
 }
 
@@ -421,7 +457,7 @@ void Directory::AddDynamicLink(const std::string& path, Document* file, Director
 	file->AddDynamicLink(this);
 }
 
-void Directory::RemoveFolder(const std::string& name, const Directory* cur)
+void Directory::DeleteFolder(const std::string& name, const Directory* cur)
 {
 	int len = m_Files.size();
 	for (int i = 0; i < len; ++i)
@@ -444,7 +480,7 @@ void Directory::RemoveFolder(const std::string& name, const Directory* cur)
 	throw std::exception("No such file or directory");
 }
 
-void Directory::RemoveTree(const std::string& name, const Directory* cur)
+void Directory::DeleteTree(const std::string& name, const Directory* cur)
 {
 	int len = m_Files.size();
 	for (int i = 0; i < len; ++i)
@@ -457,7 +493,7 @@ void Directory::RemoveTree(const std::string& name, const Directory* cur)
 				throw std::exception("Not a directory");
 			else if (!CheckTree(myfolder, cur))
 				throw std::exception("Not allowed remove current directory");
-			else if (m_CountOfHardLinks > 0)
+			else if (m_HardLinkCount > 0)
 				throw std::exception("Not allowed remove folder containing hard links");
 			else
 				DeleteObject(i);
@@ -467,7 +503,7 @@ void Directory::RemoveTree(const std::string& name, const Directory* cur)
 	throw std::exception("No such file or directory");
 }
 
-void Directory::RemoveFile(const std::string& name, Directory* root)
+void Directory::DeleteFile(const std::string& name, Directory* root)
 {
 	int len = m_Files.size();
 	for (int i = 0; i < len; ++i)
@@ -490,7 +526,7 @@ void Directory::RemoveFile(const std::string& name, Directory* root)
 	}
 }
 
-void Directory::RemoveDynamicLink(const Document* file)
+void Directory::DeleteDynamicLink(const Document* file)
 {
 	int len = m_Files.size();
 	for (int i = 0; i < len; ++i)
@@ -499,6 +535,18 @@ void Directory::RemoveDynamicLink(const Document* file)
 		if (dlink != nullptr && dlink->GetFile() == file)
 		{
 			DeleteObject(i);
+			return;
+		}
+	}
+}
+
+void Directory::RemoveFile(const File* const file)
+{
+	for (size_t i = 0; i < m_Files.size(); ++i)
+	{
+		if (m_Files[i] == file)
+		{
+			m_Files.erase(m_Files.begin() + i);
 			return;
 		}
 	}
@@ -559,6 +607,16 @@ void Directory::Copy(const File* const file)
 	throw std::exception("Something went wrong");
 }
 
+void Directory::Move(File* myfile, std::string path)
+{
+	if (myfile->HardLinkCount() > 0)
+		throw std::exception("Not allowed move files containing hard links");
+	if (HasFileWithSameName(myfile->GetName()))
+		return;
+	this->AddAnyFile(myfile);
+	ModifyDuringMove(myfile, path);
+}
+
 Directory* Directory::SearchFolder(const std::string& path)
 {
 	VectorString path_vector;
@@ -568,7 +626,7 @@ Directory* Directory::SearchFolder(const std::string& path)
 
 void Directory::IncrementHardLinkCount(const std::vector<std::string>& pathvector, int ind)
 {
-	m_CountOfHardLinks++;
+	m_HardLinkCount++;
 	if (ind == pathvector.size() - 1)
 	{
 		Document* doc = this->SearchDocument(pathvector.back());
@@ -588,7 +646,7 @@ void Directory::IncrementHardLinkCount(const std::vector<std::string>& pathvecto
 
 void Directory::DecrementHardLinkCount(const std::vector<std::string>& pathvector, int ind)
 {
-	m_CountOfHardLinks--;
+	m_HardLinkCount--;
 	if (ind == pathvector.size() - 1)
 	{
 		Document* doc = this->SearchDocument(pathvector.back());
@@ -622,6 +680,37 @@ bool Directory::HasFileWithSameName(const std::string& name) const
 		}
 	}
 	return false;
+}
+
+void Directory::ModifyDuringMove(File* myfile, std::string path)
+{
+	DynamicLink* dlink = dynamic_cast<DynamicLink*>(myfile);
+	if (dlink != nullptr)
+	{
+		Document* file = dlink->GetFile();
+		Directory* parent = file->FindParentDynamicLink(dlink);
+		if (parent != this)
+		{
+			file->RemoveDynamicLink(parent);
+			file->AddDynamicLink(this);
+		}
+		return;
+	}
+	Document* doc = dynamic_cast<Document*>(myfile);
+	if (doc != nullptr)
+	{
+		doc->ChangePath(path + "/" + doc->GetName());
+		return;
+	}
+	Directory* folder = dynamic_cast<Directory*>(myfile);
+	if (folder != nullptr)
+	{
+		for (File* file : folder->m_Files)
+		{
+			folder->ModifyDuringMove(file, path + "/" + myfile->GetName());
+		}
+		return;
+	}
 }
 
 bool Directory::CheckTree(const Directory* folder, const Directory* cur)
@@ -675,12 +764,12 @@ Document* Directory::SearchDocument(const std::string& name)
 	throw std::exception("No such file or directory");
 }
 
-DynamicLink* Directory::SearchDynamicLink(const std::string& path)
+DynamicLink* Directory::SearchDynamicLink(Document* doc)
 {
 	for (File* file : m_Files)
 	{
 		DynamicLink* link = dynamic_cast<DynamicLink*>(file);
-		if (link != nullptr && link->GetPath() == path)
+		if (link != nullptr && link->GetFile() == doc)
 		{
 			return link;
 		}
@@ -688,18 +777,29 @@ DynamicLink* Directory::SearchDynamicLink(const std::string& path)
 	throw std::exception("No such file or directory");
 }
 
-const File* const Directory::SearchFile(const std::string& path) const
+const File* const Directory::SearchFile(const std::string& name) const
 {
 	for (File* file : m_Files)
 	{
-		if (file->GetName() == path)
+		if (file->GetName() == name)
 		{
 			return file;
 		}
 	}
-	throw std::exception("Something went wrong");
+	throw std::exception("No such file or directory");
 }
 
+File* Directory::SearchFile(const std::string& name)
+{
+	for (File* file : m_Files)
+	{
+		if (file->GetName() == name)
+		{
+			return file;
+		}
+	}
+	throw std::exception("No such file or directory");
+}
 bool Directory::SearchDynamicLink(const DynamicLink* const link)
 {
 	for (File* file : m_Files)
@@ -725,6 +825,15 @@ void Document::RemoveDynamicLink(Directory* parent)
 	}
 }
 
+void Document::ChangePath(const std::string& path)
+{
+	for (Directory* parent : m_DynamicLinks)
+	{
+		DynamicLink* link = parent->SearchDynamicLink(this);
+		link->ChangePath(path);
+	}
+}
+
 Directory* Document::FindParentDynamicLink(const DynamicLink* const link) const
 {
 	for (size_t i = 0; i < m_DynamicLinks.size(); ++i)
@@ -743,7 +852,7 @@ void Document::Deallocate()
 	for (int i = 0; i < len; ++i)
 	{
 		Directory* parent = m_DynamicLinks[0];
-		parent->RemoveDynamicLink(this);
+		parent->DeleteDynamicLink(this);
 	}
 }
 
