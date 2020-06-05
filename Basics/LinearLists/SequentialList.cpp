@@ -29,7 +29,7 @@ SequentialList& SequentialList::operator=(const SequentialList& object)
 		m_maxsize = object.m_maxsize;
 		m_array = new int[m_maxsize];
 		for (int i = 0; i < m_size; ++i) {
-			m_array[i] = object[i];
+			m_array[i] = object.m_array[i];
 		}
 	}
 	return *this;
