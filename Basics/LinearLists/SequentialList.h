@@ -2,6 +2,7 @@
 #include <iostream>
 class SequentialList
 {
+	friend std::ostream& operator<<(std::ostream&, SequentialList&);
 public:
 	SequentialList();	
 	SequentialList(const SequentialList& object);
@@ -16,9 +17,8 @@ public:
 	void remove(int ind);
 	int&  operator[](int ind);
 	const int& operator[](int ind) const;
-	friend std::ostream& operator<<(std::ostream&, SequentialList&);
 private:
+	int* m_array;
 	int m_maxsize;
 	int m_size;
-	int* m_array;
 };

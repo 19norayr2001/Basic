@@ -1,14 +1,15 @@
 #include <unordered_map>
 #include <algorithm>
 #include <iostream>
+#include <iterator>
 #include <string>
 #include "UnitTests.h"
 #include "..\LinearLists\SequentialStack.h"
 #include "..\LinearLists\SequentialQueue.h"
 #include "..\LinearLists\SequentialList.h"
-#include "..\LinearLists\LinkedList.h"
-#include "..\LinearLists\LinkedQueue.h"
 #include "..\LinearLists\LinkedStack.h"
+#include "..\LinearLists\LinkedQueue.h"
+#include "..\LinearLists\LinkedList.h"
 #include "..\Sortings\Algorithms.h"
 #include "..\Expressions\Postfix.h"
 #include "..\Expressions\Prefix.h"
@@ -18,10 +19,7 @@ namespace
 {
 	void print_array(int* arr, int size)
 	{
-		for (int i = 0; i < size; ++i)
-		{
-			std::cout << arr[i] << " ";
-		}
+		std::copy(arr, arr + size, std::ostream_iterator<int>(std::cout, " "));
 		std::cout << std::endl;
 	}
 	void Sorttest(int* arr, int size, void(*sortfunc)(int*, int))
@@ -164,6 +162,9 @@ void Testing::sortings_test()
 	Sorttest(arr, size, Sortings::Heap_sort);
 	Sorttest(arr, size, Sortings::Insertion_sort);
 	Sorttest(arr, size, Sortings::Merge_sort);
+	Sorttest(arr, size, Sortings::Merge_sort);
+	Sorttest(arr, size, Sortings::Merge_sort);
+	Sorttest(arr, size, Sortings::Merge_sort);
 	Sorttest(arr, size, Sortings::Radix_sort);
 	Sorttest(arr, size, Sortings::Quick_sort);
 	Sorttest(arr, size, Sortings::Selection_sort);
@@ -198,11 +199,11 @@ void Testing::polynomial_test()
 		std::cout << pol1 << std::endl;
 		pol1 *= pol;
 	}
-	std::cout << "P(x) = " << std::endl << pol1 << std::endl;
-	std::cout << "P'(x) = " << std::endl << pol1.Derivative() << std::endl;
+	std::cout << "P(x) = " << pol1 << std::endl;
+	std::cout << "P'(x) = " << pol1.Derivative() << std::endl;
 	Polynomial polx({ {1, -4}, {2, -2}, {3, 5} }), poly({ {2, 2}, {3, -5}, {4, 7} });
 	Polynomial plus = polx + poly;
-	std::cout << "P(x) = " << std::endl << plus << std::endl;
+	std::cout << "P(x) = " << plus << std::endl;
 	std::cout << "P(2) = " << plus.Calculate(2) << std::endl;
 }
 // TODO add tests implementations

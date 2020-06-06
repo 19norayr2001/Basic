@@ -3,33 +3,30 @@
 #include <queue>
 namespace
 {
-	void Merge(int* arr, int sz1, int sz2)
+	void Merge(int* arr, int left1, int right1, int left2, int right2)
 	{
-		int* parr = new int[sz2];
-		for (int i = 0; i < sz2; ++i)
+		int size = right1 - left1 + right2 - left2;
+		int* parr = new int[size];
+		for (int i = left1; i < right1; ++i)
 		{
-			parr[i] = arr[i];
+			parr[i - left1] = arr[i];
 		}
-		int left1 = 0, left2 = sz1;
-		for (int i = 0; i < sz2; ++i)
+		for (int i = left2; i < right2; ++i)
 		{
-			if (left1 < sz1)
+			parr[i - left2 + right1] = arr[i];
+		}
+		int lf1 = left1, lf2 = left2;
+		for (int i = 0; i < size; ++i)
+		{
+			if ((lf1 >= right1) || (lf2 < right2 && parr[lf1] > parr[lf2]))
 			{
-				if (left2 < sz2 && parr[left1] > parr[left2])
-				{
-					arr[i] = parr[left2];
-					left2++;
-				}
-				else
-				{
-					arr[i] = parr[left1];
-					left1++;
-				}
+				arr[i] = parr[lf2];
+				lf2++;
 			}
 			else
 			{
-				arr[i] = parr[left2];
-				left2++;
+				arr[i] = parr[lf1];
+				lf1++;
 			}
 		}
 		delete[] parr;
@@ -118,7 +115,7 @@ void Sortings::Merge_sort(int* arr, int size)
 	}
 	Merge_sort(arr, size / 2);
 	Merge_sort(arr + size / 2, (size + 1)/2);
-	Merge(arr, size / 2, size);
+	Merge(arr, 0, size / 2, size / 2, size);
 }
 
 void Sortings::Radix_sort(int* arr, int size)

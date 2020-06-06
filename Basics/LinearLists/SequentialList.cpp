@@ -3,9 +3,9 @@
 static const int MAX_SIZE = 100;
 
 SequentialList::SequentialList()
-	: m_maxsize(MAX_SIZE)
+	: m_array(nullptr)
+	, m_maxsize(MAX_SIZE)
 	, m_size(0)
-	, m_array(nullptr)
 {
 	m_array = new int[m_maxsize];	
 }

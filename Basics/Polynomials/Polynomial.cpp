@@ -164,8 +164,9 @@ std::ostream& operator<<(std::ostream& print, const Polynomial& obj)
 	Node* ptr = obj.m_head->next;
 	while (ptr != nullptr)
 	{
-		print << ptr->pow << " " << ptr->coefficient << std::endl;
+		print << "(" << ptr->coefficient << ")x" << "^" << ptr->pow;
 		ptr = ptr->next;
+		print << (ptr != nullptr ? "+" : "\n") << std::flush;
 	}
 	return print;
 }
