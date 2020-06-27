@@ -1,31 +1,30 @@
 #pragma once
 #include <vector>
 
-template<typename T>
+template<typename T, typename Binary_Functor>
 class SegmentTree
 {
 	typedef T value_type;
-	typedef value_type(*SegmentFunction)(const value_type&, const value_type&);
 public:
 	template<typename It>
-	SegmentTree(It, It, SegmentFunction);
-	value_type Query(int, int);
+	SegmentTree(It, It, Binary_Functor);
+	value_type Query(int, int) const;
 	void Update(size_t, value_type);
-	size_t FindIndex(int);
+	size_t FindIndex(int) const;
 private:
 	void Build(int, int, const std::vector<T>&, size_t = 1);
-	value_type Query(int, int, int, int, size_t = 1);
-	size_t FindIndex(int, int, int, size_t = 1);
+	value_type Query(int, int, int, int, size_t = 1) const;
+	size_t FindIndex(int, int, int, size_t = 1) const;
 private:
 	std::vector<value_type> t;
 	size_t n;
-	SegmentFunction func;
+	Binary_Functor m_func;
 };
 
-template <typename T>
+template <typename T, typename Binary_Functor>
 template <typename It>
-SegmentTree<T>::SegmentTree(It begin, It end,  SegmentFunction f)
-	:func(f)
+SegmentTree<T, Binary_Functor>::SegmentTree(It begin, It end, Binary_Functor f)
+	:m_func(f)
 {
 	std::vector<T> arr(begin, end);
 	n = arr.size();
@@ -33,8 +32,8 @@ SegmentTree<T>::SegmentTree(It begin, It end,  SegmentFunction f)
 }
 
 
-template<typename T>
-void SegmentTree<T>::Build(int tleft, int tright, const std::vector<T>& arr, size_t kod)
+template <typename T, typename Binary_Functor>
+void SegmentTree<T, Binary_Functor>::Build(int tleft, int tright, const std::vector<T>& arr, size_t kod)
 {
 	if (tleft == tright)
 	{
@@ -48,15 +47,17 @@ void SegmentTree<T>::Build(int tleft, int tright, const std::vector<T>& arr, siz
 	int m = (tleft + tright) / 2;
 	Build(tleft, m, arr, 2 * kod);
 	Build(m + 1, tright, arr, 2 * kod + 1);
-	t[kod] = func(t[2 * kod], t[2 * kod + 1]);
+	t[kod] = m_func(t[2 * kod], t[2 * kod + 1]);
 }
-template<typename T>
-T SegmentTree<T>::Query(int left, int right)
+
+template <typename T, typename Binary_Functor>
+T SegmentTree<T, Binary_Functor>::Query(int left, int right) const
 {
 	return Query(left, right, 0, n - 1);
 }
-template<typename T>
-T SegmentTree<T>::Query(int left, int right, int tleft, int tright, size_t kod)
+
+template <typename T, typename Binary_Functor>
+T SegmentTree<T, Binary_Functor>::Query(int left, int right, int tleft, int tright, size_t kod) const
 {
 	if (tleft == left && tright == right)
 		return t[kod];
@@ -65,11 +66,11 @@ T SegmentTree<T>::Query(int left, int right, int tleft, int tright, size_t kod)
 		return Query(left, right, tleft, m, 2 * kod);
 	if (left > m)
 		return Query(left, right, m + 1, tright, 2 * kod + 1);
-	return func(Query(left, m, tleft, m, 2 * kod), Query(m + 1, right, m + 1, tright, 2 * kod + 1));
+	return m_func(Query(left, m, tleft, m, 2 * kod), Query(m + 1, right, m + 1, tright, 2 * kod + 1));
 }
 
-template <typename T>
-void SegmentTree<T>::Update(size_t i, value_type x)
+template <typename T, typename Binary_Functor>
+void SegmentTree<T, Binary_Functor>::Update(size_t i, value_type x)
 {
 	size_t j = FindIndex(i);
 	value_type m = x - t[j];
@@ -80,14 +81,14 @@ void SegmentTree<T>::Update(size_t i, value_type x)
 	}
 }
 
-template <typename T>
-size_t SegmentTree<T>::FindIndex(int i)
+template <typename T, typename Binary_Functor>
+size_t SegmentTree<T, Binary_Functor>::FindIndex(int i) const
 {
 	return FindIndex(i, 0, n - 1);
 }
 
-template <typename T>
-size_t SegmentTree<T>::FindIndex(int i, int tleft, int tright, size_t kod)
+template <typename T, typename Binary_Functor>
+size_t SegmentTree<T, Binary_Functor>::FindIndex(int i, int tleft, int tright, size_t kod) const
 {
 	if (tleft == tright)
 		return kod;
