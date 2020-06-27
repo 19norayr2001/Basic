@@ -62,10 +62,13 @@ namespace
 }
 
 Treap::Treap()
-	:m_root(nullptr)
+	: m_root(nullptr)
+	, m_size(0)
 {}
+
 void Treap::Insert(const int& value)
 {
+	m_size++;
 	static std::mt19937_64 rng(std::chrono::steady_clock::now().time_since_epoch().count());
 	TreapNode* my_node = new TreapNode(value, rng()%(1ll<<31));
 	if (m_root == nullptr)
@@ -82,9 +85,10 @@ void Treap::Delete(const int& value)
 	std::pair<TreapNode*, TreapNode*> first_split_pair = Split(m_root, value);
 	std::pair<TreapNode*, TreapNode*> second_split_pair = Split(first_split_pair.second, value + 1);
 	if (second_split_pair.first == nullptr)
-	{
-		return;
-	}
+		throw std::exception("Element not found");
+	m_size--;
+	if (m_size == 0)
+		m_root = nullptr;
 	RemoveTree(second_split_pair.first);
 	m_root = Merge(first_split_pair.first, second_split_pair.second);
 }
