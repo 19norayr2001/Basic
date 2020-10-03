@@ -1,19 +1,78 @@
 #include "Expression.h"
+#include <exception>
+#include <sstream>
+#include <string>
 #include <cctype>
 #include <stack>
+
+namespace {
+	bool isOption(char ch) {
+		switch (ch)
+		{
+		case '-':
+		case '+':
+		case '*':
+		case '/':
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	bool isNumber(const std::string& s) {
+		for (size_t i = 0; i < s.size(); ++i) {
+			if (!isdigit(s[i])) {
+				return false;
+			}
+		}
+		return true;
+	}
+}
+
+Symbol* SymbolFactory::createInstance(const std::string& s) {
+	if (s == "(") {
+		return new OpenBracket(s);
+	}
+	if (s == ")") {
+		return new CloseBracket(s);
+	}
+	if (s.size() == 1 && isOption(s[0])) {
+		return new Option(s);
+	}
+	if(isNumber(s)) {
+		return new Number(s);
+	}
+	if (isalpha(s[0])) {
+		return new Identificator(s);
+	}
+	throw std::exception("Illegal Argument Exception");
+}
 
 Expression::Expression()
 {}
 
 Expression::Expression(const std::string& s)
 {
-	int sz = s.size();
-	std::string smb;
-	for (int i = 0; i < sz; ++i)
+	std::string str;
+	for (size_t i = 0; i < s.size(); ++i)
 	{
-		PushInfixSymbol(smb, s[i]);
+		if (isspace(s[i])) {
+			continue;
+		}
+		if (isOption(s[i]) || s[i] == '(' || s[i] == ')') {
+			if (str != "") {
+				m_infix.push_back(SymbolFactory::createInstance(str));
+			}
+			str = s[i];
+			m_infix.push_back(SymbolFactory::createInstance(str));
+			str = "";
+			continue;
+		}
+		str += s[i];
 	}
-	PushNum(smb, m_infix);
+	if (str != "") {
+		m_infix.push_back(SymbolFactory::createInstance(str));
+	}
 }
 
 Expression::Expression(const Expression& obj)
@@ -36,20 +95,16 @@ Expression::~Expression()
 	Deallocate();
 }
 
-int Expression::StringToInteger(const std::string s) const
+int Expression::StringToInteger(const std::string& s)
 {
+	std::stringstream ss;
+	ss << s;
 	int result = 0;
-	int ten_pow = 1;
-	int sz = s.size();
-	for (int i = sz - 1; i >= 0; --i)
-	{
-		result += (s[i] - '0') * ten_pow;
-		ten_pow *= 10;
-	}
+	ss >> result;
 	return result;
 }
 
-int Expression::Priority(char ch) const
+int Expression::Priority(char ch)
 {
 	if (ch == '+' || ch == '-')
 		return 1;
@@ -59,16 +114,21 @@ int Expression::Priority(char ch) const
 		return 0;
 }
 
-int Expression::CalculateOption(int num1, int num2, char ch) const
+int Expression::CalculateOption(int num1, int num2, char ch)
 {
-	if (ch == '*')
+	switch (ch)
+	{
+	case '*':
 		return num1 * num2;
-	if (ch == '/')
+	case '/':
 		return num1 / num2;
-	if (ch == '+')
+	case '+':
 		return num1 + num2;
-	if (ch == '-')
+	case '-':
 		return num1 - num2;
+	default:
+		throw std::exception("Illegal operation " + ch);
+	}
 }
 
 void Expression::Allocate(const Expression& obj)
@@ -83,10 +143,9 @@ void Expression::Deallocate()
 
 void Expression::AllocateVector(std::vector<Symbol*>& alloc_vec,const std::vector<Symbol*>& copy_vec)
 {
-	int sz = copy_vec.size();
-	for (int i = 0; i < sz; ++i)
+	for (size_t i = 0; i < copy_vec.size(); ++i)
 	{
-		PushChar(copy_vec[i]->info, copy_vec[i]->info[0], alloc_vec);
+		alloc_vec.push_back(SymbolFactory::createInstance(copy_vec[i]->info));
 	}
 }
 
@@ -102,7 +161,7 @@ void Expression::DeallocateVector(std::vector<Symbol*>& dealloc_vec)
 void Expression::ToPostfix(std::vector<Symbol*>& vec, bool postfix)
 {
 	std::stack<int> index;
-	int sz = m_infix.size();
+	size_t sz = m_infix.size();
 	for (int i = 0; i < sz; ++i)
 	{
 		Symbol* s = m_infix[i];
@@ -146,43 +205,5 @@ void Expression::ToPostfix(std::vector<Symbol*>& vec, bool postfix)
 	{
 		vec.push_back(m_infix[index.top()]);
 		index.pop();
-	}
-}
-
-void Expression::PushInfixSymbol(std::string& smb, char ch)
-{
-	if (isdigit(ch))
-		smb += ch;
-	else if (isalpha(ch))
-		smb += ch;
-	else
-	{
-		PushChar(smb, ch, m_infix);
-		smb = "";
-	}
-}
-
-void Expression::PushChar(std::string& smb, char ch, std::vector<Symbol*>& alloc_vec)
-{
-	std::string pb;
-	pb += ch;
-	PushNum(smb, alloc_vec);
-	if (pb == "(")
-		alloc_vec.push_back(new OpenBracket(pb));
-	else if (pb == ")")
-		alloc_vec.push_back(new CloseBracket(pb));
-	else
-	{
-		alloc_vec.push_back(new Option(pb));
-	}
-}
-void Expression::PushNum(std::string& smb, std::vector<Symbol*>& alloc_vec)
-{
-	if (smb != "")
-	{
-		if (isdigit(smb[0]))
-			alloc_vec.push_back(new Number(smb));
-		else
-			alloc_vec.push_back(new Identificator(smb));
 	}
 }

@@ -89,12 +89,12 @@ void Prefix::SwapBrackets()
 	}
 }
 
-std::ostream& operator<<(std::ostream& print, const Prefix& obj)
+std::ostream& operator<<(std::ostream& out, const Prefix& obj)
 {
 	for (auto smb : obj.m_prefix)
 	{
-		print << smb->info << " ";
+		out << smb->info << " ";
 	}
-	print << std::endl;
-	return print;
+	out << std::endl;
+	return out;
 }

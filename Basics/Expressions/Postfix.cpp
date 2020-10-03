@@ -32,9 +32,9 @@ Postfix::~Postfix()
 
 int Postfix::Calculate(std::unordered_map<std::string, int>& mp) const
 {
-	int sz = m_postfix.size();
+	size_t sz = m_postfix.size();
 	std::stack<int> st;
-	for (int i = 0; i < sz; ++i)
+	for (size_t i = 0; i < sz; ++i)
 	{
 		if (dynamic_cast<Number*>(m_postfix[i]) != nullptr)
 		{

@@ -2,6 +2,7 @@
 #include <unordered_map>
 #include <vector>
 #include <string>
+
 struct Symbol
 {
 	Symbol(std::string s)
@@ -45,6 +46,13 @@ struct CloseBracket :Symbol
 	{}
 	virtual ~CloseBracket() {}
 };
+
+
+class SymbolFactory {
+public:
+	static Symbol* createInstance(const std::string&);
+};
+
 class Expression
 {
 public:
@@ -59,18 +67,14 @@ private:
 	void Deallocate();
 	void Allocate(const Expression&);
 protected:
-	int StringToInteger(const std::string) const;
-	int Priority(char) const;
-	int CalculateOption(int, int, char) const;
+	static int StringToInteger(const std::string&);
+	static int Priority(char);
+	static int CalculateOption(int, int, char);
 protected:
 	void AllocateVector(std::vector<Symbol*>&,const std::vector<Symbol*>&);
 	void DeallocateVector(std::vector<Symbol*>&);
 protected:
 	void ToPostfix(std::vector<Symbol*>&, bool = true);
-private:
-	void PushInfixSymbol(std::string&, char);
-	void PushChar(std::string&, char, std::vector<Symbol*>&);
-	void PushNum(std::string&, std::vector<Symbol*>&);
 protected:
 	std::vector<Symbol*> m_infix;
 };
