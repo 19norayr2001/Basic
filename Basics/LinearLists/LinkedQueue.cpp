@@ -1,3 +1,4 @@
+
 #include "LinkedQueue.h"
 
 LinkedQueue::LinkedQueue()
