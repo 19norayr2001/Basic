@@ -6,39 +6,39 @@ class ImplicitTreapNode
 {
 public:
 	ImplicitTreapNode(int v = 0, int p = 0, ImplicitTreapNode* lf = nullptr, ImplicitTreapNode* rg = nullptr)
-		:m_reverse(false)
-		, m_value(v)
-		, m_priority(p)
-		, m_left(lf)
-		, m_right(rg)
-		, m_size(1)
-	{ Update(); }
+		:mReverse(false)
+		, mValue(v)
+		, mPriority(p)
+		, mLeft(lf)
+		, mRight(rg)
+		, mSize(1)
+	{ update(); }
 public:
-	void ChangeLeft(ImplicitTreapNode* node) { UpdateParams(); m_left = node; Update(); }
-	void ChangeRight(ImplicitTreapNode* node) { UpdateParams(); m_right = node; Update(); }
-	ImplicitTreapNode* Left() { UpdateParams(); return m_left; }
-	const ImplicitTreapNode* Left() const { UpdateParams(); return m_left; }
-	ImplicitTreapNode* Right() { UpdateParams(); return m_right; }
-	const ImplicitTreapNode* Right() const { UpdateParams(); return m_right; }
-	size_t size() const { return m_size; }
-	size_t LeftSize() const { UpdateParams(); return (m_left != nullptr ? m_left->m_size : 0); }
-	size_t RightSize() const { UpdateParams(); return (m_right != nullptr ? m_right->m_size : 0); }
-	const int& Value() const { UpdateParams(); return m_value; }
-	void Reverse() { m_reverse ^= true; }
+	void changeLeft(ImplicitTreapNode* node) { updateParams(); mLeft = node; update(); }
+	void changeRight(ImplicitTreapNode* node) { updateParams(); mRight = node; update(); }
+	ImplicitTreapNode* getLeft() { updateParams(); return mLeft; }
+	const ImplicitTreapNode* getLeft() const { updateParams(); return mLeft; }
+	ImplicitTreapNode* getRight() { updateParams(); return mRight; }
+	const ImplicitTreapNode* getRight() const { updateParams(); return mRight; }
+	size_t size() const { return mSize; }
+	size_t leftSize() const { updateParams(); return (mLeft != nullptr ? mLeft->mSize : 0); }
+	size_t rightSize() const { updateParams(); return (mRight != nullptr ? mRight->mSize : 0); }
+	const int& getValue() const { updateParams(); return mValue; }
+	void reverse() { mReverse ^= true; }
 public:
-	static ImplicitTreapNode* Merge(ImplicitTreapNode*, ImplicitTreapNode*);
-	static std::pair<ImplicitTreapNode*, ImplicitTreapNode*> Split(ImplicitTreapNode*, size_t);
+	static ImplicitTreapNode* merge(ImplicitTreapNode*, ImplicitTreapNode*);
+	static std::pair<ImplicitTreapNode*, ImplicitTreapNode*> split(ImplicitTreapNode*, size_t);
 private:
-	void UpdateParams() const;
-	void Update() { m_size = LeftSize() + RightSize() + 1; }
+	void updateParams() const;
+	void update() { mSize = leftSize() + rightSize() + 1; }
 public:
-	mutable bool m_reverse;
+	mutable bool mReverse;
 private:
-	int m_value;
-	int m_priority;
-	mutable ImplicitTreapNode* m_left;
-	mutable ImplicitTreapNode* m_right;
-	size_t m_size;
+	int mValue;
+	int mPriority;
+	mutable ImplicitTreapNode* mLeft;
+	mutable ImplicitTreapNode* mRight;
+	size_t mSize;
 };
 
 
@@ -47,19 +47,19 @@ class ImplicitTreap
 public:
 	ImplicitTreap();
 	~ImplicitTreap();
-	void PushBack(const int&);
-	void Insert(const int&, size_t);
-	void Delete(size_t);
-	void Reverse(size_t, size_t);
-	int KeyOfOrder(size_t) const;
-	int MaxDepth() const;
+	void pushBack(const int&);
+	void insert(const int&, size_t);
+	void remove(size_t);
+	void reverse(size_t, size_t);
+	int keyOfOrder(size_t) const;
+	int maxDepth() const;
 	bool empty() const { return size() == 0; }
-	size_t size() const { return m_root != nullptr ? m_root->size() : 0; }
+	size_t size() const { return mRoot != nullptr ? mRoot->size() : 0; }
 private:
-	void Deallocate(ImplicitTreapNode*);
+	void deallocate(ImplicitTreapNode*);
 private:
-	int KeyOfOrder(size_t, ImplicitTreapNode*) const;
-	int MaxDepth(const ImplicitTreapNode*) const;
+	int keyOfOrder(size_t, ImplicitTreapNode*) const;
+	int maxDepth(const ImplicitTreapNode*) const;
 private:
-	ImplicitTreapNode* m_root;
+	ImplicitTreapNode* mRoot;
 };

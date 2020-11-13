@@ -3,7 +3,7 @@
 #include <chrono>
 #include <random>
 
-TreapNode* TreapNode::Merge(TreapNode* node1, TreapNode* node2)
+TreapNode* TreapNode::merge(TreapNode* node1, TreapNode* node2)
 {
 	if (node1 == nullptr)
 		return node2;
@@ -12,151 +12,151 @@ TreapNode* TreapNode::Merge(TreapNode* node1, TreapNode* node2)
 	if (node1->key > node2->key)
 		std::swap(node1, node2);
 	TreapNode* ret{};
-	if (node1->priority > node2->priority)
+	if (node1->mPriority > node2->mPriority)
 	{
-		ret = new TreapNode(node1->key, node1->priority, node1->Left());
-		ret->ChangeRight(Merge(node1->Right(), node2));
+		ret = new TreapNode(node1->key, node1->mPriority, node1->getLeft());
+		ret->changeRight(merge(node1->getRight(), node2));
 		delete node1;
 	}
 	else
 	{
-		ret = new TreapNode(node2->key, node2->priority, nullptr, node2->Right());
-		ret->ChangeLeft(Merge(node1, node2->Left()));
+		ret = new TreapNode(node2->key, node2->mPriority, nullptr, node2->getRight());
+		ret->changeLeft(merge(node1, node2->getLeft()));
 		delete node2;
 	}
 	return ret;
 }
 
-std::pair<TreapNode*, TreapNode*> TreapNode::Split(TreapNode* node, int x)
+std::pair<TreapNode*, TreapNode*> TreapNode::split(TreapNode* node, int x)
 {
 	if (node == nullptr)
 		return std::make_pair(nullptr, nullptr);
 	TreapNode* retleft{}, * retright{};
 	if (node->key < x)
 	{
-		std::pair<TreapNode*, TreapNode*> pright = TreapNode::Split(node->Right(), x);
+		std::pair<TreapNode*, TreapNode*> pright = TreapNode::split(node->getRight(), x);
 		retleft = node;
-		node->ChangeRight(pright.first);
+		node->changeRight(pright.first);
 		retright = pright.second;
 	}
 	else
 	{
-		std::pair<TreapNode*, TreapNode*> pleft = TreapNode::Split(node->Left(), x);
+		std::pair<TreapNode*, TreapNode*> pleft = TreapNode::split(node->getLeft(), x);
 		retleft = pleft.first;
 		retright = node;
-		retright->ChangeLeft(pleft.second);
+		retright->changeLeft(pleft.second);
 	}
 	return std::make_pair(retleft, retright);
 }
 
 Treap::Treap()
-	: m_root(nullptr)
+	: mRoot(nullptr)
 {}
 
 Treap::~Treap()
 {
-	Deallocate(m_root);
+	deallocate(mRoot);
 }
 
-void Treap::Insert(const int& value)
+void Treap::insert(const int& value)
 {
-	if (Find(value))
+	if (find(value))
 		return;
 	static std::mt19937_64 rng(std::chrono::steady_clock::now().time_since_epoch().count());
 	TreapNode* my_node = new TreapNode(value, rng() % (1ll << 31));
-	if (m_root == nullptr)
+	if (mRoot == nullptr)
 	{
-		m_root = my_node;
+		mRoot = my_node;
 		return;
 	}
-	std::pair<TreapNode*, TreapNode*> p = TreapNode::Split(m_root, value);
-	m_root = TreapNode::Merge(p.second, TreapNode::Merge(p.first, my_node));
+	std::pair<TreapNode*, TreapNode*> p = TreapNode::split(mRoot, value);
+	mRoot = TreapNode::merge(p.second, TreapNode::merge(p.first, my_node));
 }
 
-void Treap::Delete(const int& value)
+void Treap::remove(const int& value)
 {
-	std::pair<TreapNode*, TreapNode*> first_split_pair = TreapNode::Split(m_root, value);
-	std::pair<TreapNode*, TreapNode*> second_split_pair = TreapNode::Split(first_split_pair.second, value + 1);
+	std::pair<TreapNode*, TreapNode*> first_split_pair = TreapNode::split(mRoot, value);
+	std::pair<TreapNode*, TreapNode*> second_split_pair = TreapNode::split(first_split_pair.second, value + 1);
 	if (second_split_pair.first == nullptr)
 		throw std::exception("Element not found");
 	delete second_split_pair.first;
 	if (empty())
 	{
-		m_root = nullptr;
+		mRoot = nullptr;
 		return;
 	}
-	m_root = TreapNode::Merge(first_split_pair.first, second_split_pair.second);
+	mRoot = TreapNode::merge(first_split_pair.first, second_split_pair.second);
 }
 
-bool Treap::Find(const int& value) const
+bool Treap::find(const int& value) const
 {
-	return Find(value, m_root);
+	return find(value, mRoot);
 }
 
-bool Treap::Find(const int& value, TreapNode* root) const
+bool Treap::find(const int& value, TreapNode* root) const
 {
 	if (root == nullptr)
 		return false;
 	if (value == root->key)
 		return true;
 	if (value < root->key)
-		return Find(value, root->Left());
-	return Find(value, root->Right());
+		return find(value, root->getLeft());
+	return find(value, root->getRight());
 }
 
-int Treap::KeyOfOrder(size_t ind) const
+int Treap::keyOfOrder(size_t ind) const
 {
 	if (ind >= size())
 		throw std::exception("Index out of bounds");
 	ind++;
-	return KeyOfOrder(ind, m_root);
+	return keyOfOrder(ind, mRoot);
 }
 
-int Treap::KeyOfOrder(size_t ind, const TreapNode* root) const
+int Treap::keyOfOrder(size_t ind, const TreapNode* root) const
 {
-	size_t leftcount = root->LeftSize();
+	size_t leftcount = root->leftSize();
 	if (leftcount >= ind)
-		return KeyOfOrder(ind, root->Left());
+		return keyOfOrder(ind, root->getLeft());
 	if (ind == leftcount + 1)
 		return root->key;
-	return KeyOfOrder(ind - leftcount - 1, root->Right());
+	return keyOfOrder(ind - leftcount - 1, root->getRight());
 }
 
-size_t Treap::OrderOfKey(const int& key) const
+size_t Treap::orderOfKey(const int& key) const
 {
-	return OrderOfKey(key, m_root) - 1;
+	return orderOfKey(key, mRoot) - 1;
 }
 
-size_t Treap::OrderOfKey(const int& key, const TreapNode* root) const
+size_t Treap::orderOfKey(const int& key, const TreapNode* root) const
 {
 	if (root == nullptr)
 		throw std::exception("Element not found");
 	if (key == root->key)
-		return 1 + root->LeftSize();
+		return 1 + root->leftSize();
 	if (key < root->key)
-		return OrderOfKey(key, root->Left());
-	return 1 + root->LeftSize() + OrderOfKey(key, root->Right());
+		return orderOfKey(key, root->getLeft());
+	return 1 + root->leftSize() + orderOfKey(key, root->getRight());
 }
 
-int Treap::MaxDepth() const
+int Treap::maxDepth() const
 {
-	return MaxDepth(m_root);
+	return maxDepth(mRoot);
 }
 
-int Treap::MaxDepth(const TreapNode* node) const
+int Treap::maxDepth(const TreapNode* node) const
 {
 	if (node == nullptr)
 		return 0;
-	return std::max(MaxDepth(node->Right()), MaxDepth(node->Left())) + 1;
+	return std::max(maxDepth(node->getRight()), maxDepth(node->getLeft())) + 1;
 }
 
-void Treap::Deallocate(TreapNode* node)
+void Treap::deallocate(TreapNode* node)
 {
 	if (node == nullptr)
 		return;
-	if (node->Left() != nullptr)
-		Deallocate(node->Left());
-	if (node->Right() != nullptr)
-		Deallocate(node->Right());
+	if (node->getLeft() != nullptr)
+		deallocate(node->getLeft());
+	if (node->getRight() != nullptr)
+		deallocate(node->getRight());
 	delete node;
 }

@@ -3,108 +3,108 @@
 #include <chrono>
 #include <random>
 
-ImplicitTreapNode* ImplicitTreapNode::Merge(ImplicitTreapNode* node1, ImplicitTreapNode* node2)
+ImplicitTreapNode* ImplicitTreapNode::merge(ImplicitTreapNode* node1, ImplicitTreapNode* node2)
 {
 	if (node1 == nullptr)
 		return node2;
 	if (node2 == nullptr)
 		return node1;
 	ImplicitTreapNode* ret{};
-	if (node1->m_priority > node2->m_priority)
+	if (node1->mPriority > node2->mPriority)
 	{
-		ret = new ImplicitTreapNode(node1->Value(), node1->m_priority, node1->Left());
-		ret->ChangeRight(Merge(node1->Right(), node2));
+		ret = new ImplicitTreapNode(node1->getValue(), node1->mPriority, node1->getLeft());
+		ret->changeRight(merge(node1->getRight(), node2));
 		delete node1;
 	}
 	else
 	{
-		ret = new ImplicitTreapNode(node2->Value(), node2->m_priority, nullptr, node2->Right());
-		ret->ChangeLeft(Merge(node1, node2->Left()));
+		ret = new ImplicitTreapNode(node2->getValue(), node2->mPriority, nullptr, node2->getRight());
+		ret->changeLeft(merge(node1, node2->getLeft()));
 		delete node2;
 	}
 	return ret;
 }
 
-std::pair<ImplicitTreapNode*, ImplicitTreapNode*> ImplicitTreapNode::Split(ImplicitTreapNode* node, size_t x)
+std::pair<ImplicitTreapNode*, ImplicitTreapNode*> ImplicitTreapNode::split(ImplicitTreapNode* node, size_t x)
 {
 	if (node == nullptr || x <= 0)
 		return std::make_pair(nullptr, node);
 	if (x >= node->size())
 		return std::make_pair(node, nullptr);
 	ImplicitTreapNode* retleft{}, * retright{};
-	if (node->LeftSize() < x)
+	if (node->leftSize() < x)
 	{
-		std::pair<ImplicitTreapNode*, ImplicitTreapNode*> pright = ImplicitTreapNode::Split(node->Right(), x - node->LeftSize() - 1);
+		std::pair<ImplicitTreapNode*, ImplicitTreapNode*> pright = ImplicitTreapNode::split(node->getRight(), x - node->leftSize() - 1);
 		retleft = node;
-		node->ChangeRight(pright.first);
+		node->changeRight(pright.first);
 		retright = pright.second;
 	}
 	else
 	{
-		std::pair<ImplicitTreapNode*, ImplicitTreapNode*> pleft = ImplicitTreapNode::Split(node->Left(), x);
+		std::pair<ImplicitTreapNode*, ImplicitTreapNode*> pleft = ImplicitTreapNode::split(node->getLeft(), x);
 		retleft = pleft.first;
 		retright = node;
-		retright->ChangeLeft(pleft.second);
+		retright->changeLeft(pleft.second);
 	}
 	return std::make_pair(retleft, retright);
 }
 
-void ImplicitTreapNode::UpdateParams() const
+void ImplicitTreapNode::updateParams() const
 {
-	if (m_reverse)
+	if (mReverse)
 	{
-		std::swap(m_left, m_right);
-		if (m_left != nullptr)
-			m_left->Reverse();
-		if (m_right != nullptr)
-			m_right->Reverse();
-		m_reverse = false;
+		std::swap(mLeft, mRight);
+		if (mLeft != nullptr)
+			mLeft->reverse();
+		if (mRight != nullptr)
+			mRight->reverse();
+		mReverse = false;
 	}
 }
 
 ImplicitTreap::ImplicitTreap()
-	: m_root(nullptr)
+	: mRoot(nullptr)
 {}
 
 ImplicitTreap::~ImplicitTreap()
 {
-	Deallocate(m_root);
+	deallocate(mRoot);
 }
 
-void ImplicitTreap::PushBack(const int& value)
+void ImplicitTreap::pushBack(const int& value)
 {
-	Insert(value, size());
+	insert(value, size());
 }
 
-void ImplicitTreap::Insert(const int& value, size_t ind)
+void ImplicitTreap::insert(const int& value, size_t ind)
 {
 	static std::mt19937_64 rng(std::chrono::steady_clock::now().time_since_epoch().count());
 	ImplicitTreapNode* my_node = new ImplicitTreapNode(value, rng() % (1ll << 31));
-	if (m_root == nullptr)
+	if (mRoot == nullptr)
 	{
-		m_root = my_node;
+		mRoot = my_node;
 		return;
 	}
-	std::pair<ImplicitTreapNode*, ImplicitTreapNode*> p = ImplicitTreapNode::Split(m_root, ind);
-	m_root = ImplicitTreapNode::Merge(ImplicitTreapNode::Merge(p.first, my_node), p.second);
+	std::pair<ImplicitTreapNode*, ImplicitTreapNode*> p = ImplicitTreapNode::split(mRoot, ind);
+	mRoot = ImplicitTreapNode::merge(ImplicitTreapNode::merge(p.first, my_node), p.second);
 }
 
-void ImplicitTreap::Delete(size_t ind)
+void ImplicitTreap::remove(size_t ind)
 {
-	std::pair<ImplicitTreapNode*, ImplicitTreapNode*> first_split_pair = ImplicitTreapNode::Split(m_root, ind);
-	std::pair<ImplicitTreapNode*, ImplicitTreapNode*> second_split_pair = ImplicitTreapNode::Split(first_split_pair.second, 1);
+	std::pair<ImplicitTreapNode*, ImplicitTreapNode*> first_split_pair = ImplicitTreapNode::split(mRoot, ind);
+	std::pair<ImplicitTreapNode*, ImplicitTreapNode*> second_split_pair = ImplicitTreapNode::split(first_split_pair.second, 1);
 	if (second_split_pair.first == nullptr)
 		throw std::exception("Element not found");
 	delete second_split_pair.first;
 	if (empty())
 	{
-		m_root = nullptr;
+		mRoot = nullptr;
 		return;
 	}
-	m_root = ImplicitTreapNode::Merge(first_split_pair.first, second_split_pair.second);
+	mRoot = ImplicitTreapNode::merge(first_split_pair.first, second_split_pair.second);
 }
 
-void ImplicitTreap::Reverse(size_t left, size_t right)
+void ImplicitTreap::reverse(size_t left, size_t right)
 {
 	if (left < 0)
 		left = 0;
@@ -112,49 +112,49 @@ void ImplicitTreap::Reverse(size_t left, size_t right)
 		right = size();
 	if (right <= left)
 		return;
-	std::pair<ImplicitTreapNode*, ImplicitTreapNode*> p1 = ImplicitTreapNode::Split(m_root, left);
-	std::pair<ImplicitTreapNode*, ImplicitTreapNode*> p2 = ImplicitTreapNode::Split(p1.second, right - left);
-	p2.first->Reverse();
-	m_root = ImplicitTreapNode::Merge(p1.first, ImplicitTreapNode::Merge(p2.first, p2.second));
+	std::pair<ImplicitTreapNode*, ImplicitTreapNode*> p1 = ImplicitTreapNode::split(mRoot, left);
+	std::pair<ImplicitTreapNode*, ImplicitTreapNode*> p2 = ImplicitTreapNode::split(p1.second, right - left);
+	p2.first->reverse();
+	mRoot = ImplicitTreapNode::merge(p1.first, ImplicitTreapNode::merge(p2.first, p2.second));
 }
 
-int ImplicitTreap::KeyOfOrder(size_t ind) const
+int ImplicitTreap::keyOfOrder(size_t ind) const
 {
 	if (ind >= size())
 		throw std::exception("Index out of bounds");
 	ind++;
-	return KeyOfOrder(ind, m_root);
+	return keyOfOrder(ind, mRoot);
 }
 
-int ImplicitTreap::KeyOfOrder(size_t ind, ImplicitTreapNode* root) const
+int ImplicitTreap::keyOfOrder(size_t ind, ImplicitTreapNode* root) const
 {
-	size_t leftcount = root->LeftSize();
+	size_t leftcount = root->leftSize();
 	if (leftcount >= ind)
-		return KeyOfOrder(ind, root->Left());
+		return keyOfOrder(ind, root->getLeft());
 	if (ind == leftcount + 1)
-		return root->Value();
-	return KeyOfOrder(ind - leftcount - 1, root->Right());
+		return root->getValue();
+	return keyOfOrder(ind - leftcount - 1, root->getRight());
 }
 
-int ImplicitTreap::MaxDepth() const
+int ImplicitTreap::maxDepth() const
 {
-	return MaxDepth(m_root);
+	return maxDepth(mRoot);
 }
 
-int ImplicitTreap::MaxDepth(const ImplicitTreapNode* node) const
+int ImplicitTreap::maxDepth(const ImplicitTreapNode* node) const
 {
 	if (node == nullptr)
 		return 0;
-	return std::max(MaxDepth(node->Right()), MaxDepth(node->Left())) + 1;
+	return std::max(maxDepth(node->getRight()), maxDepth(node->getLeft())) + 1;
 }
 
-void ImplicitTreap::Deallocate(ImplicitTreapNode* node)
+void ImplicitTreap::deallocate(ImplicitTreapNode* node)
 {
 	if (node == nullptr)
 		return;
-	if (node->Left() != nullptr)
-		Deallocate(node->Left());
-	if (node->Right() != nullptr)
-		Deallocate(node->Right());
+	if (node->getLeft() != nullptr)
+		deallocate(node->getLeft());
+	if (node->getRight() != nullptr)
+		deallocate(node->getRight());
 	delete node;
 }

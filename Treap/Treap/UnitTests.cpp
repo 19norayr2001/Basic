@@ -18,7 +18,7 @@ void Testing::TreapTesting()
 	for (int i = 0; i < n; ++i)
 	{
 		std::cin >> k;
-		vec.PushBack(k);
+		vec.pushBack(k);
 	}
 	std::cout << "Input reverse query count" << std::endl;
 	std::cin >> m;
@@ -26,11 +26,11 @@ void Testing::TreapTesting()
 	{
 		int a, b;
 		std::cin >> a >> b;
-		vec.Reverse(a - 1, b - 1);
+		vec.reverse(a - 1, b - 1);
 		std::cout << "Array from query" << std::endl;
 		for (size_t i = 0; i < vec.size(); ++i)
 		{
-			std::cout << vec.KeyOfOrder(i) << " ";
+			std::cout << vec.keyOfOrder(i) << " ";
 		}
 		std::cout << std::endl;
 		std::cout << std::endl;
@@ -41,11 +41,11 @@ void Testing::TreapTesting()
 	{
 		int a, b;
 		std::cin >> a >> b;
-		vec.Insert(b, a - 1);
+		vec.insert(b, a - 1);
 		std::cout << "Array from query" << std::endl;
 		for (size_t i = 0; i < vec.size(); ++i)
 		{
-			std::cout << vec.KeyOfOrder(i) << " ";
+			std::cout << vec.keyOfOrder(i) << " ";
 		}
 		std::cout << std::endl;
 	}
@@ -55,11 +55,11 @@ void Testing::TreapTesting()
 	{
 		int a;
 		std::cin >> a;
-		vec.Delete(a - 1);
+		vec.remove(a - 1);
 		std::cout << "Array from query" << std::endl;
 		for (size_t i = 0; i < vec.size(); ++i)
 		{
-			std::cout << vec.KeyOfOrder(i) << " ";
+			std::cout << vec.keyOfOrder(i) << " ";
 		}
 		std::cout << std::endl;
 	}

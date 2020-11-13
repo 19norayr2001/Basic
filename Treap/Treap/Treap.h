@@ -6,33 +6,33 @@ class TreapNode
 public:
 	TreapNode(int k = 0, int p = 0, TreapNode* lf = nullptr, TreapNode* rg = nullptr)
 		: key(k)
-		, priority(p)
-		, m_left(lf)
-		, m_right(rg)
-		, m_size(1)
-	{ Update(); }
+		, mPriority(p)
+		, mLeft(lf)
+		, mRight(rg)
+		, mSize(1)
+	{ update(); }
 public:
-	void ChangeLeft(TreapNode* node) { Update(); m_left = node; }
-	void ChangeRight(TreapNode* node) { Update(); m_right = node; }
-	TreapNode* Left() { return m_left; }
-	const TreapNode* Left() const { return m_left; }
-	TreapNode* Right() { return m_right; }
-	const TreapNode* Right() const { return m_right; }
-	size_t size() const { return m_size; }
-	size_t LeftSize() const { return (m_left != nullptr ? m_left->m_size : 0); }
-	size_t RightSize() const { return (m_right != nullptr ? m_right->m_size : 0); }
+	void changeLeft(TreapNode* node) { update(); mLeft = node; }
+	void changeRight(TreapNode* node) { update(); mRight = node; }
+	TreapNode* getLeft() { return mLeft; }
+	const TreapNode* getLeft() const { return mLeft; }
+	TreapNode* getRight() { return mRight; }
+	const TreapNode* getRight() const { return mRight; }
+	size_t size() const { return mSize; }
+	size_t leftSize() const { return (mLeft != nullptr ? mLeft->mSize : 0); }
+	size_t rightSize() const { return (mRight != nullptr ? mRight->mSize : 0); }
 public:
-	static TreapNode* Merge(TreapNode*, TreapNode*);
-	static std::pair<TreapNode*, TreapNode*> Split(TreapNode*, int);
+	static TreapNode* merge(TreapNode*, TreapNode*);
+	static std::pair<TreapNode*, TreapNode*> split(TreapNode*, int);
 private:
-	void Update() { m_size = LeftSize() + RightSize() + 1; }
+	void update() { mSize = leftSize() + rightSize() + 1; }
 public:
 	int key;
 private:
-	int priority;
-	TreapNode* m_left;
-	TreapNode* m_right;
-	size_t m_size;
+	int mPriority;
+	TreapNode* mLeft;
+	TreapNode* mRight;
+	size_t mSize;
 };
 
 class Treap
@@ -40,21 +40,21 @@ class Treap
 public:
 	Treap();
 	~Treap();
-	void Insert(const int&);
-	void Delete(const int&);
-	bool Find(const int&) const;
-	int KeyOfOrder(size_t) const;
-	size_t OrderOfKey(const int&) const;
-	int MaxDepth() const;
+	void insert(const int&);
+	void remove(const int&);
+	bool find(const int&) const;
+	int keyOfOrder(size_t) const;
+	size_t orderOfKey(const int&) const;
+	int maxDepth() const;
 	bool empty() const { return size() == 0; }
-	size_t size() const { return m_root != nullptr ? m_root->size() : 0; }
+	size_t size() const { return mRoot != nullptr ? mRoot->size() : 0; }
 private:
-	void Deallocate(TreapNode*);
+	void deallocate(TreapNode*);
 private:
-	bool Find(const int&, TreapNode*) const;
-	int KeyOfOrder(size_t, const TreapNode*) const;
-	size_t OrderOfKey(const int&, const TreapNode*) const;
-	int MaxDepth(const TreapNode*) const;
+	bool find(const int&, TreapNode*) const;
+	int keyOfOrder(size_t, const TreapNode*) const;
+	size_t orderOfKey(const int&, const TreapNode*) const;
+	int maxDepth(const TreapNode*) const;
 private:
-	TreapNode* m_root;
+	TreapNode* mRoot;
 };
