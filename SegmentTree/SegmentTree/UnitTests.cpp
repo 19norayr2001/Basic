@@ -17,7 +17,7 @@ void Testing::SegmentTreeTesting()
 	{
 		for (size_t j = i; j < v.size(); ++j)
 		{
-			std::cout << "Sum of segment [" << i << ", " << j << "] - " << seg.Query(i, j) << std::endl;
+			std::cout << "Sum of segment [" << i << ", " << j << "] - " << seg.query(i, j) << std::endl;
 			size_t ind = rng() % v.size();
 			size_t value = rng() % 20;
 			v[ind] = value;
@@ -25,7 +25,7 @@ void Testing::SegmentTreeTesting()
 			std::cout << "array from update ";
 			copy(v.begin(), v.end(), std::ostream_iterator<int>(std::cout, " "));
 			std::cout << std::endl;
-			seg.Update(ind, value);
+			seg.update(ind, value);
 		}
 	}
 }

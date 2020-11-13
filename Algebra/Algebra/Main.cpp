@@ -3,10 +3,9 @@
 #include <iostream>
 
 int main() {
-
 //	Testing::testSimsAlgorithm();
 //	Testing::testAbelianGroupCount();
-//	Testing::testAbelianGroupIsmorphism();
+//	Testing::testAbelianGroupIsomorphism();
 //	Testing::testEilerFunction();
 	return 0;
 }

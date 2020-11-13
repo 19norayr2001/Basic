@@ -1,5 +1,4 @@
 #pragma once
-namespace Testing
-{
+namespace Testing {
 	void SegmentTreeTesting();
 }

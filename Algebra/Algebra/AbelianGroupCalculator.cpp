@@ -1,5 +1,6 @@
 #include "AbelianGroupCalculator.h"
 #include <algorithm>
+#include <cmath>
 #include <vector>
 
 AbelianGroupCalculator AbelianGroupCalculator::instance;
@@ -11,6 +12,7 @@ const AbelianGroupCalculator& AbelianGroupCalculator::getInstance() {
 long long AbelianGroupCalculator::calculateCount(int groupSize) const {
 	auto powers = getPrimePowers(groupSize);
 	long long answer = 1;
+
 	for (std::pair<int, int> primePower : powers) {
 		answer *= calculateForPrimePower(primePower.second);
 	}
