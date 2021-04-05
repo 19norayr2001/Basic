@@ -10,6 +10,10 @@ Permutation& Permutation::operator*=(const Permutation& permutation) {
 	return *this;
 }
 
+bool Permutation::operator==(const Permutation& p) {
+	return p.mPermuation == mPermuation;
+}
+
 int Permutation::operator[](size_t i) const {
 	return mPermuation[i - 1];
 }

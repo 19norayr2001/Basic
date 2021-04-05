@@ -6,6 +6,7 @@ public:
 	Permutation(const std::vector<int>&);
 public:
 	Permutation& operator*=(const Permutation&);
+	bool operator==(const Permutation&);
 	int operator[](size_t) const;
 	size_t size() const { return mPermuation.size(); }
 private:
