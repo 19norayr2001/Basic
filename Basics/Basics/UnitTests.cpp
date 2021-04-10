@@ -193,17 +193,16 @@ void Testing::expressions_test()
 void Testing::polynomial_test()
 {
 	std::cout << std::endl << "Testing Polynomials" << std::endl << std::endl;
-	Polynomial pol({ {0, 1}, {1, 1} }), pol1 = pol, pol2;
+	Polynomial<int> pol({ {0, 1}, {1, 1} }), pol1 = pol, pol2;
 	for (int i = 0; i < 10; ++i)
 	{
 		std::cout << pol1 << std::endl;
 		pol1 *= pol;
 	}
 	std::cout << "P(x) = " << pol1 << std::endl;
-	std::cout << "P'(x) = " << pol1.Derivative() << std::endl;
-	Polynomial polx({ {1, -4}, {2, -2}, {3, 5} }), poly({ {2, 2}, {3, -5}, {4, 7} });
-	Polynomial plus = polx + poly;
+	Polynomial<int> polx({ {1, -4}, {2, -2}, {3, 5} }), poly({ {2, 2}, {3, -5}, {4, 7} });
+	Polynomial<int> plus = polx + poly;
 	std::cout << "P(x) = " << plus << std::endl;
-	std::cout << "P(2) = " << plus.Calculate(2) << std::endl;
+	std::cout << "P(2) = " << plus.calculate(2) << std::endl;
 }
 // TODO add tests implementations
