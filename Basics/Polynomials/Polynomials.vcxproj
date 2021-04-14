@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DividedByZeroException.h" />
     <ClInclude Include="Field.h" />
     <ClInclude Include="Polynomial.h" />
   </ItemGroup>
