@@ -35,6 +35,7 @@ public:
 	Polynomial<T> operator-() const;
 public:
 	int degree() const { return m_tail == m_head ? -1 : m_tail->pow; }
+	bool isZero() const { return m_tail == m_head; }
 	template<typename U>
 	auto calculate(U) ->decltype(std::declval<T>() * std::declval<U>()) const;
 private:
@@ -55,6 +56,8 @@ template<typename T>
 Polynomial<T> operator/(Polynomial<T>, const Polynomial<T>&);
 template<typename T>
 Polynomial<T> operator%(Polynomial<T>, const Polynomial<T>&);
+template<typename T>
+Polynomial<T> gcd(const Polynomial<T>&, const Polynomial<T>&);
 
 template<typename T>
 Polynomial<T>::Polynomial(T elem)
@@ -70,9 +73,11 @@ template<typename T>
 Polynomial<T>::Polynomial(const std::vector<std::pair<int, T>>& vec)
 	: m_head(new Node<T>) 
 {
-	size_t len = vec.size();
 	Node<T>* ptr = m_head;
-	for (size_t i = 0; i < len; ++i) {
+	for (size_t i = 0; i < vec.size(); ++i) {
+		if (vec[i].second == T(0)) {
+			continue;
+		}
 		ptr->next = new Node<T>(vec[i].first, vec[i].second);
 		ptr = ptr->next;
 	}
@@ -164,15 +169,13 @@ Polynomial<T>& Polynomial<T>::operator*=(const Polynomial<T>& obj) {
 template<typename T>
 Polynomial<T>& Polynomial<T>::operator/=(const Polynomial<T>& obj) {
 	int deg1 = this->degree(), deg2 = obj.degree();
-	if (deg2 == -1) {
+	if (obj.isZero()) {
 		throw DividedByZeroException();
 	}
 	if (deg1 < deg2) return *this = Polynomial<T>(T(0));
 	T majorValue1 = this->m_tail->coefficient;
 	T majorValue2 = obj.m_tail->coefficient;
 	Polynomial<T> result = Polynomial<T>({ {deg1 - deg2, majorValue1 / majorValue2} });
-	std::cout << result * obj << std::endl;
-	std::cout << -(result * obj) << std::endl;
 	Polynomial<T> pol = *this - result * obj;
 
 	return *this = result + pol / obj;
@@ -257,6 +260,11 @@ Polynomial<T> operator/(Polynomial<T> obj1, const Polynomial<T>& obj2) {
 template<typename T>
 Polynomial<T> operator%(Polynomial<T> obj1, const Polynomial<T>& obj2) {
 	return obj1 %= obj2;
+}
+
+template<typename T>
+Polynomial<T> gcd(const Polynomial<T>& a, const Polynomial<T>& b) {
+	return (b.isZero() ? a : gcd(b, a % b));
 }
 
 template<typename T>
