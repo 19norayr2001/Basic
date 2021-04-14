@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream>
-
+#include "DividedByZeroException.h"
 typedef int Integer;
 
 template<int mod>
@@ -46,6 +46,8 @@ Field<mod> operator+(Field<mod>, const Field<mod>&);
 template<int mod>
 Field<mod> operator-(Field<mod>, const Field<mod>&);
 template<int mod>
+Field<mod> operator-(const Field<mod>&);
+template<int mod>
 bool operator>=(const Field<mod>&, const Field<mod>&);
 template<int mod>
 bool operator>(const Field<mod>&, const Field<mod>&);
@@ -83,11 +85,17 @@ Field<mod>& Field<mod>::operator*=(const Field<mod>& num) {
 
 template<int mod>
 Field<mod>& Field<mod>::operator/=(const Field<mod>& num) {
+	if (num == 0) {
+		throw DividedByZeroException();
+	}
 	return *this *= (num.pow(mod - 2));
 }
 
 template<int mod>
 Field<mod>& Field<mod>::operator%=(const Field<mod>& num) {
+	if (num == 0) {
+		throw DividedByZeroException();
+	}
 	this->value %= num.value;
 	return *this;
 }
@@ -146,6 +154,10 @@ Field<mod> operator-(Field<mod> num1, const Field<mod>& num2) {
 	return num1 -= num2;
 }
 
+template<int mod>
+Field<mod> operator-(const Field<mod>& num2) {
+	return Field<mod>(0) -= num2;
+}
 template<int mod>
 bool operator>=(const Field<mod>& num1, const Field<mod>& num2) {
 	return !(num1 < num2);

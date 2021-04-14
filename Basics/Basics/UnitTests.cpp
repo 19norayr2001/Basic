@@ -197,13 +197,15 @@ void Testing::polynomial_test()
 	Polynomial<Field<2>> pol({ {0, 1}, {1, 1} }), pol1 = pol, pol2;
 	for (int i = 0; i < 10; ++i)
 	{
-		std::cout << pol1 << std::endl;
+		std::cout << pol1 << std::endl << "      " << "deg = " << pol1.degree() << std::endl;;
 		pol1 *= pol;
 	}
-	std::cout << "P(x) = " << pol1 << std::endl;
+	std::cout << "P(x) = " << (pol1 /= pol) << std::endl << "      " << "deg = " << pol1.degree() << std::endl;
 	Polynomial<Field<2>> polx({ {1, -4}, {2, -2}, {3, 5} }), poly({ {2, 2}, {3, -5}, {4, 7} });
 	Polynomial<Field<2>> plus = polx + poly;
-	std::cout << "P(x) = " << plus << std::endl;
+	std::cout << "P(x) = " << plus << std::endl << "      " << "deg = " << poly.degree() << std::endl;;
 	std::cout << "P(2) = " << plus.calculate(Field<2>(1)) << std::endl;
+	Polynomial<Field<2>> p(1);
+	std::cout << p << ' ' << "deg = " << p.degree() << std::endl;
 }
 // TODO add tests implementations
