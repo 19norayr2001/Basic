@@ -1,9 +1,7 @@
 #pragma once
 #include <utility>
 
-
-class ImplicitTreapNode
-{
+class ImplicitTreapNode {
 public:
 	ImplicitTreapNode(int v = 0, int p = 0, ImplicitTreapNode* lf = nullptr, ImplicitTreapNode* rg = nullptr)
 		:mReverse(false)
@@ -42,8 +40,7 @@ private:
 };
 
 
-class ImplicitTreap
-{
+class ImplicitTreap {
 public:
 	ImplicitTreap();
 	~ImplicitTreap();
