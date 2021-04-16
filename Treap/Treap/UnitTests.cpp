@@ -26,7 +26,9 @@ void Testing::TreapTesting()
 	{
 		int a, b;
 		std::cin >> a >> b;
+#ifdef TREAP_REVERSE 
 		vec.reverse(a - 1, b - 1);
+#endif // TREAP_REVERSE
 		std::cout << "Array from query" << std::endl;
 		for (size_t i = 0; i < vec.size(); ++i)
 		{

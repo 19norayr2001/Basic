@@ -48,6 +48,7 @@ std::pair<ImplicitTreapNode*, ImplicitTreapNode*> ImplicitTreapNode::split(Impli
 }
 
 void ImplicitTreapNode::updateParams() const {
+#ifdef TREAP_REVERSE
 	if (mReverse) {
 		std::swap(mLeft, mRight);
 		if (mLeft != nullptr)
@@ -56,6 +57,7 @@ void ImplicitTreapNode::updateParams() const {
 			mRight->reverse();
 		mReverse = false;
 	}
+#endif // TREAP_REVERSE
 }
 
 ImplicitTreap::ImplicitTreap()
@@ -95,6 +97,7 @@ void ImplicitTreap::remove(size_t ind) {
 	mRoot = ImplicitTreapNode::merge(first_split_pair.first, second_split_pair.second);
 }
 
+#ifdef TREAP_REVERSE
 void ImplicitTreap::reverse(size_t left, size_t right) {
 	if (left < 0) {
 		left = 0;
@@ -110,6 +113,7 @@ void ImplicitTreap::reverse(size_t left, size_t right) {
 	p2.first->reverse();
 	mRoot = ImplicitTreapNode::merge(p1.first, ImplicitTreapNode::merge(p2.first, p2.second));
 }
+#endif // TREAP_REVERSE
 
 int ImplicitTreap::keyOfOrder(size_t ind) const {
 	if (ind >= size()) {
