@@ -4,21 +4,23 @@ namespace Testing
 {
 
 #ifdef TEST_LINEAR_LISTS
-	void sequential_stack_test();
-	void linked_stack_test();
-	void sequential_queue_test();
-	void linked_queue_test();
+	void test_linear_lists();
+	void test_sequential_list();
+	void test_sequential_stack();
+	void test_linked_stack();
+	void test_sequential_queue();
+	void test_linked_queue();
 #endif // TEST_LINEAR_LISTS
 
 #ifdef TEST_SORTINGS
-	void sortings_test();
+	void test_sortings();
 #endif // TEST_SORTINGS
 
 #ifdef TEST_EXPRESSIONS
-	void expressions_test();
+	void test_expressions();
 #endif // TEST_EXPRESSIONS
 
 #ifdef TEST_POLYNOMIALS
-	void polynomial_test();
+	void test_polynomial();
 #endif //TEST_POLYNOMIALS
 }

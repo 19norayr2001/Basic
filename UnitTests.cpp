@@ -52,9 +52,45 @@ namespace
 
 #ifdef TEST_LINEAR_LISTS
 
-void Testing::sequential_stack_test() 
+void Testing::test_linear_lists() {
+	test_sequential_list();
+	test_sequential_stack();
+	test_linked_stack();
+	test_sequential_queue();
+	test_linked_queue();
+}
+void Testing::test_sequential_list() {
+	std::cout << std::endl << "========================Testing Sequential List==========================" << std::endl << std::endl;
+	SequentialList vec, vec1;
+	for (size_t i = 0; i < 10; ++i) {
+		std::cout << "Inserting " << i << " in vector at index " << i % 2 << std::endl;
+		if (i % 2 == 0) {
+			vec.insert(0, i);
+		}
+		else {
+			vec.insert(1, i);
+		}
+		vec1 = vec;
+		for (size_t j = 0; j < vec1.get_size(); ++j) {
+			std::cout << vec1[j] << ' ';
+		}
+		std::cout << std::endl;
+	}
+
+	for (size_t i = 0; i < 10; ++i) {
+		std::cout << "Remove element in vector at index " << ((i&1)^1) << std::endl;
+		vec.remove(((i & 1) ^ 1));
+		vec1 = vec;
+		for (size_t j = 0; j < vec1.get_size(); ++j) {
+			std::cout << vec1[j] << ' ';
+		}
+		std::cout << std::endl;
+	}
+}
+
+void Testing::test_sequential_stack() 
 {
-	std::cout << std::endl << "Testing Sequential Stack" << std::endl << std::endl;
+	std::cout << std::endl << "========================Testing Sequential Stack==========================" << std::endl << std::endl;
 	SequentialStack st;
 	for (int i = 0; i < 10; ++i)
 	{
@@ -82,9 +118,9 @@ void Testing::sequential_stack_test()
 	}
 }
 
-void Testing::linked_stack_test() 
+void Testing::test_linked_stack() 
 {
-	std::cout << std::endl << "Testing Linked Stack" << std::endl << std::endl;
+	std::cout << std::endl << "==================Testing Linked Stack========================" << std::endl << std::endl;
 	LinkedStack st;
 	for (int i = 0; i < 10; ++i)
 	{
@@ -112,9 +148,9 @@ void Testing::linked_stack_test()
 	}
 }
 
-void Testing::sequential_queue_test() 
+void Testing::test_sequential_queue() 
 {
-	std::cout << std::endl << "Testing Sequential Queue" << std::endl << std::endl;
+	std::cout << std::endl << "=======================Testing Sequential Queue=========================" << std::endl << std::endl;
 	SequentialQueue q;
 	for (int i = 0; i < 10; ++i)
 	{
@@ -142,9 +178,9 @@ void Testing::sequential_queue_test()
 	}
 }
 
-void Testing::linked_queue_test() 
+void Testing::test_linked_queue() 
 {
-	std::cout << std::endl << "Testing Linked Queue" << std::endl << std::endl;
+	std::cout << std::endl << "===========================Testing Linked Queue=========================" << std::endl << std::endl;
 	SequentialQueue q;
 	for (int i = 0; i < 10; ++i)
 	{
@@ -175,9 +211,9 @@ void Testing::linked_queue_test()
 #endif // TEST_LINEAR_LISTS
 
 #ifdef TEST_SORTINGS
-void Testing::sortings_test()
+void Testing::test_sortings()
 {
-	std::cout << std::endl << "Testing Sortings" << std::endl << std::endl;
+	std::cout << std::endl << "==============================Testing Sortings==================================" << std::endl << std::endl;
 	const int size = 10;
 	int arr[size]{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 	Sorttest(arr, size, Sortings::Bubble_sort);
@@ -194,9 +230,9 @@ void Testing::sortings_test()
 #endif // TEST_SORTINGS
 
 #ifdef TEST_EXPRESSIONS
-void Testing::expressions_test()
+void Testing::test_expressions()
 {
-	std::cout << std::endl << "Testing Expressions" << std::endl << std::endl;
+	std::cout << std::endl << "================================Testing Expressions=============================" << std::endl << std::endl;
 	std::string exp("((x+y)*(x-y)+4*5)/8+7");
 	std::unordered_map<std::string, int> mp;
 	mp["x"] = 5;
@@ -216,9 +252,9 @@ void Testing::expressions_test()
 #endif // TEST_EXPRESSIONS
 
 #ifdef TEST_POLYNOMIALS
-void Testing::polynomial_test()
+void Testing::test_polynomial()
 {
-	std::cout << std::endl << "Testing Polynomials" << std::endl << std::endl;
+	std::cout << std::endl << "=============================Testing Polynomials=================================" << std::endl << std::endl;
 	Polynomial<Field<2>> pol({ {0, 1}, {1, 1} }), pol1 = pol, pol2;
 	for (int i = 0; i < 10; ++i)
 	{
