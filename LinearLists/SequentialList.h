@@ -3,6 +3,7 @@
 #include <type_traits>
 
 class SequentialList {
+public:
 	typedef int value_type;
 private:
 	size_t m_capacity;

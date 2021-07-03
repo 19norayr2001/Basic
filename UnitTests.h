@@ -23,4 +23,8 @@ namespace Testing
 #ifdef TEST_POLYNOMIALS
 	void test_polynomial();
 #endif //TEST_POLYNOMIALS
+
+#ifdef TEST_ITERATORS
+	void test_iterators();
+#endif //TEST_ITERATORS
 }

@@ -12,6 +12,7 @@ option(TEST_LINEAR_LISTS "Use linear lists implementation" ON)
 option(TEST_POLYNOMIALS "Use polynomials implementation" ON)
 option(TEST_SORTINGS "Use sorting algorithms implementation" ON)
 option(TEST_TREES "Use trees implementation" ON)
+option(TEST_ITERATORS "Use polynomials implementation" ON)
 
 # configure a header file to pass some of the CMake settings
 # to the source code
@@ -50,6 +51,13 @@ if(TEST_TREES)
   add_subdirectory(Trees)
   list(APPEND EXTRA_LIBS Trees)
   list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/Trees")
+endif()
+
+# if need to test, then add the Iterators library
+if(TEST_ITERATORS)
+  add_subdirectory(Iterators)
+  list(APPEND EXTRA_LIBS Iterators)
+  list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/Iterators")
 endif()
 
 # add the executable

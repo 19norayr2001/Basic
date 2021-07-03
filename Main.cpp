@@ -12,5 +12,8 @@ int main() {
 #ifdef TEST_POLYNOMIALS
 	Testing::test_polynomial();
 #endif // TEST_POLYNOMIALS
+#ifdef TEST_ITERATORS
+	Testing::test_iterators();
+#endif // TEST_ITERATORS
 	return 0;
 }

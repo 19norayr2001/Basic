@@ -4,3 +4,4 @@
 #cmakedefine TEST_POLYNOMIALS
 #cmakedefine TEST_SORTINGS
 #cmakedefine TEST_TREES
+#cmakedefine TEST_ITERATORS
