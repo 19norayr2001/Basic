@@ -2,6 +2,13 @@
 
 static const size_t MAX_SIZE = 2;
 
+namespace {
+	typedef SequentialList::iterator iterator;
+	typedef SequentialList::const_iterator const_iterator;
+	typedef SequentialList::reverse_iterator reverse_iterator;
+	typedef SequentialList::const_reverse_iterator const_reverse_iterator;
+}
+
 SequentialList::SequentialList()
 	: m_capacity(MAX_SIZE)
 	, m_size(0)
@@ -31,7 +38,7 @@ SequentialList::~SequentialList() {
 
 void SequentialList::push_back(const value_type& elem) {
 	if (is_full()) {
-		expand_capacity();
+		reserve(2 * m_capacity);
 	}
 	m_array[m_size++] = elem;
 }
@@ -61,6 +68,65 @@ void SequentialList::remove(size_t ind) {
 	pop_back();
 }
 
+void SequentialList::reserve(size_t n) {
+	if (n <= m_capacity) return;
+	m_capacity = n;
+	value_type* ptr = new value_type[m_capacity];
+	for (size_t i = 0; i < m_size; ++i) {
+		ptr[i] = m_array[i];
+	}
+	delete[] m_array;
+	m_array = ptr;
+}
+
+iterator SequentialList::begin() {
+	return iterator(m_array);
+}
+
+iterator SequentialList::end() {
+	return iterator(m_array + m_size);
+}
+
+const_iterator SequentialList::cbegin() const {
+	return const_iterator(m_array);
+}
+
+const_iterator SequentialList::cend() const {
+	return const_iterator(m_array + m_size);
+}
+
+const_iterator SequentialList::begin() const {
+	return const_iterator(m_array);
+}
+
+const_iterator SequentialList::end() const {
+	return const_iterator(m_array + m_size);
+}
+
+reverse_iterator SequentialList::rbegin() {
+	return reverse_iterator(m_array + m_size - 1);
+}
+
+reverse_iterator SequentialList::rend() {
+	return reverse_iterator(m_array - 1);
+}
+
+const_reverse_iterator SequentialList::crbegin() const {
+	return const_reverse_iterator(m_array + m_size - 1);
+}
+
+const_reverse_iterator SequentialList::crend() const {
+	return const_reverse_iterator(m_array - 1);
+}
+
+const_reverse_iterator SequentialList::rbegin() const {
+	return const_reverse_iterator(m_array + m_size - 1);
+}
+
+const_reverse_iterator SequentialList::rend() const {
+	return const_reverse_iterator(m_array - 1);
+}
+
 SequentialList::value_type& SequentialList::operator[](size_t ind) {
 	return m_array[ind];
 }
@@ -75,20 +141,10 @@ void SequentialList::swap(SequentialList& obj) {
 	std::swap(m_array, obj.m_array);
 }
 
-void SequentialList::expand_capacity() {
-	m_capacity *= 2;
-	value_type* ptr = new value_type[m_capacity];
-	for (size_t i = 0; i < m_size; ++i) {
-		ptr[i] = m_array[i];
+std::ostream& operator<<(std::ostream& out, const SequentialList& obj) {
+	for (auto it = obj.cbegin(); it != obj.cend(); ++it) {
+		std::cout << *it << ' ';
 	}
-	delete[] m_array;
-	m_array = ptr;
-}
-
-std::ostream& operator<<(std::ostream& out, SequentialList& obj) {
-	for (size_t i = 0; i < obj.m_size; ++i) {
-		std::cout << obj.m_array[i] << ' ';
-	}
-	std::cout << std::endl;
+	out << std::endl;
 	return out;
 }

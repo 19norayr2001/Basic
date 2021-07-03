@@ -71,20 +71,14 @@ void Testing::test_sequential_list() {
 			vec.insert(1, i);
 		}
 		vec1 = vec;
-		for (size_t j = 0; j < vec1.get_size(); ++j) {
-			std::cout << vec1[j] << ' ';
-		}
-		std::cout << std::endl;
+		std::cout << vec1 << std::endl;
 	}
 
 	for (size_t i = 0; i < 10; ++i) {
 		std::cout << "Remove element in vector at index " << ((i&1)^1) << std::endl;
 		vec.remove(((i & 1) ^ 1));
 		vec1 = vec;
-		for (size_t j = 0; j < vec1.get_size(); ++j) {
-			std::cout << vec1[j] << ' ';
-		}
-		std::cout << std::endl;
+		std::cout << vec1 << std::endl;
 	}
 }
 
