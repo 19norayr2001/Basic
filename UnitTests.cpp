@@ -1,5 +1,6 @@
 #include "BasicsConfig.h"
 
+
 #ifdef TEST_LINEAR_LISTS
 #	include <SequentialStack.h>
 #	include <SequentialQueue.h>
@@ -38,8 +39,10 @@
 
 namespace
 {
+#include <vector>
 	void print_array(int* arr, int size)
 	{
+		std::vector<int> v;
 		std::copy(arr, arr + size, std::ostream_iterator<int>(std::cout, " "));
 		std::cout << std::endl;
 	}
@@ -66,7 +69,7 @@ void Testing::test_linear_lists() {
 }
 void Testing::test_sequential_list() {
 	std::cout << std::endl << "========================Testing Sequential List==========================" << std::endl << std::endl;
-	SequentialList vec, vec1;
+	SequentialList<int> vec, vec1;
 	for (size_t i = 0; i < 10; ++i) {
 		std::cout << "Inserting " << i << " in vector at index " << i % 2 << std::endl;
 		if (i % 2 == 0) {

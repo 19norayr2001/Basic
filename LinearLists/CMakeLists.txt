@@ -8,7 +8,6 @@ add_library(LinearLists
 			LinkedStack.h
 			LinkedStack.cpp
 			SequentialList.h
-			SequentialList.cpp
 			SequentialQueue.h
 			SequentialQueue.cpp
 			SequentialStack.h
