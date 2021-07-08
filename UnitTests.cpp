@@ -39,10 +39,8 @@
 
 namespace
 {
-#include <vector>
 	void print_array(int* arr, int size)
 	{
-		std::vector<int> v;
 		std::copy(arr, arr + size, std::ostream_iterator<int>(std::cout, " "));
 		std::cout << std::endl;
 	}
