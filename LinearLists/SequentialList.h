@@ -7,9 +7,11 @@ template<typename T, typename Alloc = std::allocator<T>>
 class SequentialList {
 public:
 	typedef T value_type;
+	typedef std::allocator_traits<Alloc> AllocTraits;
 private:
 	size_t m_capacity;
 	size_t m_size;
+	Alloc m_allocator;
 	value_type* m_array;
 private:
 	template<bool B>
@@ -81,9 +83,9 @@ public:
 	using reverse_iterator = common_reverse_iterator<iterator>;
 	using const_reverse_iterator = common_reverse_iterator<const_iterator>;
 public:
-	SequentialList();	
-	SequentialList(const SequentialList&);
-	SequentialList& operator=(const SequentialList&);
+	SequentialList(const Alloc& = Alloc());	
+	SequentialList(const SequentialList<T, Alloc>&);
+	SequentialList& operator=(const SequentialList<T, Alloc>&);
 	~SequentialList();
 public:
 	void push_back(const value_type&);
@@ -364,19 +366,21 @@ typename SequentialList<T, Alloc>::template common_reverse_iterator<It> Sequenti
 //=================================== Sequential List implementation ===================================
 
 template<typename T, typename Alloc>
-SequentialList<T, Alloc>::SequentialList()
+SequentialList<T, Alloc>::SequentialList(const Alloc& allocator)
 	: m_capacity(MAX_SIZE)
 	, m_size(0)
-	, m_array(new value_type[m_capacity]) {}
+	, m_allocator(allocator)
+	, m_array(AllocTraits::allocate(m_allocator, m_capacity)) {}
 
 template<typename T, typename Alloc>
 SequentialList<T, Alloc>::SequentialList(const SequentialList<T, Alloc>& obj)
 	: m_capacity(obj.m_capacity)
 	, m_size(obj.m_size)
-	, m_array(new value_type[m_capacity])
+	, m_allocator(obj.m_allocator)
+	, m_array(AllocTraits::allocate(m_allocator, m_capacity)) 
 {
 	for (size_t i = 0; i < m_size; ++i) {
-		m_array[i] = obj.m_array[i];
+		AllocTraits::construct(m_allocator, m_array + i, obj.m_array[i]);
 	}
 }
 
@@ -391,7 +395,10 @@ SequentialList<T, Alloc>& SequentialList<T, Alloc>::operator=(const SequentialLi
 
 template<typename T, typename Alloc>
 SequentialList<T, Alloc>::~SequentialList() {
-	delete[] m_array;
+	for (size_t i = 0; i < m_size; ++i) {
+		AllocTraits::destroy(m_allocator, m_array + i);
+	}
+	AllocTraits::deallocate(m_allocator, m_array, m_capacity);
 }
 
 template<typename T, typename Alloc>
@@ -399,13 +406,15 @@ void SequentialList<T, Alloc>::push_back(const value_type& elem) {
 	if (is_full()) {
 		reserve(2 * m_capacity);
 	}
-	m_array[m_size++] = elem;
+	AllocTraits::construct(m_allocator, m_array + m_size, elem);
+	++m_size;
 }
 
 template<typename T, typename Alloc>
 void SequentialList<T, Alloc>::pop_back() {
 	if (!is_empty()) {
-		--m_size;
+		--m_size; 
+		AllocTraits::destroy(m_allocator, m_array + m_size);
 	}
 }
 
@@ -415,31 +424,44 @@ void SequentialList<T, Alloc>::insert(size_t ind, const value_type& elem) {
 		push_back(elem);
 		return;
 	}
+
 	value_type last = m_array[m_size - 1];
+	AllocTraits::destroy(m_allocator, m_array + m_size - 1);
 	for (size_t i = m_size - 1; i > ind; --i) {
-		m_array[i] = m_array[i - 1];
+		AllocTraits::construct(m_allocator, m_array + i, m_array[i - 1]);
+		AllocTraits::destroy(m_allocator, m_array + i - 1);
 	}
-	m_array[ind] = elem;
+	AllocTraits::construct(m_allocator, m_array + ind, elem);
 	push_back(last);
 }
 
 template<typename T, typename Alloc>
 void SequentialList<T, Alloc>::remove(size_t ind) {
 	for (size_t i = ind; i < m_size; ++i) {
-		m_array[i] = m_array[i + 1];
+		AllocTraits::destroy(m_allocator, m_array + i);
+		AllocTraits::construct(m_allocator, m_array + i, m_array[i + 1]);
 	}
 	pop_back();
 }
 
 template<typename T, typename Alloc>
 void SequentialList<T, Alloc>::reserve(size_t n) {
+	// if there already present enought memory, just return
 	if (n <= m_capacity) return;
-	m_capacity = n;
-	value_type* ptr = new value_type[m_capacity];
+
+	// allocate and construct new memory
+	value_type* ptr = AllocTraits::allocate(m_allocator, n);
 	for (size_t i = 0; i < m_size; ++i) {
-		ptr[i] = m_array[i];
+		AllocTraits::construct(m_allocator, ptr + i, m_array[i]);
 	}
-	delete[] m_array;
+
+	// destroy and deallocate old memory
+	for (size_t i = 0; i < m_size; ++i) {
+		AllocTraits::destroy(m_allocator, m_array + i);
+	}
+	AllocTraits::deallocate(m_allocator, m_array, m_capacity);
+
+	m_capacity = n;
 	m_array = ptr;
 }
 
