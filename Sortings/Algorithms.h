@@ -1,4 +1,6 @@
-#pragma once
+#ifndef ALGORITHMS_H
+#define ALGORITHMS_H
+
 namespace Sortings
 {
 	void Bubble_sort(int*, int);
@@ -9,3 +11,5 @@ namespace Sortings
 	void Quick_sort(int*, int);
 	void Heap_sort(int*, int);
 }
+
+#endif // ALGORITHMS_H

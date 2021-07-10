@@ -1,4 +1,6 @@
-#pragma once
+#ifndef SEQUENTIAL_LIST_H
+#define SEQUENTIAL_LIST_H
+
 #include <memory>
 #include <iostream>
 #include <type_traits>
@@ -550,3 +552,5 @@ std::ostream& operator<<(std::ostream& out, const SequentialList<T, Alloc>& obj)
 	out << std::endl;
 	return out;
 }
+
+#endif // SEQUENTIAL_LIST_H

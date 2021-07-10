@@ -1,4 +1,6 @@
-#pragma once
+#ifndef PRIORITY_QUEUE_H
+#define PRIORITY_QUEUE_H
+
 #include <vector>
 
 class PriorityQueue
@@ -19,3 +21,5 @@ private:
 	std::vector<int> m_heap;
 	int m_size;
 };
+
+#endif // PRIORITY_QUEUE_H

@@ -1,4 +1,6 @@
-#pragma once
+#ifndef FIELD_H
+#define FIELD_H
+
 #include <iostream>
 #include "DividedByZeroException.h"
 typedef int Integer;
@@ -221,3 +223,5 @@ constexpr bool Field<mod>::checkMod() {
 typedef Field<998244353> lll;
 auto factorial = lll::factorial;
 auto C = lll::C;
+
+#endif // FIELD_H

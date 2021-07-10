@@ -1,4 +1,6 @@
-#pragma once
+#ifndef PREFIX_H
+#define PREFIX_H
+
 #include "Expression.h"
 #include <unordered_map>
 class Prefix :public Expression
@@ -21,3 +23,4 @@ private:
 	std::vector<Symbol*> m_prefix;
 };
 
+#endif // PREFIX_H

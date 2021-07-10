@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LIST_SEARCH_TREE_H
+#define LIST_SEARCH_TREE_H
 
 class ListSearchTree
 {
@@ -50,3 +51,4 @@ private:
 	int m_size;
 };
 
+#endif // LIST_SEARCH_TREE_H

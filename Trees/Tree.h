@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TREE_H
+#define TREE_H
 
 namespace BinaryTree
 {
@@ -27,3 +28,5 @@ namespace BinaryTree
 	void inorder_traversal_stack(Node* root);
 	void postorder_traversal_stack(Node* root);
 }
+
+#endif // TREE_H

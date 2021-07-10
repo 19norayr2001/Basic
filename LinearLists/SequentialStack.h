@@ -1,4 +1,6 @@
-#pragma once
+#ifndef SEQUENTIAL_STACK_H
+#define SEQUENTIAL_STACK_H
+
 #include <iostream>
 class SequentialStack
 {
@@ -21,4 +23,6 @@ private:
 	int m_maxsize;
 	int* m_array;
 };
+
+#endif // SEQUENTIAL_STACK_H
 

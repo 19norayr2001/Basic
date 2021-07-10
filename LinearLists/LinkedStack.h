@@ -1,4 +1,6 @@
-#pragma once
+#ifndef LINKED_STACK_H
+#define LINKED_STACK_H
+
 #include <iostream>
 class LinkedStack
 {
@@ -32,3 +34,5 @@ private:
 	int m_size;
 };
 
+
+#endif // LINKED_STACK_H

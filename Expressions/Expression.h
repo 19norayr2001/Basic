@@ -1,4 +1,6 @@
-#pragma once
+#ifndef EXPRESSION_H
+#define EXPRESSION_H
+
 #include <unordered_map>
 #include <vector>
 #include <string>
@@ -78,3 +80,5 @@ protected:
 protected:
 	std::vector<Symbol*> m_infix;
 };
+
+#endif // EXPRESSION_H

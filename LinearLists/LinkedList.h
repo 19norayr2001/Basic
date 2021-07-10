@@ -1,4 +1,6 @@
-#pragma once
+#ifndef LINKED_LIST_H
+#define LINKED_LIST_H
+
 #include <iostream>
 class LinkedList
 {
@@ -35,3 +37,5 @@ private:
 	Node *m_head;
 	Node *m_tail;
 };
+
+#endif

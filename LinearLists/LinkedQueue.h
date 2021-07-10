@@ -1,4 +1,6 @@
-#pragma once
+#ifndef LINKED_QUEUE_H
+#define LINKED_QUEUE_H
+
 #include <iostream>
 class LinkedQueue
 {
@@ -33,3 +35,4 @@ private:
 	int m_size;
 };
 
+#endif // LINKED_QUEUE_H

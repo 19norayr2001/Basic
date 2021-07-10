@@ -1,4 +1,6 @@
-#pragma once
+#ifndef POLYNOMIAL_H
+#define POLYNOMIAL_H
+
 #include "DividedByZeroException.h"
 #include <iostream>
 #include <utility>
@@ -281,3 +283,5 @@ std::ostream& operator<<(std::ostream& print, const Polynomial<T>& obj) {
 	}
 	return print;
 }
+
+#endif // POLYNOMIAL_H

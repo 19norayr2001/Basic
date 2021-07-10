@@ -1,4 +1,7 @@
-#pragma once
+#ifndef POSTFIX_H
+#define POSTFIX_H
+
+
 #include "Expression.h"
 #include <unordered_map>
 class Postfix :public Expression
@@ -18,4 +21,6 @@ private:
 private:
 	std::vector<Symbol*> m_postfix;
 };
+
+#endif // POSTFIX_H
 

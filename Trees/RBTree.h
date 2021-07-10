@@ -1,4 +1,6 @@
-#pragma once
+#ifndef RB_TREE_H
+#define RB_TREE_H
+
 #include "BinarySearchTree.h"
 
 class RBTree :public BinarySearchTree
@@ -40,3 +42,4 @@ private:
 	int m_size;
 };
 
+#endif // RB_TREE_H

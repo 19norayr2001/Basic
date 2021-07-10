@@ -1,4 +1,6 @@
-#pragma once
+#ifndef UNITTESTS_H
+#define UNITTESTS_H
+
 #include "BasicsConfig.h"
 namespace Testing
 {
@@ -22,9 +24,11 @@ namespace Testing
 
 #ifdef TEST_POLYNOMIALS
 	void test_polynomial();
-#endif //TEST_POLYNOMIALS
+#endif // TEST_POLYNOMIALS
 
 #ifdef TEST_ITERATORS
 	void test_iterators();
-#endif //TEST_ITERATORS
+#endif // TEST_ITERATORS
 }
+
+#endif // UNITTESTS_H

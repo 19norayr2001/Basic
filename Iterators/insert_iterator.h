@@ -1,4 +1,5 @@
-#pragma once
+#ifndef INSERT_ITERATOR_H
+#define INSERT_ITERATOR_H
 
 namespace Iterator {
 	template<typename Container>
@@ -42,3 +43,5 @@ namespace Iterator {
 		return insert_iterator<Container>(container, iterator);
 	}
 }
+
+#endif // INSERT_ITERATOR_H

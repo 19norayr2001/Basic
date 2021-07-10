@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SEQUENTIAL_QUEUE_H
+#define SEQUENTIAL_QUEUE_H
 
 class SequentialQueue
 {
@@ -23,4 +24,6 @@ private:
 	int m_right;
 	int m_size;
 };
+
+#endif // SEQUENTIAL_QUEUE_H
 
