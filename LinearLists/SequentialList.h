@@ -381,8 +381,23 @@ SequentialList<T, Alloc>::SequentialList(const SequentialList<T, Alloc>& obj)
 	, m_allocator(obj.m_allocator)
 	, m_array(AllocTraits::allocate(m_allocator, m_capacity)) 
 {
-	for (size_t i = 0; i < m_size; ++i) {
-		AllocTraits::construct(m_allocator, m_array + i, obj.m_array[i]);
+	// variable is initialized here for catch block
+	size_t i = 0;
+	try {
+		for (size_t i = 0; i < m_size; ++i) {
+			// try to contruct
+			AllocTraits::construct(m_allocator, m_array + i, obj.m_array[i]);
+		}
+	}
+	catch (...) {
+		// destroy all already constructed objects
+		for (; i > 0; --i) {
+			AllocTraits::destroy(m_allocator, m_array + i - 1);
+		}
+		// deallocate memory
+		AllocTraits::deallocate(m_allocator, m_array, m_capacity);
+		// rethrow caught exception
+		throw;
 	}
 }
 
@@ -452,9 +467,23 @@ void SequentialList<T, Alloc>::reserve(size_t n) {
 	if (n <= m_capacity) return;
 
 	// allocate and construct new memory
-	value_type* ptr = AllocTraits::allocate(m_allocator, n);
-	for (size_t i = 0; i < m_size; ++i) {
-		AllocTraits::construct(m_allocator, ptr + i, m_array[i]);
+	value_type* new_array = AllocTraits::allocate(m_allocator, n);
+	// variable initialized here for catch block
+	size_t i = 0;
+	try {
+		for (size_t i = 0; i < m_size; ++i) {
+			AllocTraits::construct(m_allocator, new_array + i, m_array[i]);
+		}
+	}
+	catch (...) {
+		// destroy all already constructed objects
+		for (; i > 0; --i) {
+			AllocTraits::destroy(m_allocator, new_array + i - 1);
+		}
+		// deallocate memory
+		AllocTraits::deallocate(m_allocator, new_array, n);
+		// rethrow caught exception
+		throw;
 	}
 
 	// destroy and deallocate old memory
@@ -464,7 +493,7 @@ void SequentialList<T, Alloc>::reserve(size_t n) {
 	AllocTraits::deallocate(m_allocator, m_array, m_capacity);
 
 	m_capacity = n;
-	m_array = ptr;
+	m_array = new_array;
 }
 
 template<typename T, typename Alloc>
