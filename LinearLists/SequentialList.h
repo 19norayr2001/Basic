@@ -179,7 +179,7 @@ typename SequentialList<T, Alloc>::template common_iterator<B>& SequentialList<T
 
 template<typename T, typename Alloc>
 template<bool B>
-ptrdiff_t SequentialList<T, Alloc>::common_iterator<B>::operator-(const typename SequentialList<T, Alloc>::template common_iterator<B>& iter) const {
+ptrdiff_t SequentialList<T, Alloc>::common_iterator<B>::operator-(const common_iterator<B>& iter) const {
 	return m_ptr - iter.m_ptr;
 }
 
@@ -299,8 +299,8 @@ typename SequentialList<T, Alloc>::template common_reverse_iterator<It>& Sequent
 
 template<typename T, typename Alloc>
 template<typename It>
-ptrdiff_t SequentialList<T, Alloc>::common_reverse_iterator<It>::operator-(const typename SequentialList<T, Alloc>::template common_reverse_iterator<It>& iter) const {
-	return m_iterator - iter.m_iterator;
+ptrdiff_t SequentialList<T, Alloc>::common_reverse_iterator<It>::operator-(const common_reverse_iterator<It>& iter) const {
+	return iter.m_iterator - m_iterator;
 }
 
 template<typename T, typename Alloc>
