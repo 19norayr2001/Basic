@@ -36,6 +36,7 @@
 #include <iostream>
 #include <iterator>
 #include <string>
+#include <random>
 
 namespace
 {
@@ -47,7 +48,7 @@ namespace
 
 	void Sorttest(int* arr, int size, void(*sortfunc)(int*, int))
 	{
-		std::random_shuffle(arr, arr + size);
+		std::shuffle(arr, arr + size, std::default_random_engine{});
 		std::cout << "array before sorting" << std::endl;
 		print_array(arr, size);
 		std::cout << "array after sorting" << std::endl;
@@ -65,24 +66,20 @@ void Testing::test_linear_lists() {
 	test_sequential_queue();
 	test_linked_queue();
 }
+
 void Testing::test_sequential_list() {
 	std::cout << std::endl << "========================Testing Sequential List==========================" << std::endl << std::endl;
 	SequentialList<int> vec, vec1;
 	for (size_t i = 0; i < 10; ++i) {
-		std::cout << "Inserting " << i << " in vector at index " << i % 2 << std::endl;
-		if (i % 2 == 0) {
-			vec.insert(0, i);
-		}
-		else {
-			vec.insert(1, i);
-		}
+		std::cout << "Inserted " << i << " in vector at back" << std::endl;
+		vec.push_back(i);
 		vec1 = vec;
 		std::cout << vec1 << std::endl;
 	}
 
 	for (size_t i = 0; i < 10; ++i) {
-		std::cout << "Remove element in vector at index " << ((i&1)^1) << std::endl;
-		vec.remove(((i & 1) ^ 1));
+		std::cout << "Pop last element in vector" << std::endl;
+		vec.pop_back();
 		vec1 = vec;
 		std::cout << vec1 << std::endl;
 	}
