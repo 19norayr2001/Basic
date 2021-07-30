@@ -3,13 +3,13 @@
 
 namespace Sortings
 {
-	void Bubble_sort(int*, int);
-	void Insertion_sort(int*, int);
-	void Selection_sort(int*, int);
-	void Merge_sort(int*, int);
-	void Radix_sort(int*, int);
-	void Quick_sort(int*, int);
-	void Heap_sort(int*, int);
+	void bubble_sort(int*, int);
+	void insertion_sort(int*, int);
+	void selection_sort(int*, int);
+	void merge_sort(int*, int);
+	void radix_sort(int*, int);
+	void quick_sort(int*, int);
+	void heap_sort(int*, int);
 }
 
 #endif // ALGORITHMS_H

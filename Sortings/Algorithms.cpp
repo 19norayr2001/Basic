@@ -1,7 +1,7 @@
 #include "Algorithms.h"
 #include <queue>
 namespace {
-	void Merge(int* arr, int left1, int right1, int left2, int right2) {
+	void merge(int* arr, int left1, int right1, int left2, int right2) {
 		int size = right1 - left1 + right2 - left2;
 		int* parr = new int[size] {};
 		for (int i = left1; i < right1; ++i) {
@@ -28,7 +28,7 @@ namespace {
 		return (x >> k) & 1;
 	}
 
-	int Partition_quick(int* arr, int left, int right) {
+	int partition_quick(int* arr, int left, int right) {
 		int x = arr[right];
 		int i = left - 1;
 		for (int j = left; j <= right; ++j) {
@@ -40,15 +40,15 @@ namespace {
 		return i;
 	}
 
-	void Quick(int* arr, int left, int right) {
+	void quick(int* arr, int left, int right) {
 		if (left < right) {
-			int mid = Partition_quick(arr, left, right);
-			Quick(arr, left, mid - 1);
-			Quick(arr, mid + 1, right);
+			int mid = partition_quick(arr, left, right);
+			quick(arr, left, mid - 1);
+			quick(arr, mid + 1, right);
 		}
 	}
 }
-void Sortings::Bubble_sort(int* arr, int size) {
+void Sortings::bubble_sort(int* arr, int size) {
 	for (int i = 0; i < size; ++i) {
 		for (int j = i + 1; j < size; ++j) {
 			if (arr[i] > arr[j]) {
@@ -58,7 +58,7 @@ void Sortings::Bubble_sort(int* arr, int size) {
 	}
 }
 
-void Sortings::Insertion_sort(int* arr, int size) {
+void Sortings::insertion_sort(int* arr, int size) {
 	for (int i = 0; i < size; ++i) {
 		int j = i;
 		while (j >= 1 && arr[j] < arr[j - 1]) {
@@ -68,7 +68,7 @@ void Sortings::Insertion_sort(int* arr, int size) {
 	}
 }
 
-void Sortings::Selection_sort(int* arr, int size) {
+void Sortings::selection_sort(int* arr, int size) {
 	for (int i = 0; i < size; ++i) {
 		int minn = arr[i];
 		int minimum_index = i;
@@ -82,14 +82,14 @@ void Sortings::Selection_sort(int* arr, int size) {
 	}
 }
 
-void Sortings::Merge_sort(int* arr, int size) {
+void Sortings::merge_sort(int* arr, int size) {
 	if (size <= 1) return;
-	Merge_sort(arr, size / 2);
-	Merge_sort(arr + size / 2, (size + 1)/2);
-	Merge(arr, 0, size / 2, size / 2, size);
+	merge_sort(arr, size / 2);
+	merge_sort(arr + size / 2, (size + 1)/2);
+	merge(arr, 0, size / 2, size / 2, size);
 }
 
-void Sortings::Radix_sort(int* arr, int size) {
+void Sortings::radix_sort(int* arr, int size) {
 	std::queue<int> q[2];
 	int memorysize = sizeof(arr[0]) * 8;
 	for (int i = 0; i < memorysize; ++i) {
@@ -107,11 +107,11 @@ void Sortings::Radix_sort(int* arr, int size) {
 	}
 }
 
-void Sortings::Quick_sort(int* arr, int size) {
-	Quick(arr, 0, size - 1);
+void Sortings::quick_sort(int* arr, int size) {
+	quick(arr, 0, size - 1);
 }
 
-void Sortings::Heap_sort(int* arr, int size) {
+void Sortings::heap_sort(int* arr, int size) {
 	std::priority_queue<int> pq;
 	for (int i = 0; i < size; ++i) {
 		pq.push(arr[i]);

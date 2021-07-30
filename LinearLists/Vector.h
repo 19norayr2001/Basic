@@ -6,7 +6,7 @@
 #include <type_traits>
 
 template<typename T, typename Alloc = std::allocator<T>>
-class SequentialList {
+class Vector {
 public:
 	typedef T value_type;
 	typedef std::allocator_traits<Alloc> AllocTraits;
@@ -85,12 +85,12 @@ public:
 	using reverse_iterator = common_reverse_iterator<iterator>;
 	using const_reverse_iterator = common_reverse_iterator<const_iterator>;
 public:
-	SequentialList(const Alloc& = Alloc());	
-	SequentialList(const SequentialList<T, Alloc>&);
-	SequentialList(SequentialList<T, Alloc>&&) noexcept;
-	SequentialList& operator=(const SequentialList<T, Alloc>&) &;
-	SequentialList& operator=(SequentialList<T, Alloc>&&) & noexcept;
-	~SequentialList();
+	Vector(const Alloc& = Alloc());	
+	Vector(const Vector<T, Alloc>&);
+	Vector(Vector<T, Alloc>&&) noexcept;
+	Vector& operator=(const Vector<T, Alloc>&) &;
+	Vector& operator=(Vector<T, Alloc>&&) & noexcept;
+	~Vector();
 public:
 	template<typename... Args>
 	void emplace_back(Args&&...);
@@ -99,6 +99,8 @@ public:
 	void pop_back();
 public:
 	void reserve(size_t);
+	value_type& back() { return m_array[m_size - 1]; }
+	const value_type& back() const { return m_array[m_size - 1]; }
 public:
 	iterator begin();
 	iterator end();
@@ -117,10 +119,10 @@ public:
 	value_type& operator[](size_t);
 	const value_type& operator[](size_t) const;
 public:
-	size_t get_size() const { return m_size; }
-	bool is_empty() const { return m_size == 0; }
+	size_t size() const { return m_size; }
+	bool empty() const { return m_size == 0; }
 private:
-	void swap(SequentialList&);
+	void swap(Vector&);
 	bool is_full() const { return m_size == m_capacity; }
 	void destroy();
 private:
@@ -128,25 +130,25 @@ private:
 };
 
 template<typename T, typename Alloc>
-std::ostream& operator<<(std::ostream&, const SequentialList<T, Alloc>&);
+std::ostream& operator<<(std::ostream&, const Vector<T, Alloc>&);
 
 //======================common_iterator implementation==========================================
 
 template<typename T, typename Alloc>
 template<bool B>
-SequentialList<T, Alloc>::common_iterator<B>::common_iterator(type* ptr)
+Vector<T, Alloc>::common_iterator<B>::common_iterator(type* ptr)
 	:m_ptr(ptr) {}
 
 template<typename T, typename Alloc>
 template<bool B>
-typename SequentialList<T, Alloc>::template common_iterator<B>& SequentialList<T, Alloc>::common_iterator<B>::operator++() {
+typename Vector<T, Alloc>::template common_iterator<B>& Vector<T, Alloc>::common_iterator<B>::operator++() {
 	++m_ptr;
 	return *this;
 }
 
 template<typename T, typename Alloc>
 template<bool B>
-typename SequentialList<T, Alloc>::template common_iterator<B> SequentialList<T, Alloc>::common_iterator<B>::operator++(int) {
+typename Vector<T, Alloc>::template common_iterator<B> Vector<T, Alloc>::common_iterator<B>::operator++(int) {
 	common_iterator iter = *this;
 	++m_ptr;
 	return iter;
@@ -154,21 +156,21 @@ typename SequentialList<T, Alloc>::template common_iterator<B> SequentialList<T,
 
 template<typename T, typename Alloc>
 template<bool B>
-typename SequentialList<T, Alloc>::template common_iterator<B>& SequentialList<T, Alloc>::common_iterator<B>::operator+=(ptrdiff_t n) {
+typename Vector<T, Alloc>::template common_iterator<B>& Vector<T, Alloc>::common_iterator<B>::operator+=(ptrdiff_t n) {
 	m_ptr += n;
 	return *this;
 }
 
 template<typename T, typename Alloc>
 template<bool B>
-typename SequentialList<T, Alloc>::template common_iterator<B>& SequentialList<T, Alloc>::common_iterator<B>::operator--() {
+typename Vector<T, Alloc>::template common_iterator<B>& Vector<T, Alloc>::common_iterator<B>::operator--() {
 	--m_ptr;
 	return *this;
 }
 
 template<typename T, typename Alloc>
 template<bool B>
-typename SequentialList<T, Alloc>::template common_iterator<B> SequentialList<T, Alloc>::common_iterator<B>::operator--(int) {
+typename Vector<T, Alloc>::template common_iterator<B> Vector<T, Alloc>::common_iterator<B>::operator--(int) {
 	common_iterator iter = *this;
 	--m_ptr;
 	return iter;
@@ -176,75 +178,75 @@ typename SequentialList<T, Alloc>::template common_iterator<B> SequentialList<T,
 
 template<typename T, typename Alloc>
 template<bool B>
-typename SequentialList<T, Alloc>::template common_iterator<B>& SequentialList<T, Alloc>::common_iterator<B>::operator-=(ptrdiff_t n) {
+typename Vector<T, Alloc>::template common_iterator<B>& Vector<T, Alloc>::common_iterator<B>::operator-=(ptrdiff_t n) {
 	m_ptr -= n;
 	return *this;
 }
 
 template<typename T, typename Alloc>
 template<bool B>
-ptrdiff_t SequentialList<T, Alloc>::common_iterator<B>::operator-(const common_iterator<B>& iter) const {
+ptrdiff_t Vector<T, Alloc>::common_iterator<B>::operator-(const common_iterator<B>& iter) const {
 	return m_ptr - iter.m_ptr;
 }
 
 template<typename T, typename Alloc>
 template<bool B>
-auto SequentialList<T, Alloc>::common_iterator<B>::operator*() -> type& {
+auto Vector<T, Alloc>::common_iterator<B>::operator*() -> type& {
 	return *m_ptr;
 }
 
 template<typename T, typename Alloc>
 template<bool B>
-auto SequentialList<T, Alloc>::common_iterator<B>::operator->() -> type* {
+auto Vector<T, Alloc>::common_iterator<B>::operator->() -> type* {
 	return m_ptr;
 }
 
 template<typename T, typename Alloc>
 template<bool B>
-bool SequentialList<T, Alloc>::common_iterator<B>::operator==(const common_iterator<B>& iter) const {
+bool Vector<T, Alloc>::common_iterator<B>::operator==(const common_iterator<B>& iter) const {
 	return m_ptr == iter.m_ptr;
 }
 
 template<typename T, typename Alloc>
 template<bool B>
-bool SequentialList<T, Alloc>::common_iterator<B>::operator!=(const common_iterator<B>& iter) const {
+bool Vector<T, Alloc>::common_iterator<B>::operator!=(const common_iterator<B>& iter) const {
 	return m_ptr != iter.m_ptr;
 }
 
 template<typename T, typename Alloc>
 template<bool B>
-bool SequentialList<T, Alloc>::common_iterator<B>::operator<(const common_iterator<B>& iter) const {
+bool Vector<T, Alloc>::common_iterator<B>::operator<(const common_iterator<B>& iter) const {
 	return m_ptr < iter.m_ptr;
 }
 
 template<typename T, typename Alloc>
 template<bool B>
-bool SequentialList<T, Alloc>::common_iterator<B>::operator>(const common_iterator<B>& iter) const {
+bool Vector<T, Alloc>::common_iterator<B>::operator>(const common_iterator<B>& iter) const {
 	return m_ptr > iter.m_ptr;
 }
 
 template<typename T, typename Alloc>
 template<bool B>
-bool SequentialList<T, Alloc>::common_iterator<B>::operator<=(const common_iterator<B>& iter) const {
+bool Vector<T, Alloc>::common_iterator<B>::operator<=(const common_iterator<B>& iter) const {
 	return m_ptr <= iter.m_ptr;
 }
 
 template<typename T, typename Alloc>
 template<bool B>
-bool SequentialList<T, Alloc>::common_iterator<B>::operator>=(const common_iterator<B>& iter) const {
+bool Vector<T, Alloc>::common_iterator<B>::operator>=(const common_iterator<B>& iter) const {
 	return m_ptr >= iter.m_ptr;
 }
 
 template<typename T, typename Alloc>
 template<bool B>
-typename SequentialList<T, Alloc>::template common_iterator<B> SequentialList<T, Alloc>::common_iterator<B>::operator+(ptrdiff_t n) {
+typename Vector<T, Alloc>::template common_iterator<B> Vector<T, Alloc>::common_iterator<B>::operator+(ptrdiff_t n) {
 	common_iterator<B> iter = *this;
 	return iter += n;
 }
 
 template<typename T, typename Alloc>
 template<bool B>
-typename SequentialList<T, Alloc>::template common_iterator<B> SequentialList<T, Alloc>::common_iterator<B>::operator-(ptrdiff_t n) {
+typename Vector<T, Alloc>::template common_iterator<B> Vector<T, Alloc>::common_iterator<B>::operator-(ptrdiff_t n) {
 	common_iterator<B> iter = *this;
 	return iter -= n;
 }
@@ -254,19 +256,19 @@ typename SequentialList<T, Alloc>::template common_iterator<B> SequentialList<T,
 
 template<typename T, typename Alloc>
 template<typename It>
-SequentialList<T, Alloc>::common_reverse_iterator<It>::common_reverse_iterator(const It& iter)
+Vector<T, Alloc>::common_reverse_iterator<It>::common_reverse_iterator(const It& iter)
 	:m_iterator(iter) {}
 
 template<typename T, typename Alloc>
 template<typename It>
-typename SequentialList<T, Alloc>::template common_reverse_iterator<It>& SequentialList<T, Alloc>::common_reverse_iterator<It>::operator++() {
+typename Vector<T, Alloc>::template common_reverse_iterator<It>& Vector<T, Alloc>::common_reverse_iterator<It>::operator++() {
 	--m_iterator;
 	return *this;
 }
 
 template<typename T, typename Alloc>
 template<typename It>
-typename SequentialList<T, Alloc>::template common_reverse_iterator<It> SequentialList<T, Alloc>::common_reverse_iterator<It>::operator++(int) {
+typename Vector<T, Alloc>::template common_reverse_iterator<It> Vector<T, Alloc>::common_reverse_iterator<It>::operator++(int) {
 	common_reverse_iterator<It> iter = *this;
 	--m_iterator;
 	return iter;
@@ -274,21 +276,21 @@ typename SequentialList<T, Alloc>::template common_reverse_iterator<It> Sequenti
 
 template<typename T, typename Alloc>
 template<typename It>
-typename SequentialList<T, Alloc>::template common_reverse_iterator<It>& SequentialList<T, Alloc>::common_reverse_iterator<It>::operator+=(ptrdiff_t n) {
+typename Vector<T, Alloc>::template common_reverse_iterator<It>& Vector<T, Alloc>::common_reverse_iterator<It>::operator+=(ptrdiff_t n) {
 	m_iterator -= n;
 	return *this;
 }
 
 template<typename T, typename Alloc>
 template<typename It>
-typename SequentialList<T, Alloc>::template common_reverse_iterator<It>& SequentialList<T, Alloc>::common_reverse_iterator<It>::operator--() {
+typename Vector<T, Alloc>::template common_reverse_iterator<It>& Vector<T, Alloc>::common_reverse_iterator<It>::operator--() {
 	++m_iterator;
 	return *this;
 }
 
 template<typename T, typename Alloc>
 template<typename It>
-typename SequentialList<T, Alloc>::template common_reverse_iterator<It> SequentialList<T, Alloc>::common_reverse_iterator<It>::operator--(int) {
+typename Vector<T, Alloc>::template common_reverse_iterator<It> Vector<T, Alloc>::common_reverse_iterator<It>::operator--(int) {
 	common_reverse_iterator iter = *this;
 	++m_iterator;
 	return iter;
@@ -296,90 +298,90 @@ typename SequentialList<T, Alloc>::template common_reverse_iterator<It> Sequenti
 
 template<typename T, typename Alloc>
 template<typename It>
-typename SequentialList<T, Alloc>::template common_reverse_iterator<It>& SequentialList<T, Alloc>::common_reverse_iterator<It>::operator-=(ptrdiff_t n) {
+typename Vector<T, Alloc>::template common_reverse_iterator<It>& Vector<T, Alloc>::common_reverse_iterator<It>::operator-=(ptrdiff_t n) {
 	m_iterator += n;
 	return *this;
 }
 
 template<typename T, typename Alloc>
 template<typename It>
-ptrdiff_t SequentialList<T, Alloc>::common_reverse_iterator<It>::operator-(const common_reverse_iterator<It>& iter) const {
+ptrdiff_t Vector<T, Alloc>::common_reverse_iterator<It>::operator-(const common_reverse_iterator<It>& iter) const {
 	return iter.m_iterator - m_iterator;
 }
 
 template<typename T, typename Alloc>
 template<typename It>
-auto SequentialList<T, Alloc>::common_reverse_iterator<It>::operator*() -> type& {
+auto Vector<T, Alloc>::common_reverse_iterator<It>::operator*() -> type& {
 	return *m_iterator;
 }
 
 template<typename T, typename Alloc>
 template<typename It>
-auto SequentialList<T, Alloc>::common_reverse_iterator<It>::operator->() -> type* {
+auto Vector<T, Alloc>::common_reverse_iterator<It>::operator->() -> type* {
 	return std::addressof(*m_iterator);
 }
 
 template<typename T, typename Alloc>
 template<typename It>
-bool SequentialList<T, Alloc>::common_reverse_iterator<It>::operator==(const common_reverse_iterator<It>& iter) const {
+bool Vector<T, Alloc>::common_reverse_iterator<It>::operator==(const common_reverse_iterator<It>& iter) const {
 	return m_iterator == iter.m_iterator;
 }
 
 template<typename T, typename Alloc>
 template<typename It>
-bool SequentialList<T, Alloc>::common_reverse_iterator<It>::operator!=(const common_reverse_iterator<It>& iter) const {
+bool Vector<T, Alloc>::common_reverse_iterator<It>::operator!=(const common_reverse_iterator<It>& iter) const {
 	return m_iterator != iter.m_iterator;
 }
 
 template<typename T, typename Alloc>
 template<typename It>
-bool SequentialList<T, Alloc>::common_reverse_iterator<It>::operator<(const common_reverse_iterator<It>& iter) const {
+bool Vector<T, Alloc>::common_reverse_iterator<It>::operator<(const common_reverse_iterator<It>& iter) const {
 	return iter.m_iterator < m_iterator;
 }
 
 template<typename T, typename Alloc>
 template<typename It>
-bool SequentialList<T, Alloc>::common_reverse_iterator<It>::operator>(const common_reverse_iterator<It>& iter) const {
+bool Vector<T, Alloc>::common_reverse_iterator<It>::operator>(const common_reverse_iterator<It>& iter) const {
 	return iter.m_iterator > m_iterator;
 }
 
 template<typename T, typename Alloc>
 template<typename It>
-bool SequentialList<T, Alloc>::common_reverse_iterator<It>::operator<=(const common_reverse_iterator<It>& iter) const {
+bool Vector<T, Alloc>::common_reverse_iterator<It>::operator<=(const common_reverse_iterator<It>& iter) const {
 	return iter.m_iterator <= m_iterator;
 }
 
 template<typename T, typename Alloc>
 template<typename It>
-bool SequentialList<T, Alloc>::common_reverse_iterator<It>::operator>=(const common_reverse_iterator<It>& iter) const {
+bool Vector<T, Alloc>::common_reverse_iterator<It>::operator>=(const common_reverse_iterator<It>& iter) const {
 	return iter.m_iterator >= m_iterator;
 }
 
 template<typename T, typename Alloc>
 template<typename It>
-typename SequentialList<T, Alloc>::template common_reverse_iterator<It> SequentialList<T, Alloc>::common_reverse_iterator<It>::operator+(ptrdiff_t n) {
-	typename SequentialList<T, Alloc>::template common_reverse_iterator<It> iter = *this;
+typename Vector<T, Alloc>::template common_reverse_iterator<It> Vector<T, Alloc>::common_reverse_iterator<It>::operator+(ptrdiff_t n) {
+	typename Vector<T, Alloc>::template common_reverse_iterator<It> iter = *this;
 	return iter += n;
 }
 
 template<typename T, typename Alloc>
 template<typename It>
-typename SequentialList<T, Alloc>::template common_reverse_iterator<It> SequentialList<T, Alloc>::common_reverse_iterator<It>::operator-(ptrdiff_t n) {
-	typename SequentialList<T, Alloc>::template common_reverse_iterator<It> iter = *this;
+typename Vector<T, Alloc>::template common_reverse_iterator<It> Vector<T, Alloc>::common_reverse_iterator<It>::operator-(ptrdiff_t n) {
+	typename Vector<T, Alloc>::template common_reverse_iterator<It> iter = *this;
 	return iter -= n;
 }
 
 //=================================== Sequential List implementation ===================================
 
 template<typename T, typename Alloc>
-SequentialList<T, Alloc>::SequentialList(const Alloc& allocator)
+Vector<T, Alloc>::Vector(const Alloc& allocator)
 	: m_capacity(MAX_SIZE)
 	, m_size(0)
 	, m_allocator(allocator)
 	, m_array(AllocTraits::allocate(m_allocator, m_capacity)) {}
 
 template<typename T, typename Alloc>
-SequentialList<T, Alloc>::SequentialList(const SequentialList<T, Alloc>& obj)
+Vector<T, Alloc>::Vector(const Vector<T, Alloc>& obj)
 	: m_capacity(obj.m_capacity)
 	, m_size(obj.m_size)
 	, m_allocator(obj.m_allocator)
@@ -407,7 +409,7 @@ SequentialList<T, Alloc>::SequentialList(const SequentialList<T, Alloc>& obj)
 
 
 template<typename T, typename Alloc>
-SequentialList<T, Alloc>::SequentialList(SequentialList<T, Alloc>&& obj) noexcept 
+Vector<T, Alloc>::Vector(Vector<T, Alloc>&& obj) noexcept 
 	:m_capacity(obj.m_capacity)
 	, m_size(obj.m_size)
 	, m_allocator(obj.m_allocator)
@@ -418,31 +420,31 @@ SequentialList<T, Alloc>::SequentialList(SequentialList<T, Alloc>&& obj) noexcep
 }
 
 template<typename T, typename Alloc>
-SequentialList<T, Alloc>& SequentialList<T, Alloc>::operator=(const SequentialList<T, Alloc>& obj) & {
+Vector<T, Alloc>& Vector<T, Alloc>::operator=(const Vector<T, Alloc>& obj) & {
 	if (this != &obj) {
-		SequentialList<T, Alloc> copy_obj(obj);
+		Vector<T, Alloc> copy_obj(obj);
 		this->swap(copy_obj);
 	}
 	return *this;
 }
 
 template<typename T, typename Alloc>
-SequentialList<T, Alloc>& SequentialList<T, Alloc>::operator=(SequentialList<T, Alloc>&& obj) & noexcept {
+Vector<T, Alloc>& Vector<T, Alloc>::operator=(Vector<T, Alloc>&& obj) & noexcept {
 	if (this != &obj) {
-		SequentialList<T, Alloc> moved_obj = std::move(obj);
+		Vector<T, Alloc> moved_obj = std::move(obj);
 		this->swap(moved_obj);
 	}
 	return *this;
 }
 
 template<typename T, typename Alloc>
-SequentialList<T, Alloc>::~SequentialList() {
+Vector<T, Alloc>::~Vector() {
 	destroy();
 }
 
 template<typename T, typename Alloc>
 template<typename... Args>
-void SequentialList<T, Alloc>::emplace_back(Args&&... args) {
+void Vector<T, Alloc>::emplace_back(Args&&... args) {
 	// reserve more capacity if current is fullfilled
 	if (is_full()) {
 		reserve(2 * m_capacity);
@@ -452,25 +454,25 @@ void SequentialList<T, Alloc>::emplace_back(Args&&... args) {
 }
 
 template<typename T, typename Alloc>
-void SequentialList<T, Alloc>::push_back(const value_type& elem) {
+void Vector<T, Alloc>::push_back(const value_type& elem) {
 	emplace_back(elem);
 }
 
 template<typename T, typename Alloc>
-void SequentialList<T, Alloc>::push_back(value_type&& elem) {
-	emplace_back(elem);
+void Vector<T, Alloc>::push_back(value_type&& elem) {
+	emplace_back(std::move(elem));
 }
 
 template<typename T, typename Alloc>
-void SequentialList<T, Alloc>::pop_back() {
-	if (!is_empty()) {
+void Vector<T, Alloc>::pop_back() {
+	if (!empty()) {
 		--m_size; 
 		AllocTraits::destroy(m_allocator, m_array + m_size);
 	}
 }
 
 template<typename T, typename Alloc>
-void SequentialList<T, Alloc>::reserve(size_t n) {
+void Vector<T, Alloc>::reserve(size_t n) {
 	// if there already present enought memory, just return
 	if (n <= m_capacity) return;
 
@@ -510,84 +512,84 @@ void SequentialList<T, Alloc>::reserve(size_t n) {
 }
 
 template<typename T, typename Alloc>
-typename SequentialList<T, Alloc>::iterator SequentialList<T, Alloc>::begin() {
+typename Vector<T, Alloc>::iterator Vector<T, Alloc>::begin() {
 	return iterator(m_array);
 }
 
 template<typename T, typename Alloc>
-typename SequentialList<T, Alloc>::iterator SequentialList<T, Alloc>::end() {
+typename Vector<T, Alloc>::iterator Vector<T, Alloc>::end() {
 	return iterator(m_array + m_size);
 }
 
 template<typename T, typename Alloc>
-typename SequentialList<T, Alloc>::const_iterator SequentialList<T, Alloc>::cbegin() const {
+typename Vector<T, Alloc>::const_iterator Vector<T, Alloc>::cbegin() const {
 	return const_iterator(m_array);
 }
 
 template<typename T, typename Alloc>
-typename SequentialList<T, Alloc>::const_iterator SequentialList<T, Alloc>::cend() const {
+typename Vector<T, Alloc>::const_iterator Vector<T, Alloc>::cend() const {
 	return const_iterator(m_array + m_size);
 }
 
 template<typename T, typename Alloc>
-typename SequentialList<T, Alloc>::const_iterator SequentialList<T, Alloc>::begin() const {
+typename Vector<T, Alloc>::const_iterator Vector<T, Alloc>::begin() const {
 	return const_iterator(m_array);
 }
 
 template<typename T, typename Alloc>
-typename SequentialList<T, Alloc>::const_iterator SequentialList<T, Alloc>::end() const {
+typename Vector<T, Alloc>::const_iterator Vector<T, Alloc>::end() const {
 	return const_iterator(m_array + m_size);
 }
 
 template<typename T, typename Alloc>
-typename SequentialList<T, Alloc>::reverse_iterator SequentialList<T, Alloc>::rbegin() {
+typename Vector<T, Alloc>::reverse_iterator Vector<T, Alloc>::rbegin() {
 	return reverse_iterator(m_array + m_size - 1);
 }
 
 template<typename T, typename Alloc>
-typename SequentialList<T, Alloc>::reverse_iterator SequentialList<T, Alloc>::rend() {
+typename Vector<T, Alloc>::reverse_iterator Vector<T, Alloc>::rend() {
 	return reverse_iterator(m_array - 1);
 }
 
 template<typename T, typename Alloc>
-typename SequentialList<T, Alloc>::const_reverse_iterator SequentialList<T, Alloc>::crbegin() const {
+typename Vector<T, Alloc>::const_reverse_iterator Vector<T, Alloc>::crbegin() const {
 	return const_reverse_iterator(m_array + m_size - 1);
 }
 
 template<typename T, typename Alloc>
-typename SequentialList<T, Alloc>::const_reverse_iterator SequentialList<T, Alloc>::crend() const {
+typename Vector<T, Alloc>::const_reverse_iterator Vector<T, Alloc>::crend() const {
 	return const_reverse_iterator(m_array - 1);
 }
 
 template<typename T, typename Alloc>
-typename SequentialList<T, Alloc>::const_reverse_iterator SequentialList<T, Alloc>::rbegin() const {
+typename Vector<T, Alloc>::const_reverse_iterator Vector<T, Alloc>::rbegin() const {
 	return const_reverse_iterator(m_array + m_size - 1);
 }
 
 template<typename T, typename Alloc>
-typename SequentialList<T, Alloc>::const_reverse_iterator SequentialList<T, Alloc>::rend() const {
+typename Vector<T, Alloc>::const_reverse_iterator Vector<T, Alloc>::rend() const {
 	return const_reverse_iterator(m_array - 1);
 }
 
 template<typename T, typename Alloc>
-typename SequentialList<T, Alloc>::value_type& SequentialList<T, Alloc>::operator[](size_t ind) {
+typename Vector<T, Alloc>::value_type& Vector<T, Alloc>::operator[](size_t ind) {
 	return m_array[ind];
 }
 
 template<typename T, typename Alloc>
-const typename SequentialList<T, Alloc>::value_type& SequentialList<T, Alloc>::operator[](size_t ind) const {
+const typename Vector<T, Alloc>::value_type& Vector<T, Alloc>::operator[](size_t ind) const {
 	return m_array[ind];
 }
 
 template<typename T, typename Alloc>
-void SequentialList<T, Alloc>::swap(SequentialList<T, Alloc>& obj) {
+void Vector<T, Alloc>::swap(Vector<T, Alloc>& obj) {
 	std::swap(m_capacity, obj.m_capacity);
 	std::swap(m_size, obj.m_size);
 	std::swap(m_array, obj.m_array);
 }
 
 template<typename T, typename Alloc>
-void SequentialList<T, Alloc>::destroy() {
+void Vector<T, Alloc>::destroy() {
 	// destroy elements and deallocate memory
 	for (size_t i = m_size; i > 0; --i) {
 		AllocTraits::destroy(m_allocator, m_array + i - 1);
@@ -596,7 +598,7 @@ void SequentialList<T, Alloc>::destroy() {
 }
 
 template<typename T, typename Alloc>
-std::ostream& operator<<(std::ostream& out, const SequentialList<T, Alloc>& obj) {
+std::ostream& operator<<(std::ostream& out, const Vector<T, Alloc>& obj) {
 	for (auto it = obj.cbegin(); it != obj.cend(); ++it) {
 		std::cout << *it << ' ';
 	}
