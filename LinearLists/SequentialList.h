@@ -87,13 +87,16 @@ public:
 public:
 	SequentialList(const Alloc& = Alloc());	
 	SequentialList(const SequentialList<T, Alloc>&);
-	SequentialList& operator=(const SequentialList<T, Alloc>&);
+	SequentialList(SequentialList<T, Alloc>&&) noexcept;
+	SequentialList& operator=(const SequentialList<T, Alloc>&) &;
+	SequentialList& operator=(SequentialList<T, Alloc>&&) & noexcept;
 	~SequentialList();
 public:
+	template<typename... Args>
+	void emplace_back(Args&&...);
 	void push_back(const value_type&);
+	void push_back(value_type&&);
 	void pop_back();
-	void insert(size_t ind, const value_type&);
-	void remove(size_t ind);
 public:
 	void reserve(size_t);
 public:
@@ -119,6 +122,7 @@ public:
 private:
 	void swap(SequentialList&);
 	bool is_full() const { return m_size == m_capacity; }
+	void destroy();
 private:
 	static const size_t MAX_SIZE = 2;
 };
@@ -384,7 +388,7 @@ SequentialList<T, Alloc>::SequentialList(const SequentialList<T, Alloc>& obj)
 	// variable is initialized here for catch block
 	size_t i = 0;
 	try {
-		for (size_t i = 0; i < m_size; ++i) {
+		for (i = 0; i < m_size; ++i) {
 			// try to contruct
 			AllocTraits::construct(m_allocator, m_array + i, obj.m_array[i]);
 		}
@@ -401,8 +405,20 @@ SequentialList<T, Alloc>::SequentialList(const SequentialList<T, Alloc>& obj)
 	}
 }
 
+
 template<typename T, typename Alloc>
-SequentialList<T, Alloc>& SequentialList<T, Alloc>::operator=(const SequentialList<T, Alloc>& obj) {
+SequentialList<T, Alloc>::SequentialList(SequentialList<T, Alloc>&& obj) noexcept 
+	:m_capacity(obj.m_capacity)
+	, m_size(obj.m_size)
+	, m_allocator(obj.m_allocator)
+	, m_array(obj.m_array) {
+	obj.m_capacity = 0;
+	obj.m_size = 0;
+	obj.m_array = nullptr;
+}
+
+template<typename T, typename Alloc>
+SequentialList<T, Alloc>& SequentialList<T, Alloc>::operator=(const SequentialList<T, Alloc>& obj) & {
 	if (this != &obj) {
 		SequentialList<T, Alloc> copy_obj(obj);
 		this->swap(copy_obj);
@@ -411,20 +427,38 @@ SequentialList<T, Alloc>& SequentialList<T, Alloc>::operator=(const SequentialLi
 }
 
 template<typename T, typename Alloc>
-SequentialList<T, Alloc>::~SequentialList() {
-	for (size_t i = 0; i < m_size; ++i) {
-		AllocTraits::destroy(m_allocator, m_array + i);
+SequentialList<T, Alloc>& SequentialList<T, Alloc>::operator=(SequentialList<T, Alloc>&& obj) & noexcept {
+	if (this != &obj) {
+		SequentialList<T, Alloc> moved_obj = std::move(obj);
+		this->swap(moved_obj);
 	}
-	AllocTraits::deallocate(m_allocator, m_array, m_capacity);
+	return *this;
+}
+
+template<typename T, typename Alloc>
+SequentialList<T, Alloc>::~SequentialList() {
+	destroy();
+}
+
+template<typename T, typename Alloc>
+template<typename... Args>
+void SequentialList<T, Alloc>::emplace_back(Args&&... args) {
+	// reserve more capacity if current is fullfilled
+	if (is_full()) {
+		reserve(2 * m_capacity);
+	}
+	AllocTraits::construct(m_allocator, m_array + m_size, std::forward<Args>(args)...);
+	++m_size;
 }
 
 template<typename T, typename Alloc>
 void SequentialList<T, Alloc>::push_back(const value_type& elem) {
-	if (is_full()) {
-		reserve(2 * m_capacity);
-	}
-	AllocTraits::construct(m_allocator, m_array + m_size, elem);
-	++m_size;
+	emplace_back(elem);
+}
+
+template<typename T, typename Alloc>
+void SequentialList<T, Alloc>::push_back(value_type&& elem) {
+	emplace_back(elem);
 }
 
 template<typename T, typename Alloc>
@@ -433,32 +467,6 @@ void SequentialList<T, Alloc>::pop_back() {
 		--m_size; 
 		AllocTraits::destroy(m_allocator, m_array + m_size);
 	}
-}
-
-template<typename T, typename Alloc>
-void SequentialList<T, Alloc>::insert(size_t ind, const value_type& elem) {
-	if (ind >= m_size) {
-		push_back(elem);
-		return;
-	}
-
-	value_type last = m_array[m_size - 1];
-	AllocTraits::destroy(m_allocator, m_array + m_size - 1);
-	for (size_t i = m_size - 1; i > ind; --i) {
-		AllocTraits::construct(m_allocator, m_array + i, m_array[i - 1]);
-		AllocTraits::destroy(m_allocator, m_array + i - 1);
-	}
-	AllocTraits::construct(m_allocator, m_array + ind, elem);
-	push_back(last);
-}
-
-template<typename T, typename Alloc>
-void SequentialList<T, Alloc>::remove(size_t ind) {
-	for (size_t i = ind; i < m_size; ++i) {
-		AllocTraits::destroy(m_allocator, m_array + i);
-		AllocTraits::construct(m_allocator, m_array + i, m_array[i + 1]);
-	}
-	pop_back();
 }
 
 template<typename T, typename Alloc>
@@ -471,14 +479,23 @@ void SequentialList<T, Alloc>::reserve(size_t n) {
 	// variable initialized here for catch block
 	size_t i = 0;
 	try {
-		for (size_t i = 0; i < m_size; ++i) {
-			AllocTraits::construct(m_allocator, new_array + i, m_array[i]);
+		for (i = 0; i < m_size; ++i) {
+			AllocTraits::construct(m_allocator, new_array + i, std::move_if_noexcept(m_array[i]));
 		}
 	}
 	catch (...) {
 		// destroy all already constructed objects
 		for (; i > 0; --i) {
-			AllocTraits::destroy(m_allocator, new_array + i - 1);
+			// if move assignment is safe, then move in old memory
+			if constexpr (std::is_nothrow_move_constructible_v<value_type> 
+				&& std::is_nothrow_move_assignable_v<value_type>) {
+				m_array[i] = new_array[i];
+				continue;
+			}
+			else {
+				// else destroy the element
+				AllocTraits::destroy(m_allocator, new_array + i - 1);
+			}
 		}
 		// deallocate memory
 		AllocTraits::deallocate(m_allocator, new_array, n);
@@ -486,11 +503,7 @@ void SequentialList<T, Alloc>::reserve(size_t n) {
 		throw;
 	}
 
-	// destroy and deallocate old memory
-	for (size_t i = 0; i < m_size; ++i) {
-		AllocTraits::destroy(m_allocator, m_array + i);
-	}
-	AllocTraits::deallocate(m_allocator, m_array, m_capacity);
+	destroy();
 
 	m_capacity = n;
 	m_array = new_array;
@@ -571,6 +584,15 @@ void SequentialList<T, Alloc>::swap(SequentialList<T, Alloc>& obj) {
 	std::swap(m_capacity, obj.m_capacity);
 	std::swap(m_size, obj.m_size);
 	std::swap(m_array, obj.m_array);
+}
+
+template<typename T, typename Alloc>
+void SequentialList<T, Alloc>::destroy() {
+	// destroy elements and deallocate memory
+	for (size_t i = m_size; i > 0; --i) {
+		AllocTraits::destroy(m_allocator, m_array + i - 1);
+	}
+	AllocTraits::deallocate(m_allocator, m_array, m_capacity);
 }
 
 template<typename T, typename Alloc>
