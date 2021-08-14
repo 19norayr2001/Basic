@@ -2,102 +2,104 @@
 #define FIELD_H
 
 #include <iostream>
+#include <type_traits>
 #include "DividedByZeroException.h"
-typedef int Integer;
-
-template<int mod>
+template<int mod, typename T>
 class Field;
 
-template<int mod>
-std::istream& operator>>(std::istream&, Field<mod>&);
+template<int mod, typename T>
+std::istream& operator>>(std::istream&, Field<mod, T>&);
 
-template<int mod>
+template<int mod, typename T = int>
 class Field {
-	friend std::istream& operator>><mod>(std::istream&, Field<mod>&);
 public:
-	Field(Integer x = 0)
+	using integer_type = T;
+
+	friend std::istream& operator>><mod, integer_type>(std::istream&, Field<mod, T>&);
+public:
+	Field(integer_type x = 0)
 		:value((x % mod + mod) % mod) {
 	}
-	Field<mod>& operator=(const Field<mod>&);
-	Field<mod>& operator*=(const Field<mod>&);
-	Field<mod>& operator/=(const Field<mod>&);
-	Field<mod>& operator%=(const Field<mod>&);
-	Field<mod>& operator+=(const Field<mod>&);
-	Field<mod>& operator-=(const Field<mod>&);
-	bool operator==(const Field<mod>&) const;
-	bool operator<(const Field<mod>&) const;
-	Field<mod> pow(Integer) const;
-	explicit operator Integer() const;
+	Field<mod, T>& operator=(const Field<mod, T>&);
+	Field<mod, T>& operator*=(const Field<mod, T>&);
+	Field<mod, T>& operator/=(const Field<mod, T>&);
+	Field<mod, T>& operator%=(const Field<mod, T>&);
+	Field<mod, T>& operator+=(const Field<mod, T>&);
+	Field<mod, T>& operator-=(const Field<mod, T>&);
+	bool operator==(const Field<mod, T>&) const;
+	bool operator<(const Field<mod, T>&) const;
+	Field<mod, T> pow(integer_type) const;
+	explicit operator integer_type() const;
 public:
-	static Field<mod> factorial(Integer);
-	static Field<mod> C(Integer, Integer);
+	static Field<mod, T> factorial(integer_type);
+	static Field<mod, T> C(integer_type, integer_type);
 private:
-	static Field<mod> binpow(const Field<mod>&, Integer);
+	static Field<mod, T> binpow(const Field<mod, T>&, integer_type);
 private:
 	static constexpr bool checkMod();
 	static_assert(checkMod(), "Mod must be a prime number");
 private:
-	Integer value;
+	integer_type value;
 };
 
-template<int mod>
-Field<mod> operator*(Field<mod>, const Field<mod>&);
-template<int mod>
-Field<mod> operator/(Field<mod>, const Field<mod>&);
-template<int mod>
-Field<mod> operator%(Field<mod>, const Field<mod>&);
-template<int mod>
-Field<mod> operator+(Field<mod>, const Field<mod>&);
-template<int mod>
-Field<mod> operator-(Field<mod>, const Field<mod>&);
-template<int mod>
-Field<mod> operator-(const Field<mod>&);
-template<int mod>
-bool operator>=(const Field<mod>&, const Field<mod>&);
-template<int mod>
-bool operator>(const Field<mod>&, const Field<mod>&);
-template<int mod>
-bool operator<=(const Field<mod>&, const Field<mod>&);
-template<int mod>
-bool operator!=(const Field<mod>&, const Field<mod>&);
+template<int mod, typename T>
+Field<mod, T> operator*(Field<mod, T>, const Field<mod, T>&);
+template<int mod, typename T>
+Field<mod, T> operator/(Field<mod, T>, const Field<mod, T>&);
+template<int mod, typename T>
+Field<mod, T> operator%(Field<mod, T>, const Field<mod, T>&);
+template<int mod, typename T>
+Field<mod, T> operator+(Field<mod, T>, const Field<mod, T>&);
+template<int mod, typename T>
+Field<mod, T> operator-(Field<mod, T>, const Field<mod, T>&);
+template<int mod, typename T>
+Field<mod, T> operator-(const Field<mod, T>&);
+template<int mod, typename T>
+bool operator>=(const Field<mod, T>&, const Field<mod, T>&);
+template<int mod, typename T>
+bool operator>(const Field<mod, T>&, const Field<mod, T>&);
+template<int mod, typename T>
+bool operator<=(const Field<mod, T>&, const Field<mod, T>&);
+template<int mod, typename T>
+bool operator!=(const Field<mod, T>&, const Field<mod, T>&);
 
-template<int mod>
-std::ostream& operator<<(std::ostream& out, const Field<mod>& num) {
-	Integer value(num);
+template<int mod, typename T>
+std::ostream& operator<<(std::ostream& out, const Field<mod, T>& num) {
+	typename Field<mod, T>::integer_type value(num);
 	return out << value;
 }
 
-template<int mod>
-std::istream& operator>>(std::istream& in, Field<mod>& num) {
+template<int mod, typename T>
+std::istream& operator>>(std::istream& in, Field<mod, T>& num) {
 	in >> num.value;
 	return in;
 }
 
-template<int mod>
-Field<mod>& Field<mod>::operator=(const Field<mod>& num) {
+template<int mod, typename T>
+Field<mod, T>& Field<mod, T>::operator=(const Field<mod, T>& num) {
 	if (this != &num) {
 		this->value = num.value;
 	}
 	return *this;
 }
 
-template<int mod>
-Field<mod>& Field<mod>::operator*=(const Field<mod>& num) {
+template<int mod, typename T>
+Field<mod, T>& Field<mod, T>::operator*=(const Field<mod, T>& num) {
 	this->value *= num.value;
 	this->value %= mod;
 	return *this;
 }
 
-template<int mod>
-Field<mod>& Field<mod>::operator/=(const Field<mod>& num) {
+template<int mod, typename T>
+Field<mod, T>& Field<mod, T>::operator/=(const Field<mod, T>& num) {
 	if (num == 0) {
 		throw DividedByZeroException();
 	}
 	return *this *= (num.pow(mod - 2));
 }
 
-template<int mod>
-Field<mod>& Field<mod>::operator%=(const Field<mod>& num) {
+template<int mod, typename T>
+Field<mod, T>& Field<mod, T>::operator%=(const Field<mod, T>& num) {
 	if (num == 0) {
 		throw DividedByZeroException();
 	}
@@ -105,116 +107,116 @@ Field<mod>& Field<mod>::operator%=(const Field<mod>& num) {
 	return *this;
 }
 
-template<int mod>
-Field<mod>& Field<mod>::operator+=(const Field<mod>& num) {
+template<int mod, typename T>
+Field<mod, T>& Field<mod, T>::operator+=(const Field<mod, T>& num) {
 	this->value += num.value;
 	this->value %= mod;
 	return *this;
 }
 
-template<int mod>
-Field<mod>& Field<mod>::operator-=(const Field<mod>& num) {
+template<int mod, typename T>
+Field<mod, T>& Field<mod, T>::operator-=(const Field<mod, T>& num) {
 	this->value += (mod - num.value);
 	this->value %= mod;
 	return *this;
 }
 
-template<int mod>
-Field<mod> Field<mod>::pow(Integer num) const {
+template<int mod, typename T>
+Field<mod, T> Field<mod, T>::pow(integer_type num) const {
 	return binpow(*this, num);
 }
 
-template<int mod>
-bool Field<mod>::operator==(const Field<mod>& num) const {
+template<int mod, typename T>
+bool Field<mod, T>::operator==(const Field<mod, T>& num) const {
 	return this->value == num.value;
 }
 
-template<int mod>
-bool Field<mod>::operator<(const Field<mod>& num) const {
+template<int mod, typename T>
+bool Field<mod, T>::operator<(const Field<mod, T>& num) const {
 	return this->value < num.value;
 }
 
-template<int mod>
-Field<mod> operator*(Field<mod> num1, const Field<mod>& num2) {
+template<int mod, typename T>
+Field<mod, T> operator*(Field<mod, T> num1, const Field<mod, T>& num2) {
 	return num1 *= num2;
 }
 
-template<int mod>
-Field<mod> operator/(Field<mod> num1, const Field<mod>& num2) {
+template<int mod, typename T>
+Field<mod, T> operator/(Field<mod, T> num1, const Field<mod, T>& num2) {
 	return num1 /= num2;
 }
 
-template<int mod>
-Field<mod> operator%(Field<mod> num1, const Field<mod>& num2) {
+template<int mod, typename T>
+Field<mod, T> operator%(Field<mod, T> num1, const Field<mod, T>& num2) {
 	return num1 %= num2;
 }
 
-template<int mod>
-Field<mod> operator+(Field<mod> num1, const Field<mod>& num2) {
+template<int mod, typename T>
+Field<mod, T> operator+(Field<mod, T> num1, const Field<mod, T>& num2) {
 	return num1 += num2;
 }
 
-template<int mod>
-Field<mod> operator-(Field<mod> num1, const Field<mod>& num2) {
+template<int mod, typename T>
+Field<mod, T> operator-(Field<mod, T> num1, const Field<mod, T>& num2) {
 	return num1 -= num2;
 }
 
-template<int mod>
-Field<mod> operator-(const Field<mod>& num2) {
-	return Field<mod>(0) -= num2;
+template<int mod, typename T>
+Field<mod, T> operator-(const Field<mod, T>& num2) {
+	return Field<mod, T>(0) -= num2;
 }
-template<int mod>
-bool operator>=(const Field<mod>& num1, const Field<mod>& num2) {
+template<int mod, typename T>
+bool operator>=(const Field<mod, T>& num1, const Field<mod, T>& num2) {
 	return !(num1 < num2);
 }
 
-template<int mod>
-bool operator>(const Field<mod>& num1, const Field<mod>& num2) {
+template<int mod, typename T>
+bool operator>(const Field<mod, T>& num1, const Field<mod, T>& num2) {
 	return !(num1 < num2 || num1 == num2);
 }
 
-template<int mod>
-bool operator<=(const Field<mod>& num1, const Field<mod>& num2) {
+template<int mod, typename T>
+bool operator<=(const Field<mod, T>& num1, const Field<mod, T>& num2) {
 	return (num1 < num2 || num1 == num2);
 }
 
-template<int mod>
-bool operator!=(const Field<mod>& num1, const Field<mod>& num2) {
+template<int mod, typename T>
+bool operator!=(const Field<mod, T>& num1, const Field<mod, T>& num2) {
 	return !(num1 == num2);
 }
 
-template<int mod>
-Field<mod>::operator Integer() const {
+template<int mod, typename T>
+Field<mod, T>::operator integer_type() const {
 	return this->value;
 }
 
-template<int mod>
-Field<mod> Field<mod>::factorial(Integer n) {
-	static std::vector<Field<mod>> fact{ 1, 1 };
+template<int mod, typename T>
+Field<mod, T> Field<mod, T>::factorial(integer_type n) {
+	static std::vector<Field<mod, T>> fact{ 1, 1 };
 	if (n < fact.size())
 		return fact[n];
 	for (size_t i = fact.size(); i <= n; ++i)
-		fact.push_back(Field<mod>(i) * fact[i - 1]);
+		fact.push_back(Field<mod, T>(i) * fact[i - 1]);
 	return fact[n];
 }
 
-template<int mod>
-Field<mod> Field<mod>::C(Integer n, Integer k) {
-	return Field<mod>::factorial(n) / Field<mod>::factorial(k) / Field<mod>::factorial(n - k);
+template<int mod, typename T>
+Field<mod, T> Field<mod, T>::C(integer_type n, integer_type k) {
+	return Field<mod, T>::factorial(n) / Field<mod, T>::factorial(k) / Field<mod, T>::factorial(n - k);
 }
 
-template<int mod>
-Field<mod> Field<mod>::binpow(const Field<mod>& a, Integer n) {
+template<int mod, typename T>
+Field<mod, T> Field<mod, T>::binpow(const Field<mod, T>& a, integer_type n) {
 	if (n == 0) return 1;
 	if (n % 2 == 1) return binpow(a, n - 1) * a;
 	else {
-		Field<mod> b = binpow(a, n / 2);
+		Field<mod, T> b = binpow(a, n / 2);
 		return b * b;
 	}
 }
 
-template<int mod>
-constexpr bool Field<mod>::checkMod() {
+template<int mod, typename T>
+constexpr bool Field<mod, T>::checkMod() {
 	for (int i = 2; i * i <= mod; ++i) {
 		if (mod % i == 0) {
 			return false;
