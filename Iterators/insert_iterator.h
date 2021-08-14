@@ -1,13 +1,18 @@
 #ifndef INSERT_ITERATOR_H
 #define INSERT_ITERATOR_H
+#include <iterator>
 
 namespace Iterator {
 	template<typename Container>
 	class insert_iterator
 	{
 	public:
-		typedef typename Container::value_type type;
-		typedef Container container_type;
+		using iterator_category = std::output_iterator_tag;
+		using value_type = void;
+		using pointer = void;
+		using reference = void;
+		using container_type = Container;
+		using difference_type = std::ptrdiff_t;
 		typedef typename Container::iterator iterator_type;
 	private:
 		Container* m_container;

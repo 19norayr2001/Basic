@@ -1,5 +1,6 @@
 #ifndef BACK_INSERT_ITERATOR_H
 #define BACK_INSERT_ITERATOR_H
+#include <iterator>
 
 namespace Iterator {
 	template<typename Container>
@@ -8,8 +9,13 @@ namespace Iterator {
 	private:
 		Container* m_container;
 	public:
-		typedef typename Container::value_type type;
-		typedef Container container_type;
+		using iterator_category = std::output_iterator_tag;
+		using value_type = void;
+		using pointer = void;
+		using reference = void;
+		using container_type = Container;
+		using difference_type = std::ptrdiff_t;
+	public:
 		back_insert_iterator(Container& container) 
 			: m_container(std::addressof(container)) {}
 
