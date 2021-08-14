@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20.2)
+cmake_minimum_required(VERSION 3.16)
 
-add_library(Iterators INTERFACE back_insert_iterator.h insert_iterator.h)
+add_library(Iterators INTERFACE)
 target_compile_features(Iterators INTERFACE cxx_std_17)
