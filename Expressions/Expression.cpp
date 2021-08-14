@@ -1,5 +1,5 @@
 #include "Expression.h"
-#include <exception>
+#include <stdexcept>
 #include <sstream>
 #include <string>
 #include <cctype>
@@ -45,7 +45,7 @@ Symbol* SymbolFactory::createInstance(const std::string& s) {
 	if (isalpha(s[0])) {
 		return new Identificator(s);
 	}
-	throw std::exception("Illegal Argument Exception");
+	throw std::invalid_argument("Invalid expression input");
 }
 
 Expression::Expression()
@@ -127,7 +127,7 @@ int Expression::CalculateOption(int num1, int num2, char ch)
 	case '-':
 		return num1 - num2;
 	default:
-		throw std::exception("Illegal operation " + ch);
+		throw std::invalid_argument("Not compatible operation " + ch);
 	}
 }
 
