@@ -35,6 +35,7 @@
 #include <iterator>
 #include <string>
 #include <random>
+#include <list>
 
 namespace
 {
@@ -238,7 +239,7 @@ void Testing::test_polynomial() {
 	Polynomial<Field<2>> p(1);
 	std::cout << p << ' ' << "deg = " << p.degree() << std::endl;
 }
-#endif TEST_POLYNOMIALS
+#endif // TEST_POLYNOMIALS
 
 #ifdef TEST_ITERATORS
 void Testing::test_iterators() {
@@ -262,11 +263,10 @@ void Testing::test_iterators() {
 	std::copy(arr1.begin(), arr1.end(), Iterator::inserter(arr2, arr2.begin() + 3));
 	std::copy(arr2.begin(), arr2.end(), std::ostream_iterator<int>(std::cout, " "));
 	std::cout << std::endl;
-
 	std::cout << "Using std::insert_iterator" << std::endl;
 	std::copy(arr1.begin(), arr1.end(), std::inserter(arr3, arr3.begin() + 3));
 	std::copy(arr3.begin(), arr3.end(), std::ostream_iterator<int>(std::cout, " "));
 	std::cout << std::endl;
 }
-#endif TEST_ITERATORS
+#endif // TEST_ITERATORS
 // TODO add tests implementations
