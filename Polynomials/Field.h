@@ -6,11 +6,14 @@
 typedef int Integer;
 
 template<int mod>
+class Field;
+
+template<int mod>
+std::istream& operator>>(std::istream&, Field<mod>&);
+
+template<int mod>
 class Field {
-	template<int mod>
-	friend std::ostream& operator<<(std::ostream&, const Field<mod>&);
-	template<int mod>
-	friend std::istream& operator>>(std::istream&, Field<mod>&);
+	friend std::istream& operator>><mod>(std::istream&, Field<mod>&);
 public:
 	Field(Integer x = 0)
 		:value((x % mod + mod) % mod) {
@@ -60,8 +63,8 @@ bool operator!=(const Field<mod>&, const Field<mod>&);
 
 template<int mod>
 std::ostream& operator<<(std::ostream& out, const Field<mod>& num) {
-	out << num.value;
-	return out;
+	Integer value(num);
+	return out << value;
 }
 
 template<int mod>
