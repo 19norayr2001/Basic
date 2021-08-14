@@ -1,11 +1,11 @@
 #ifndef DIVIDE_BY_ZERO_EXCEPTION_H
 #define DIVIDE_BY_ZERO_EXCEPTION_H
 
-#include <exception>
-class DividedByZeroException : public std::exception {
+#include <stdexcept>
+class DividedByZeroException : public std::runtime_error {
 public:
 	DividedByZeroException()
-		:std::exception("Not allowed divide by zero") {}
+		:std::runtime_error("Not allowed divide by zero") {}
 };
 
 #endif // DIVIDE_BY_ZERO_EXCEPTION_H
