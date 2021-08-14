@@ -1,4 +1,5 @@
 #include "Prefix.h"
+#include <algorithm>
 #include <iostream>
 #include <stack>
 Prefix::Prefix()
