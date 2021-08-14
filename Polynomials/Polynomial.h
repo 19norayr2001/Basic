@@ -269,7 +269,7 @@ Polynomial<T> gcd(const Polynomial<T>& a, const Polynomial<T>& b) {
 
 template<typename T>
 std::ostream& operator<<(std::ostream& print, const Polynomial<T>& obj) {
-	Polynomial<T>::Node* ptr = obj.m_head->next;
+	typename Polynomial<T>::Node* ptr = obj.m_head->next;
 	if (ptr == nullptr) {
 		std::cout << "Empty polynomial" << std::endl;
 		return print;
