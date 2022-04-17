@@ -1,13 +1,15 @@
-#include <gtest/gtest.h>
 #include "BasicsConfig.h"
 
-
-
 #ifdef TEST_LINEAR_LISTS
-#	include <Vector.h>
-#   include <Stack.h>
-#   include <Queue.h>
-#	include <LinkedList.h>
+
+#include <gtest/gtest.h>
+
+#include <Vector.h>
+#include <Stack.h>
+#include <Queue.h>
+#include <LinkedList.h>
+
+#include <list>
 
 TEST(LinearListsTest, Vector) {
 	const size_t SIZE = 10;
