@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.16)
 
-add_library(Sortings
-			Algorithms.h
-			Algorithms.cpp)
+add_library(Sortings INTERFACE)
+target_compile_features(Polynomials INTERFACE cxx_std_20)
