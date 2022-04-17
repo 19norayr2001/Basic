@@ -116,6 +116,7 @@ int Expression::Priority(char ch)
 
 int Expression::CalculateOption(int num1, int num2, char ch)
 {
+	using std::string_literals::operator""s;
 	switch (ch)
 	{
 	case '*':
@@ -127,7 +128,7 @@ int Expression::CalculateOption(int num1, int num2, char ch)
 	case '-':
 		return num1 - num2;
 	default:
-		throw std::invalid_argument("Not compatible operation " + ch);
+		throw std::invalid_argument("Not compatible operation "s + ch);
 	}
 }
 
