@@ -54,26 +54,6 @@ namespace
 	}
 }
 
-#ifdef TEST_EXPRESSIONS
-void Testing::test_expressions() {
-	std::cout << std::endl << "================================Testing Expressions=============================" << std::endl << std::endl;
-	std::string exp("((x+y)*(x-y)+4*5)/8+7");
-	std::unordered_map<std::string, int> mp;
-	mp["x"] = 5;
-	mp["y"] = 4;
-	Expression* pref = new Prefix(exp);
-	Expression* post = new Postfix(exp);
-	std::cout << exp << std::endl;
-	for (auto x : mp) {
-		std::cout << x.first << " = " << x.second << std::endl;
-	}
-	std::cout << (dynamic_cast<Prefix&>(*pref));
-	std::cout << " prefix result" << " " << pref->Calculate(mp) << std::endl;
-	std::cout << (dynamic_cast<Postfix&>(*post));
-	std::cout << "postfix result" << " " << post->Calculate(mp) << std::endl;
-}
-#endif // TEST_EXPRESSIONS
-
 #ifdef TEST_POLYNOMIALS
 void Testing::test_polynomial() {
 	std::cout << std::endl << "=============================Testing Polynomials=================================" << std::endl << std::endl;
