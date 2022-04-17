@@ -1,17 +1,5 @@
 #include "BasicsConfig.h"
 
-
-#ifdef TEST_LINEAR_LISTS
-#	include <Vector.h>
-#   include <Stack.h>
-#   include <Queue.h>
-#	include <LinkedList.h>
-#endif // TEST_LINEAR_LISTS
-
-#ifdef TEST_SORTINGS
-#	include <Algorithms.h>
-#endif // TEST_SORTINGS
-
 #ifdef TEST_POLYNOMIALS
 #	include <Polynomial.h>
 #	include <Field.h>
@@ -37,40 +25,6 @@
 #include <random>
 #include <list>
 
-namespace
-{
-	void print_array(int* arr, int size) {
-		std::copy(arr, arr + size, std::ostream_iterator<int>(std::cout, " "));
-		std::cout << std::endl;
-	}
-
-	void sort_test(int* arr, int size, void(*sortfunc)(int*, int)) {
-		std::shuffle(arr, arr + size, std::default_random_engine{});
-		std::cout << "array before sorting" << std::endl;
-		print_array(arr, size);
-		std::cout << "array after sorting" << std::endl;
-		sortfunc(arr, size);
-		print_array(arr, size);
-	}
-}
-
-#ifdef TEST_POLYNOMIALS
-void Testing::test_polynomial() {
-	std::cout << std::endl << "=============================Testing Polynomials=================================" << std::endl << std::endl;
-	Polynomial<Field<2>> pol({ {0, 1}, {1, 1} }), pol1 = pol, pol2;
-	for (int i = 0; i < 10; ++i) {
-		std::cout << pol1 << std::endl << "      " << "deg = " << pol1.degree() << std::endl;;
-		pol1 *= pol;
-	}
-	std::cout << "P(x) = " << (pol1 /= pol) << std::endl << "      " << "deg = " << pol1.degree() << std::endl;
-	Polynomial<Field<2>> polx({ {1, -4}, {2, -2}, {3, 5} }), poly({ {2, 2}, {3, -5}, {4, 7} });
-	Polynomial<Field<2>> plus = polx + poly;
-	std::cout << "P(x) = " << plus << std::endl << "      " << "deg = " << poly.degree() << std::endl;;
-	std::cout << "P(2) = " << plus.calculate(Field<2>(1)) << std::endl;
-	Polynomial<Field<2>> p(1);
-	std::cout << p << ' ' << "deg = " << p.degree() << std::endl;
-}
-#endif // TEST_POLYNOMIALS
 
 #ifdef TEST_ITERATORS
 void Testing::test_iterators() {
@@ -100,4 +54,3 @@ void Testing::test_iterators() {
 	std::cout << std::endl;
 }
 #endif // TEST_ITERATORS
-// TODO add tests implementations
