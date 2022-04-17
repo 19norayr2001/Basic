@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.16)
 project(Basics)
 
 # specify the C++ standard
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 option(TEST_EXPRESSIONS "Use expression implementation" ON)
@@ -17,7 +17,7 @@ option(TEST_ITERATORS "Use polynomials implementation" ON)
 # configure a header file to pass some of the CMake settings
 # to the source code
 configure_file(BasicsConfig.h.in BasicsConfig.h)
-						   
+
 # if need to test, then add the Expressions library
 if(TEST_EXPRESSIONS)
   add_subdirectory(Expressions)
@@ -60,10 +60,20 @@ if(TEST_ITERATORS)
   list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/Iterators")
 endif()
 
-# add the executable
-add_executable(Basics Main.cpp UnitTests.cpp UnitTests.h)
+# Fetch and build google test
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  # Specify the commit you depend on and update it regularly.
+  URL https://github.com/google/googletest/archive/e2239ee6043f73722e7aa812a459f54a28552929.zip
+)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
 
-target_link_libraries(Basics PUBLIC ${EXTRA_LIBS})
+add_subdirectory(Tests)
+
+target_link_libraries(Basics gtest_main ${EXTRA_LIBS})
 
 # add the binary tree to the search path for include files
 # so that we will find BasicsConfig.h
@@ -71,3 +81,4 @@ target_include_directories(Basics PUBLIC
                            "${PROJECT_BINARY_DIR}"
                            ${EXTRA_INCLUDES}
                            )
+
