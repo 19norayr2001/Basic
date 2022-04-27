@@ -18,47 +18,29 @@ option(TEST_ITERATORS "Use polynomials implementation" ON)
 # to the source code
 configure_file(BasicsConfig.h.in BasicsConfig.h)
 
-# if need to test, then add the Expressions library
-if(TEST_EXPRESSIONS)
-  add_subdirectory(Expressions)
-  list(APPEND EXTRA_LIBS Expressions)
-  list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/Expressions")
-endif()
+add_subdirectory(Expressions)
+list(APPEND EXTRA_LIBS Expressions)
+list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/Expressions")
 
-# if need to test, then add the LinearLists library
-if(TEST_LINEAR_LISTS)
-  add_subdirectory(LinearLists)
-  list(APPEND EXTRA_LIBS LinearLists)
-  list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/LinearLists")
-endif()
+add_subdirectory(LinearLists)
+list(APPEND EXTRA_LIBS LinearLists)
+list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/LinearLists")
 
-# if need to test, then add the Polynomials library
-if(TEST_POLYNOMIALS)
-  add_subdirectory(Polynomials)
-  list(APPEND EXTRA_LIBS Polynomials)
-  list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/Polynomials")
-endif()
+add_subdirectory(Polynomials)
+list(APPEND EXTRA_LIBS Polynomials)
+list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/Polynomials")
 
-# if need to test, then add the Sortings library
-if(TEST_SORTINGS)
-  add_subdirectory(Sortings)
-  list(APPEND EXTRA_LIBS Sortings)
-  list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/Sortings")
-endif()
+add_subdirectory(Sortings)
+list(APPEND EXTRA_LIBS Sortings)
+list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/Sortings")
 
-# if need to test, then add the Trees library
-if(TEST_TREES)
-  add_subdirectory(Trees)
-  list(APPEND EXTRA_LIBS Trees)
-  list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/Trees")
-endif()
+add_subdirectory(Trees)
+list(APPEND EXTRA_LIBS Trees)
+list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/Trees")
 
-# if need to test, then add the Iterators library
-if(TEST_ITERATORS)
-  add_subdirectory(Iterators)
-  list(APPEND EXTRA_LIBS Iterators)
-  list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/Iterators")
-endif()
+add_subdirectory(Iterators)
+list(APPEND EXTRA_LIBS Iterators)
+list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/Iterators")
 
 add_subdirectory(dependencies EXCLUDE_FROM_ALL)
 
