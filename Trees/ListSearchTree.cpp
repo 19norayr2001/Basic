@@ -1,4 +1,5 @@
 #include "ListSearchTree.h"
+#include <stdexcept>
 
 ListSearchTree::ListSearchTree()
 	:m_root(nullptr)
@@ -48,6 +49,7 @@ int ListSearchTree::find(int k) const
 		ExternalNode* pointer = dynamic_cast<ExternalNode*>(ptr);
 		return pointer->value;
 	}
+    throw std::out_of_range("Index is out of list tree bounds");
 }
 
 void ListSearchTree::insert(const int& val, int k)
