@@ -2,3 +2,5 @@
 **/x64
 **/Debug
 **/Build
+.idea
+cmake-build-*
