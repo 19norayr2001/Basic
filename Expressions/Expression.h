@@ -2,51 +2,52 @@
 #define EXPRESSION_H
 
 #include <unordered_map>
+#include <utility>
 #include <vector>
 #include <string>
 
 struct Symbol
 {
-	Symbol(std::string s)
-		:info(s)
+	explicit Symbol(std::string s)
+		:info(std::move(s))
 	{}
 	std::string info;
-	virtual ~Symbol() {}
+	virtual ~Symbol() = default;
 };
-struct Option :Symbol
+struct Option : Symbol
 {
-	Option(std::string s)
-		:Symbol(s)
+	explicit Option(std::string s)
+		:Symbol(std::move(s))
 	{}
-	virtual ~Option() {}
+	~Option() override = default;
 };
-struct Number :Symbol
+struct Number : Symbol
 {
-	Number(std::string s)
-		:Symbol(s)
+	explicit Number(std::string s)
+		:Symbol(std::move(s))
 	{}
-	virtual ~Number() {}
+	~Number() override = default;
 };
-struct Identificator :Symbol
+struct Identifier : Symbol
 {
-	Identificator(std::string s)
-		:Symbol(s)
+	explicit Identifier(std::string s)
+		:Symbol(std::move(s))
 	{}
-	virtual ~Identificator() {}
+	~Identifier() override = default;
 };
 struct OpenBracket :Symbol
 {
-	OpenBracket(std::string s)
-		:Symbol(s)
+	explicit OpenBracket(std::string s)
+		:Symbol(std::move(s))
 	{}
-	virtual ~OpenBracket() {}
+	~OpenBracket() override = default;
 };
 struct CloseBracket :Symbol
 {
-	CloseBracket(std::string s)
-		:Symbol(s)
+	explicit CloseBracket(std::string s)
+		:Symbol(std::move(s))
 	{}
-	virtual ~CloseBracket() {}
+	~CloseBracket() override = default;
 };
 
 
@@ -59,7 +60,7 @@ class Expression
 {
 public:
 	Expression();
-	Expression(const std::string&);
+	explicit Expression(const std::string&);
 	Expression(const Expression&);
 	Expression& operator=(const Expression&);
 	virtual ~Expression();

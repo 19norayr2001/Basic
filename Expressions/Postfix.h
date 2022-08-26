@@ -7,13 +7,13 @@
 class Postfix :public Expression
 {
 public:
-	Postfix();
-	Postfix(const std::string&);
+	Postfix() = default;
+	explicit Postfix(const std::string&);
 	Postfix(const Postfix&);
 	Postfix& operator=(const Postfix&);
-	virtual ~Postfix();
+	~Postfix() override;
 public:
-	virtual int Calculate(std::unordered_map<std::string, int>&) const;
+	int Calculate(std::unordered_map<std::string, int>&) const override;
 	friend std::ostream& operator<<(std::ostream&, const Postfix&);
 private:
 	void Allocate(const Postfix&);

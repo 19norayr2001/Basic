@@ -1,8 +1,6 @@
 #include "Postfix.h"
 #include <stack>
 #include <iostream>
-Postfix::Postfix()
-{}
 
 Postfix::Postfix(const std::string& s)
 	:Expression(s)
@@ -40,7 +38,7 @@ int Postfix::Calculate(std::unordered_map<std::string, int>& mp) const
 		{
 			st.push(StringToInteger(m_postfix[i]->info));
 		}
-		else if (dynamic_cast<Identificator*>(m_postfix[i]) != nullptr)
+		else if (dynamic_cast<Identifier*>(m_postfix[i]) != nullptr)
 		{
 			st.push(mp[m_postfix[i]->info]);
 		}

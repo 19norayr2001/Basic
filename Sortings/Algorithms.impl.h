@@ -6,10 +6,10 @@
 #include <vector>
 #include <queue>
 
-template<typename ForwIt>
-void Sortings::bubble_sort(ForwIt begin, ForwIt end) {
-	for (ForwIt it = begin; it != end; ++it) {
-		ForwIt itj = it; ++itj;
+template<typename ForwardIt>
+void Sortings::bubble_sort(ForwardIt begin, ForwardIt end) {
+	for (ForwardIt it = begin; it != end; ++it) {
+		ForwardIt itj = it; ++itj;
 		for (; itj != end; ++itj) {
 			if (*it > *itj) {
 				std::iter_swap(it, itj);
@@ -18,10 +18,10 @@ void Sortings::bubble_sort(ForwIt begin, ForwIt end) {
 	}
 }
 
-template<typename ForwIt>
-void Sortings::insertion_sort(ForwIt begin, ForwIt end) {
-	for (ForwIt it = begin; it != end; ++it) {
-		for (ForwIt itj = it, itPrev = it; itj != begin; --itj) {
+template<typename ForwardIt>
+void Sortings::insertion_sort(ForwardIt begin, ForwardIt end) {
+	for (ForwardIt it = begin; it != end; ++it) {
+		for (ForwardIt itj = it, itPrev = it; itj != begin; --itj) {
 			--itPrev;
 			if (*itPrev < *itj) break;
 			std::iter_swap(itPrev, itj);
@@ -29,16 +29,16 @@ void Sortings::insertion_sort(ForwIt begin, ForwIt end) {
 	}
 }
 
-template<typename ForwIt>
-void Sortings::selection_sort(ForwIt begin, ForwIt end) {
-	for (ForwIt it = begin; it != end; ++it) {
+template<typename ForwardIt>
+void Sortings::selection_sort(ForwardIt begin, ForwardIt end) {
+	for (ForwardIt it = begin; it != end; ++it) {
 		std::iter_swap(it, std::min_element(it, end));
 	}
 }
 
-template<typename ForwIt>
-ForwIt partition_quick(ForwIt begin, ForwIt end) {
-	using ValueType = typename std::iterator_traits<ForwIt>::value_type;
+template<typename ForwardIt>
+ForwardIt partition_quick(ForwardIt begin, ForwardIt end) {
+	using ValueType = typename std::iterator_traits<ForwardIt>::value_type;
 	ValueType value = *end;
 	auto it2 = begin;
 	for (auto it = begin; it != end; ++it) {
@@ -65,10 +65,10 @@ void Sortings::quick_sort(RandIt begin, RandIt end) {
 	quick(begin, end);
 }
 
-template<typename ForwIt, typename K>
-void Sortings::radix_sort(ForwIt begin, ForwIt end) {
-	using ValueType = typename std::iterator_traits<ForwIt>::value_type;
-	std::queue<ValueType> q[2];
+template<typename ForwardIt, typename K>
+void Sortings::radix_sort(ForwardIt begin, ForwardIt end) {
+	using ValueType = typename std::iterator_traits<ForwardIt>::value_type;
+	std::queue<ValueType> queues[2];
 
 	auto bit = [](int x, int k) {
 		return (x >> k) & 1;
@@ -77,31 +77,31 @@ void Sortings::radix_sort(ForwIt begin, ForwIt end) {
 	ValueType bitCount = sizeof(ValueType) * 8;
 	for (int i = 0; i < bitCount; ++i) {
 		for (auto it = begin; it != end; ++it) {
-			q[bit(*it, i)].push(*it);
+			queues[bit(*it, i)].push(*it);
 		}
 
 		auto it = begin;
-		for (int t = 0; t < 2; ++t) {
-			while (!q[t].empty()) {
-				*it = q[t].front();
+		for (auto & q : queues) {
+			while (!q.empty()) {
+				*it = q.front();
 				++it;
-				q[t].pop();
+				q.pop();
 			}
 		}
 	}
 }
 
-template<typename ForwIt>
-void Sortings::heap_sort(ForwIt begin, ForwIt end) {
-	using ValueType = typename std::iterator_traits<ForwIt>::value_type;
+template<typename ForwardIt>
+void Sortings::heap_sort(ForwardIt begin, ForwardIt end) {
+	using ValueType = typename std::iterator_traits<ForwardIt>::value_type;
 	// use max heap
 	std::priority_queue<ValueType, std::vector<ValueType>, std::greater<ValueType>> pq;
 	
-	for (ForwIt it = begin; it != end; ++it) {
+	for (ForwardIt it = begin; it != end; ++it) {
 		pq.push(*it);
 	}
 
-	for (ForwIt it = begin; it != end; ++it) {
+	for (ForwardIt it = begin; it != end; ++it) {
 		*it = pq.top(); pq.pop();
 	}
 }
@@ -133,7 +133,7 @@ void Sortings::merge_sort(RandIt begin, RandIt end) {
 	merge_sort(middle, end);
 
 	using ValueType = typename std::iterator_traits<RandIt>::value_type;
-	// initalize buffer for merge algorithm
+	// initialize buffer for merge algorithm
 	std::vector<ValueType> buffer(size);
 	// merge two sorted half parts
 	AlgorithmUtility::merge(begin, middle, middle,  begin + size, buffer.begin());

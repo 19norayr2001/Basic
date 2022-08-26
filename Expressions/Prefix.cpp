@@ -2,8 +2,6 @@
 #include <algorithm>
 #include <iostream>
 #include <stack>
-Prefix::Prefix()
-{}
 
 Prefix::Prefix(const std::string& s)
 	:Expression(s)
@@ -38,15 +36,16 @@ Prefix::~Prefix()
 
 int Prefix::Calculate(std::unordered_map<std::string, int>& mp) const
 {
-	int sz = m_prefix.size();
+	size_t sz = m_prefix.size();
 	std::stack<int> st;
-	for (int i = sz - 1; i >= 0; --i)
+	for (size_t j = sz; j > 0; --j)
 	{
+        size_t i = j - 1;
 		if (dynamic_cast<Number*>(m_prefix[i]) != nullptr)
 		{
 			st.push(StringToInteger(m_prefix[i]->info));
 		}
-		else if (dynamic_cast<Identificator*>(m_prefix[i]) != nullptr)
+		else if (dynamic_cast<Identifier*>(m_prefix[i]) != nullptr)
 		{
 			st.push(mp[m_prefix[i]->info]);
 		}
@@ -74,8 +73,8 @@ void Prefix::Deallocate()
 
 void Prefix::SwapBrackets()
 {
-	int sz = m_infix.size();
-	for (int i = 0; i < sz; ++i)
+	size_t sz = m_infix.size();
+	for (size_t i = 0; i < sz; ++i)
 	{
 		if (dynamic_cast<OpenBracket*>(m_infix[i]) != nullptr)
 		{

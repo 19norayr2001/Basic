@@ -14,15 +14,15 @@ private:
 		int pow;
 		T coefficient;
 		Node* next;
-		Node(int p = 0, T c = T(0), Node* ptr = nullptr)
+		explicit Node(int p = 0, T c = T(0), Node* ptr = nullptr)
 			: pow(p)
 			, coefficient(c)
 			, next(ptr)
 		{}
 	};
 public:
-	Polynomial(T = T(0));
-	Polynomial(const std::vector<std::pair<int, T>>&);
+	explicit Polynomial(T = T(0));
+	explicit Polynomial(const std::vector<std::pair<int, T>>&);
 	Polynomial(const Polynomial<T>&);
 	Polynomial<T>& operator=(const Polynomial<T>&);
 	~Polynomial();

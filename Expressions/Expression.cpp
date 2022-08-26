@@ -43,7 +43,7 @@ Symbol* SymbolFactory::createInstance(const std::string& s) {
 		return new Number(s);
 	}
 	if (isalpha(s[0])) {
-		return new Identificator(s);
+		return new Identifier(s);
 	}
 	throw std::invalid_argument("Invalid expression input");
 }
