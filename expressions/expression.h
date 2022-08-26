@@ -70,7 +70,6 @@ private:
 	void Deallocate();
 	void Allocate(const Expression&);
 protected:
-	static int StringToInteger(const std::string&);
 	static int Priority(char);
 	static int CalculateOption(int, int, char);
 protected:

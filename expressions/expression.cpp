@@ -95,15 +95,6 @@ Expression::~Expression()
 	Deallocate();
 }
 
-int Expression::StringToInteger(const std::string& s)
-{
-	std::stringstream ss;
-	ss << s;
-	int result = 0;
-	ss >> result;
-	return result;
-}
-
 int Expression::Priority(char ch)
 {
 	if (ch == '+' || ch == '-')

@@ -36,7 +36,7 @@ int Postfix::Calculate(std::unordered_map<std::string, int>& mp) const
 	{
 		if (dynamic_cast<Number*>(m_postfix[i]) != nullptr)
 		{
-			st.push(StringToInteger(m_postfix[i]->info));
+			st.push(std::stoi(m_postfix[i]->info));
 		}
 		else if (dynamic_cast<Identifier*>(m_postfix[i]) != nullptr)
 		{

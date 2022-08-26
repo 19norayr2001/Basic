@@ -43,7 +43,7 @@ int Prefix::Calculate(std::unordered_map<std::string, int>& mp) const
         size_t i = j - 1;
 		if (dynamic_cast<Number*>(m_prefix[i]) != nullptr)
 		{
-			st.push(StringToInteger(m_prefix[i]->info));
+			st.push(std::stoi(m_prefix[i]->info));
 		}
 		else if (dynamic_cast<Identifier*>(m_prefix[i]) != nullptr)
 		{
