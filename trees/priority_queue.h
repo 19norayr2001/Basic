@@ -3,23 +3,31 @@
 
 #include <vector>
 
-class PriorityQueue
-{
+class PriorityQueue {
 public:
-	PriorityQueue();
-	PriorityQueue(const PriorityQueue&);
-	PriorityQueue& operator=(const PriorityQueue&);
-	~PriorityQueue();
+    PriorityQueue();
+
+    PriorityQueue(const PriorityQueue &);
+
+    PriorityQueue &operator=(const PriorityQueue &);
+
+    ~PriorityQueue();
+
 public:
-	const int& top() const;
-	void insert(const int&);
-	void pop();
+    const int &top() const;
+
+    void insert(const int &);
+
+    void pop();
+
 private:
-	void allocate(const PriorityQueue&);
-	void deallocate();
+    void allocate(const PriorityQueue &);
+
+    void deallocate();
+
 private:
-	std::vector<int> m_heap;
-	int m_size;
+    std::vector<int> m_heap;
+    int m_size;
 };
 
 #endif // PRIORITY_QUEUE_H

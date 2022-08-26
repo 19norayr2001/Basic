@@ -25,7 +25,7 @@ TEST(IteratorTest, BackInserter) {
 
 TEST(IteratorTest, Inserter) {
     std::vector<int> vec{6, 5, 4, 3, 2, 1};
-    std::vector<int> vecTest{ -1, -2, -3, -4, -5, -6 };
+    std::vector<int> vecTest{-1, -2, -3, -4, -5, -6};
     std::vector<int> vecStl = vecTest;
 
     // using our inserter
