@@ -37,5 +37,5 @@ namespace AlgorithmUtility {
 
 // This check breaks include recursion
 #ifndef ALGORITHMS_IMPL_H
-#include "Algorithms.impl.h"
+#include "algorithms.impl.h"
 #endif

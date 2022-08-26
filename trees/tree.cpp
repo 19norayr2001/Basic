@@ -3,7 +3,7 @@
 #include <queue>
 #include <stack>
 
-#include "Tree.h"
+#include "tree.h"
 
 int BinaryTree::count_leaf(Node* root)
 {

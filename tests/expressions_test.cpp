@@ -5,9 +5,9 @@
 #include <gtest/gtest.h>
 #include <unordered_map>
 
-#include <Expression.h>
-#include <Prefix.h>
-#include <Postfix.h>
+#include <expression.h>
+#include <prefix.h>
+#include <postfix.h>
 
 TEST(ExpressionTest, Prefix) {
     int x = 5;

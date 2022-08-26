@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "LinkedList.h"
+#include "linked_list.h"
 
 LinkedList::LinkedList()
 	: m_head(nullptr)

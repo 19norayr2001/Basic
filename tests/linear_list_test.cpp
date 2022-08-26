@@ -4,10 +4,10 @@
 
 #include <gtest/gtest.h>
 
-#include <Vector.h>
-#include <Stack.h>
-#include <Queue.h>
-#include <LinkedList.h>
+#include <vector.h>
+#include <stack.h>
+#include <queue.h>
+#include <linked_list.h>
 
 #include <list>
 

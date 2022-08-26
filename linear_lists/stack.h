@@ -1,7 +1,7 @@
 #ifndef STACK_H
 #define STACK_H
 
-#include "Vector.h"
+#include "vector.h"
 
 template<typename T, typename Container = Vector<T>>
 class Stack

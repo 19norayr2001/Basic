@@ -1,6 +1,6 @@
 #include <cmath>
 
-#include "PriorityQueue.h"
+#include "priority_queue.h"
 
 PriorityQueue::PriorityQueue()
 	:m_size(0)

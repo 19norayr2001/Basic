@@ -1,4 +1,4 @@
-#include "BinarySearchTree.h"
+#include "binary_search_tree.h"
 
 BinarySearchTree::BinarySearchTree()
 	:m_root(nullptr)

@@ -1,7 +1,7 @@
 #ifndef RB_TREE_H
 #define RB_TREE_H
 
-#include "BinarySearchTree.h"
+#include "binary_search_tree.h"
 
 class RBTree :public BinarySearchTree
 {

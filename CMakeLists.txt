@@ -16,7 +16,7 @@ option(TEST_ITERATORS "Use polynomials implementation" ON)
 
 # configure a header file to pass some of the CMake settings
 # to the source code
-configure_file(BasicsConfig.h.in BasicsConfig.h)
+configure_file(basics_config.h.in BasicsConfig.h)
 
 add_subdirectory(expressions)
 list(APPEND EXTRA_LIBS Expressions)

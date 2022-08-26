@@ -28,7 +28,7 @@ endif()
 
 # if need to test, then add the iterators library
 if(TEST_ITERATORS)
-    list(APPEND TESTS_SOURCES Iterators_test.cpp)
+    list(APPEND TESTS_SOURCES iterators_test.cpp)
 endif()
 
 add_executable(Basics ${TESTS_SOURCES})
