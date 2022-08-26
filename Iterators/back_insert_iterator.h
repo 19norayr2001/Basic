@@ -16,7 +16,7 @@ namespace Iterator {
 		using container_type = Container;
 		using difference_type = std::ptrdiff_t;
 	public:
-		back_insert_iterator(Container& container) 
+		explicit back_insert_iterator(Container& container)
 			: m_container(std::addressof(container)) {}
 
 		back_insert_iterator<Container>& operator=(const typename Container::value_type& value) {
