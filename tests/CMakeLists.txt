@@ -12,17 +12,17 @@ if(TEST_LINEAR_LISTS)
     list(APPEND TESTS_SOURCES linear_list_test.cpp)
 endif()
 
-# if need to test, then add the Polynomials library
+# if need to test, then add the polynomials library
 if(TEST_POLYNOMIALS)
     list(APPEND TESTS_SOURCES polynomial_test.cpp)
 endif()
 
-# if need to test, then add the Sortings library
+# if need to test, then add the sortings library
 if(TEST_SORTINGS)
     list(APPEND TESTS_SOURCES sorting_test.cpp)
 endif()
 
-# if need to test, then add the Trees library
+# if need to test, then add the trees library
 if(TEST_TREES)
 endif()
 

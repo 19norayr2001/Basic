@@ -26,17 +26,17 @@ add_subdirectory(linear_lists)
 list(APPEND EXTRA_LIBS LinearLists)
 list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/linear_lists")
 
-add_subdirectory(Polynomials)
+add_subdirectory(polynomials)
 list(APPEND EXTRA_LIBS Polynomials)
-list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/Polynomials")
+list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/polynomials")
 
-add_subdirectory(Sortings)
+add_subdirectory(sortings)
 list(APPEND EXTRA_LIBS Sortings)
-list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/Sortings")
+list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/sortings")
 
-add_subdirectory(Trees)
+add_subdirectory(trees)
 list(APPEND EXTRA_LIBS Trees)
-list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/Trees")
+list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/trees")
 
 add_subdirectory(iterators)
 list(APPEND EXTRA_LIBS Iterators)
@@ -44,7 +44,7 @@ list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/iterators")
 
 add_subdirectory(dependencies EXCLUDE_FROM_ALL)
 
-add_subdirectory(Tests)
+add_subdirectory(tests)
 
 target_link_libraries(Basics gtest_main ${EXTRA_LIBS})
 
