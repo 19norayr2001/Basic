@@ -18,13 +18,13 @@ option(TEST_ITERATORS "Use polynomials implementation" ON)
 # to the source code
 configure_file(BasicsConfig.h.in BasicsConfig.h)
 
-add_subdirectory(Expressions)
+add_subdirectory(expressions)
 list(APPEND EXTRA_LIBS Expressions)
-list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/Expressions")
+list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/expressions")
 
-add_subdirectory(LinearLists)
+add_subdirectory(linear_lists)
 list(APPEND EXTRA_LIBS LinearLists)
-list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/LinearLists")
+list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/linear_lists")
 
 add_subdirectory(Polynomials)
 list(APPEND EXTRA_LIBS Polynomials)
@@ -38,9 +38,9 @@ add_subdirectory(Trees)
 list(APPEND EXTRA_LIBS Trees)
 list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/Trees")
 
-add_subdirectory(Iterators)
+add_subdirectory(iterators)
 list(APPEND EXTRA_LIBS Iterators)
-list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/Iterators")
+list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/iterators")
 
 add_subdirectory(dependencies EXCLUDE_FROM_ALL)
 
