@@ -5,5 +5,4 @@ add_library(Expressions
         expression.cpp
 		postfix.h
 		postfix.cpp
-		prefix.h
-		prefix.cpp)
+        symbol.cpp symbol.h operation.cpp operation.h)

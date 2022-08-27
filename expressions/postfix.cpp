@@ -4,58 +4,68 @@
 
 Postfix::Postfix(const std::string &s)
         : Expression(s) {
-    ToPostfix(m_postfix);
+    toPostfix();
 }
 
-Postfix::Postfix(const Postfix &obj) {
-    Allocate(obj);
-}
-
-Postfix &Postfix::operator=(const Postfix &obj) {
-    if (this != &obj) {
-        Deallocate();
-        Allocate(obj);
-    }
-    return *this;
-}
-
-Postfix::~Postfix() {
-    Deallocate();
-}
-
-int Postfix::Calculate(std::unordered_map<std::string, int> &mp) const {
-    size_t sz = m_postfix.size();
+int Postfix::calculate(std::unordered_map<std::string, int> &mp) const {
     std::stack<int> st;
-    for (size_t i = 0; i < sz; ++i) {
-        if (dynamic_cast<Number *>(m_postfix[i]) != nullptr) {
-            st.push(std::stoi(m_postfix[i]->info));
-        } else if (dynamic_cast<Identifier *>(m_postfix[i]) != nullptr) {
-            st.push(mp[m_postfix[i]->info]);
+    for (const auto &smb: m_postfix) {
+        if (smb.isNumber()) {
+            st.push(smb.asNumber());
+        } else if (smb.isIdentifier()) {
+            st.push(mp[smb.asIdentifier()]);
         } else {
-            int num2 = st.top();
-            st.pop();
-            int num1 = st.top();
-            st.pop();
-            st.push(CalculateOption(num1, num2, m_postfix[i]->info[0]));
+            int y = st.top(); st.pop();
+            int x = st.top(); st.pop();
+            st.push(smb.asOperator().calculateOption(x, y));
         }
     }
     return st.top();
 }
 
-void Postfix::Allocate(const Postfix &obj) {
-    AllocateVector(m_infix, obj.m_infix);
-    AllocateVector(m_postfix, obj.m_postfix);
-}
-
-void Postfix::Deallocate() {
-    DeallocateVector(m_infix);
-    m_postfix.clear();
-}
-
-std::ostream &operator<<(std::ostream &print, const Postfix &obj) {
-    for (auto smb: obj.m_postfix) {
-        print << smb->info << " ";
+void Postfix::toPostfix() {
+    std::stack<int> index;
+    size_t sz = m_infix.size();
+    for (int i = 0; i < sz; ++i) {
+        Symbol &s = m_infix[i];
+        if (s.isNumber() || s.isIdentifier()) {
+            m_postfix.push_back(s);
+        } else if (s.isOpenBracket()) {
+            index.push(i);
+        } else if (s.isCloseBracket()) {
+            while (!m_infix[index.top()].isOpenBracket()) {
+                m_postfix.push_back(m_infix[index.top()]);
+                index.pop();
+            }
+            index.pop();
+        } else if (s.isOperation()) {
+            Operation op = s.asOperator();
+            while(!index.empty()) {
+                Symbol& smb = m_infix[index.top()];
+                if(!smb.isOperation() || smb.asOperator().priority() < op.priority()) break;
+                m_postfix.push_back(smb);
+                index.pop();
+            }
+            index.push(i);
+        }
     }
-    print << std::endl;
-    return print;
+    while (!index.empty()) {
+        m_postfix.push_back(m_infix[index.top()]);
+        index.pop();
+    }
+}
+
+std::ostream &operator<<(std::ostream &out, const Postfix &obj) {
+    for (const auto& smb: obj.m_postfix) {
+        if (smb.isIdentifier()) {
+            out << smb.asIdentifier();
+        } else if(smb.isNumber()) {
+            out << smb.asNumber();
+        } else {
+            out << smb.asOperator();
+        }
+        out << ' ';
+    }
+    out << std::endl;
+    return out;
 }

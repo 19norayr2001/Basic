@@ -6,29 +6,20 @@
 #include <unordered_map>
 
 class Postfix : public Expression {
+    friend std::ostream &operator<<(std::ostream &, const Postfix &);
+
 public:
     Postfix() = default;
 
     explicit Postfix(const std::string &);
 
-    Postfix(const Postfix &);
-
-    Postfix &operator=(const Postfix &);
-
-    ~Postfix() override;
-
 public:
-    int Calculate(std::unordered_map<std::string, int> &) const override;
+    int calculate(std::unordered_map<std::string, int> &) const override;
 
-    friend std::ostream &operator<<(std::ostream &, const Postfix &);
-
-private:
-    void Allocate(const Postfix &);
-
-    void Deallocate();
+    void toPostfix();
 
 private:
-    std::vector<Symbol *> m_postfix;
+    std::vector<Symbol> m_postfix;
 };
 
 #endif // POSTFIX_H
