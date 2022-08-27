@@ -18,17 +18,17 @@ private:
         Number
     };
 public:
-    explicit Symbol(const std::string& s);
+    explicit Symbol(const std::string &s);
 
-    bool isOpenBracket() const;
+    [[nodiscard]] bool isOpenBracket() const;
 
-    bool isCloseBracket() const;
+    [[nodiscard]] bool isCloseBracket() const;
 
-    bool isIdentifier() const;
+    [[nodiscard]] bool isIdentifier() const;
 
-    bool isOperation() const;
+    [[nodiscard]] bool isOperation() const;
 
-    bool isNumber() const;
+    [[nodiscard]] bool isNumber() const;
 
     [[nodiscard]] const std::string &asIdentifier() const;
 
