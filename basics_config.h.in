@@ -5,3 +5,4 @@
 #cmakedefine TEST_SORTINGS
 #cmakedefine TEST_TREES
 #cmakedefine TEST_ITERATORS
+#cmakedefine TEST_SMART_POINTERS

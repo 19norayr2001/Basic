@@ -7,12 +7,13 @@ project(Basics)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-option(TEST_EXPRESSIONS "Use expression implementation" ON)
-option(TEST_LINEAR_LISTS "Use linear lists implementation" ON)
-option(TEST_POLYNOMIALS "Use polynomials implementation" ON)
-option(TEST_SORTINGS "Use sorting algorithms implementation" ON)
-option(TEST_TREES "Use trees implementation" ON)
-option(TEST_ITERATORS "Use polynomials implementation" ON)
+option(TEST_EXPRESSIONS "Test expressions library" ON)
+option(TEST_LINEAR_LISTS "Test linear lists library" ON)
+option(TEST_POLYNOMIALS "Test polynomials library" ON)
+option(TEST_SORTINGS "Test sorting algorithms library" ON)
+option(TEST_TREES "Test trees library" ON)
+option(TEST_ITERATORS "Test polynomials library" ON)
+option(TEST_SMART_POINTERS "Test smart pointers library" ON)
 
 # configure a header file to pass some of the CMake settings
 # to the source code
@@ -41,6 +42,10 @@ list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/trees")
 add_subdirectory(iterators)
 list(APPEND EXTRA_LIBS Iterators)
 list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/iterators")
+
+add_subdirectory(smart_pointers)
+list(APPEND EXTRA_LIBS SmartPointers)
+list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/smart_pointers")
 
 add_subdirectory(dependencies EXCLUDE_FROM_ALL)
 
