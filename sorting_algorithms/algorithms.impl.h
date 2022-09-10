@@ -7,7 +7,7 @@
 #include <queue>
 
 template<typename ForwardIt>
-void Sortings::bubble_sort(ForwardIt begin, ForwardIt end) {
+void SortingAlgorithms::bubble_sort(ForwardIt begin, ForwardIt end) {
     for (ForwardIt it = begin; it != end; ++it) {
         ForwardIt itj = it;
         ++itj;
@@ -20,7 +20,7 @@ void Sortings::bubble_sort(ForwardIt begin, ForwardIt end) {
 }
 
 template<typename ForwardIt>
-void Sortings::insertion_sort(ForwardIt begin, ForwardIt end) {
+void SortingAlgorithms::insertion_sort(ForwardIt begin, ForwardIt end) {
     for (ForwardIt it = begin; it != end; ++it) {
         for (ForwardIt itj = it, itPrev = it; itj != begin; --itj) {
             --itPrev;
@@ -31,7 +31,7 @@ void Sortings::insertion_sort(ForwardIt begin, ForwardIt end) {
 }
 
 template<typename ForwardIt>
-void Sortings::selection_sort(ForwardIt begin, ForwardIt end) {
+void SortingAlgorithms::selection_sort(ForwardIt begin, ForwardIt end) {
     for (ForwardIt it = begin; it != end; ++it) {
         std::iter_swap(it, std::min_element(it, end));
     }
@@ -62,12 +62,12 @@ void quick(RandIt begin, RandIt end) {
 }
 
 template<typename RandIt>
-void Sortings::quick_sort(RandIt begin, RandIt end) {
+void SortingAlgorithms::quick_sort(RandIt begin, RandIt end) {
     quick(begin, end);
 }
 
 template<typename ForwardIt, typename K>
-void Sortings::radix_sort(ForwardIt begin, ForwardIt end) {
+void SortingAlgorithms::radix_sort(ForwardIt begin, ForwardIt end) {
     using ValueType = typename std::iterator_traits<ForwardIt>::value_type;
     std::queue<ValueType> queues[2];
 
@@ -93,7 +93,7 @@ void Sortings::radix_sort(ForwardIt begin, ForwardIt end) {
 }
 
 template<typename ForwardIt>
-void Sortings::heap_sort(ForwardIt begin, ForwardIt end) {
+void SortingAlgorithms::heap_sort(ForwardIt begin, ForwardIt end) {
     using ValueType = typename std::iterator_traits<ForwardIt>::value_type;
     // use max heap
     std::priority_queue<ValueType, std::vector<ValueType>, std::greater<ValueType>> pq;
@@ -128,7 +128,7 @@ void AlgorithmUtility::merge(InputIt begin1, InputIt end1, InputIt begin2, Input
 }
 
 template<typename RandIt>
-void Sortings::merge_sort(RandIt begin, RandIt end) {
+void SortingAlgorithms::merge_sort(RandIt begin, RandIt end) {
     size_t size = end - begin;
     if (size <= 1) return;
     RandIt middle = begin + size / 2;

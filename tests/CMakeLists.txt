@@ -18,7 +18,7 @@ if(TEST_POLYNOMIALS)
 endif()
 
 # if need to test, then add the sortings test sources
-if(TEST_SORTINGS)
+if(TEST_SORTING_ALGORITHMS)
     list(APPEND TESTS_SOURCES sorting_test.cpp)
 endif()
 

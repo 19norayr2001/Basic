@@ -4,7 +4,7 @@
 #include <type_traits>
 #include <iterator>
 
-namespace Sortings {
+namespace SortingAlgorithms {
     template<typename ForwIt>
     void bubble_sort(ForwIt, ForwIt);
 

@@ -2,7 +2,7 @@
 #cmakedefine TEST_EXPRESSIONS
 #cmakedefine TEST_LINEAR_LISTS
 #cmakedefine TEST_POLYNOMIALS
-#cmakedefine TEST_SORTINGS
+#cmakedefine TEST_SORTING_ALGORITHMS
 #cmakedefine TEST_TREES
 #cmakedefine TEST_ITERATORS
 #cmakedefine TEST_SMART_POINTERS
