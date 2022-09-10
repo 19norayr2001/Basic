@@ -7,18 +7,18 @@
 #include <shared_ptr.h>
 
 TEST(SmartPointersTest, UniqeuePtr) {
-    constexpr int value = 7;
-    UniquePointer<int> ptr(new int(value));
-    EXPECT_EQ(*ptr, value);
-    *ptr += value;
-    const UniquePointer<int> movedPtr(ptr);
-    EXPECT_EQ(*movedPtr, 2 * value);
+    int* cPtr = new int();
+    unique_ptr<int> ptr(cPtr);
+    EXPECT_EQ(ptr.get(), cPtr);
+    const unique_ptr<int> moved(std::move(ptr));
+    EXPECT_EQ(moved.get(), cPtr);
+    EXPECT_EQ(ptr.get(), nullptr);
 }
 
 TEST(SmartPointersTest, SharedPtr) {
     constexpr int value = 4;
-    SharedPointer<int> ptr(new int(value));
-    SharedPointer<int> ptr2(ptr);
+    shared_ptr<int> ptr(new int(value));
+    shared_ptr<int> ptr2(ptr);
     EXPECT_EQ(*ptr, value);
     EXPECT_EQ(*ptr2, value);
 }

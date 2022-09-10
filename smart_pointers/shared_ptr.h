@@ -6,13 +6,13 @@
 #define BASICS_SHARED_PTR_H
 
 template <typename Type>
-class SharedPointer
+class shared_ptr
 {
 public:
-    SharedPointer(Type* = nullptr);
-    SharedPointer(const SharedPointer<Type>&);
-    SharedPointer<Type>& operator=(const SharedPointer<Type>&);
-    ~SharedPointer();
+    shared_ptr(Type* = nullptr);
+    shared_ptr(const shared_ptr<Type>&);
+    shared_ptr<Type>& operator=(const shared_ptr<Type>&);
+    ~shared_ptr();
 public:
     Type& operator*();
     const Type& operator*() const;
@@ -26,13 +26,13 @@ private:
 };
 
 template <typename Type>
-SharedPointer<Type>::SharedPointer(Type* ptr)
+shared_ptr<Type>::shared_ptr(Type* ptr)
         :m_data(ptr)
         , m_count(new int(1))
 {}
 
 template <typename Type>
-SharedPointer<Type>::SharedPointer(const SharedPointer<Type>& obj)
+shared_ptr<Type>::shared_ptr(const shared_ptr<Type>& obj)
         :m_data(obj.m_data)
         , m_count(obj.m_count)
 {
@@ -40,7 +40,7 @@ SharedPointer<Type>::SharedPointer(const SharedPointer<Type>& obj)
 }
 
 template <typename Type>
-SharedPointer<Type>& SharedPointer<Type>::operator=(const SharedPointer<Type>& obj)
+shared_ptr<Type>& shared_ptr<Type>::operator=(const shared_ptr<Type>& obj)
 {
     if (this != &obj)
     {
@@ -53,37 +53,37 @@ SharedPointer<Type>& SharedPointer<Type>::operator=(const SharedPointer<Type>& o
 }
 
 template <typename Type>
-SharedPointer<Type>::~SharedPointer()
+shared_ptr<Type>::~shared_ptr()
 {
     Deallocate();
 }
 
 template <typename Type>
-Type& SharedPointer<Type>::operator*()
+Type& shared_ptr<Type>::operator*()
 {
     return *m_data;
 }
 
 template <typename Type>
-const Type& SharedPointer<Type>::operator*() const
+const Type& shared_ptr<Type>::operator*() const
 {
     return *m_data;
 }
 
 template <typename Type>
-Type* SharedPointer<Type>::operator->()
+Type* shared_ptr<Type>::operator->()
 {
     return m_data;
 }
 
 template <typename Type>
-const Type* SharedPointer<Type>::operator->() const
+const Type* shared_ptr<Type>::operator->() const
 {
     return m_data;
 }
 
 template <typename Type>
-void SharedPointer<Type>::Deallocate()
+void shared_ptr<Type>::Deallocate()
 {
     if (*m_count > 0){
         (*m_count)--;
