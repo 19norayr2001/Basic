@@ -5,45 +5,47 @@
 #ifndef BASICS_SHARED_PTR_H
 #define BASICS_SHARED_PTR_H
 
-template <typename Type>
-class shared_ptr
-{
+template<typename T>
+class shared_ptr {
 public:
-    shared_ptr(Type* = nullptr);
-    shared_ptr(const shared_ptr<Type>&);
-    shared_ptr<Type>& operator=(const shared_ptr<Type>&);
+    explicit shared_ptr(T * = nullptr);
+
+    shared_ptr(const shared_ptr<T> &);
+
+    shared_ptr<T> &operator=(const shared_ptr<T> &);
+
     ~shared_ptr();
+
 public:
-    Type& operator*();
-    const Type& operator*() const;
-    Type* operator->();
-    const Type* operator->() const;
+    T &operator*();
+
+    const T &operator*() const;
+
+    T *operator->();
+
+    const T *operator->() const;
+
 private:
     void Deallocate();
+
 private:
-    Type* m_data;
-    int* m_count;
+    T *m_data;
+    int *m_count;
 };
 
-template <typename Type>
-shared_ptr<Type>::shared_ptr(Type* ptr)
-        :m_data(ptr)
-        , m_count(new int(1))
-{}
+template<typename T>
+shared_ptr<T>::shared_ptr(T *ptr)
+        :m_data(ptr), m_count(new int(1)) {}
 
-template <typename Type>
-shared_ptr<Type>::shared_ptr(const shared_ptr<Type>& obj)
-        :m_data(obj.m_data)
-        , m_count(obj.m_count)
-{
+template<typename T>
+shared_ptr<T>::shared_ptr(const shared_ptr<T> &obj)
+        :m_data(obj.m_data), m_count(obj.m_count) {
     (*m_count)++;
 }
 
-template <typename Type>
-shared_ptr<Type>& shared_ptr<Type>::operator=(const shared_ptr<Type>& obj)
-{
-    if (this != &obj)
-    {
+template<typename T>
+shared_ptr<T> &shared_ptr<T>::operator=(const shared_ptr<T> &obj) {
+    if (this != &obj) {
         Deallocate();
         m_data = obj.m_data;
         m_count = obj.m_count;
@@ -52,44 +54,37 @@ shared_ptr<Type>& shared_ptr<Type>::operator=(const shared_ptr<Type>& obj)
     return *this;
 }
 
-template <typename Type>
-shared_ptr<Type>::~shared_ptr()
-{
+template<typename T>
+shared_ptr<T>::~shared_ptr() {
     Deallocate();
 }
 
-template <typename Type>
-Type& shared_ptr<Type>::operator*()
-{
+template<typename T>
+T &shared_ptr<T>::operator*() {
     return *m_data;
 }
 
-template <typename Type>
-const Type& shared_ptr<Type>::operator*() const
-{
+template<typename T>
+const T &shared_ptr<T>::operator*() const {
     return *m_data;
 }
 
-template <typename Type>
-Type* shared_ptr<Type>::operator->()
-{
+template<typename T>
+T *shared_ptr<T>::operator->() {
     return m_data;
 }
 
-template <typename Type>
-const Type* shared_ptr<Type>::operator->() const
-{
+template<typename T>
+const T *shared_ptr<T>::operator->() const {
     return m_data;
 }
 
-template <typename Type>
-void shared_ptr<Type>::Deallocate()
-{
-    if (*m_count > 0){
+template<typename T>
+void shared_ptr<T>::Deallocate() {
+    if (*m_count > 0) {
         (*m_count)--;
     }
-    if (m_count == 0)
-    {
+    if (m_count == 0) {
         delete m_count;
         delete m_data;
         m_count = nullptr;
