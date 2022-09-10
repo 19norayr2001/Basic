@@ -16,11 +16,11 @@ TEST(SmartPointersTest, UniqeuePtr) {
 }
 
 TEST(SmartPointersTest, SharedPtr) {
-    constexpr int value = 4;
-    shared_ptr<int> ptr(new int(value));
-    shared_ptr<int> ptr2(ptr);
-    EXPECT_EQ(*ptr, value);
-    EXPECT_EQ(*ptr2, value);
+    char* cPtr = new char();
+    shared_ptr<char> smart_ptr(cPtr);
+    shared_ptr<char> smart_ptr2(smart_ptr);
+    EXPECT_EQ(smart_ptr2.get(), cPtr);
+    EXPECT_EQ(smart_ptr.get(), cPtr);
 }
 
 #endif // TEST_SMART_POINTERS
