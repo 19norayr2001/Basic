@@ -10,7 +10,9 @@
 template<typename T>
 class shared_ptr {
 public:
-    explicit shared_ptr(T* ptr = nullptr);
+    explicit shared_ptr(T* ptr);
+
+    explicit shared_ptr(std::nullptr_t null);
 
     shared_ptr(const shared_ptr<T>& obj);
 
@@ -45,9 +47,15 @@ shared_ptr<T>::shared_ptr(T* ptr)
         :m_data(ptr), m_count(new std::atomic<unsigned int>(1)) {}
 
 template<typename T>
+shared_ptr<T>::shared_ptr(std::nullptr_t)
+        :m_data(nullptr), m_count(nullptr) {}
+
+template<typename T>
 shared_ptr<T>::shared_ptr(const shared_ptr<T>& obj)
         :m_data(obj.m_data), m_count(obj.m_count) {
-    (*m_count)++;
+    if (m_data != nullptr) {
+        ++(*m_count);
+    }
 }
 
 template<typename T>

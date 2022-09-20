@@ -21,6 +21,10 @@ TEST(SmartPointersTest, SharedPtr) {
     shared_ptr<char> smart_ptr2(smart_ptr);
     EXPECT_EQ(smart_ptr2.get(), cPtr);
     EXPECT_EQ(smart_ptr.get(), cPtr);
+    shared_ptr<char> null(nullptr);
+    shared_ptr<char> null2(null);
+    EXPECT_EQ(null.get(), nullptr);
+    EXPECT_EQ(null2.get(), nullptr);
 }
 
 #endif // TEST_SMART_POINTERS
