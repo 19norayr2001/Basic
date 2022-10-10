@@ -15,3 +15,19 @@ This container provides
 - `strong exception safety`, `move semantics` for public functions
 - possibility of using `custom allocators` 
 - `iterator`, `reverse iterator`
+
+Check out some usages of vector
+```c++
+// vector with polymorphic allocator
+Vector<int, std::pmr::polymorphic_allocator<int>> vec;
+// reserve memory for 100 elements
+vec.reserve(100);
+// add elements in vector
+for(int i = 0; i < 10; ++i) {
+    vec.push_back(i);
+}
+// using reverse iterators, print all vector elements in reverse order
+for(auto it = vec.rbegin(); it != vec.rend(); ++it) {
+    std::cout << *it << ' ';
+}
+```
