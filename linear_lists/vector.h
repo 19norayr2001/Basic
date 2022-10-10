@@ -186,9 +186,9 @@ public:
 
     bool empty() const { return m_size == 0; }
 
-private:
     void swap(Vector &);
 
+private:
     bool is_full() const { return m_size == m_capacity; }
 
     void destroy();
