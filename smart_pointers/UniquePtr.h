@@ -6,20 +6,20 @@
 #define BASICS_UNIQUE_PTR_H
 
 template<typename T>
-class unique_ptr {
+class UniquePtr {
 public:
-    explicit unique_ptr(T* ptr = nullptr);
+    explicit UniquePtr(T* ptr = nullptr);
 
-    unique_ptr(unique_ptr<T>&& other) noexcept ;
+    UniquePtr(UniquePtr<T>&& other) noexcept ;
 
-    unique_ptr<T> &operator=(unique_ptr<T> && other) noexcept ;
+    UniquePtr<T> &operator=(UniquePtr<T> && other) noexcept ;
 
-    ~unique_ptr();
+    ~UniquePtr();
 public:
 
-    unique_ptr(const unique_ptr<T> &) = delete;
+    UniquePtr(const UniquePtr<T> &) = delete;
 
-    unique_ptr<T> &operator=(const unique_ptr<T> &) = delete;
+    UniquePtr<T> &operator=(const UniquePtr<T> &) = delete;
 
 public:
     T& operator*();
@@ -30,7 +30,7 @@ public:
 
     const T* operator->() const;
 
-    void swap(unique_ptr<T>& other) noexcept;
+    void swap(UniquePtr<T>& other) noexcept;
 
     T* get() const noexcept;
 
@@ -39,54 +39,54 @@ private:
 };
 
 template<typename T>
-unique_ptr<T>::unique_ptr(T* ptr)
+UniquePtr<T>::UniquePtr(T* ptr)
         :m_data(ptr) {}
 
 template<typename T>
-unique_ptr<T>::unique_ptr(unique_ptr<T>&& other) noexcept
+UniquePtr<T>::UniquePtr(UniquePtr<T>&& other) noexcept
         : m_data(std::exchange(other.m_data, nullptr)) {}
 
 template<typename T>
-unique_ptr<T>& unique_ptr<T>::operator=(unique_ptr<T>&& other) noexcept {
+UniquePtr<T>& UniquePtr<T>::operator=(UniquePtr<T>&& other) noexcept {
     if (this != &other) {
-        unique_ptr<T> moved = std::move(other);
+        UniquePtr<T> moved = std::move(other);
         this->swap(moved);
     }
     return *this;
 }
 
 template<typename T>
-unique_ptr<T>::~unique_ptr() {
+UniquePtr<T>::~UniquePtr() {
     delete m_data;
 }
 
 template<typename T>
-T& unique_ptr<T>::operator*() {
+T& UniquePtr<T>::operator*() {
     return *m_data;
 }
 
 template<typename T>
-const T& unique_ptr<T>::operator*() const {
+const T& UniquePtr<T>::operator*() const {
     return *m_data;
 }
 
 template<typename T>
-T* unique_ptr<T>::operator->() {
+T* UniquePtr<T>::operator->() {
     return m_data;
 }
 
 template<typename T>
-const T* unique_ptr<T>::operator->() const {
+const T* UniquePtr<T>::operator->() const {
     return m_data;
 }
 
 template<typename T>
-void unique_ptr<T>::swap(unique_ptr<T> &other) noexcept {
+void UniquePtr<T>::swap(UniquePtr<T> &other) noexcept {
     std::swap(m_data, other.m_data);
 }
 
 template<typename T>
-T *unique_ptr<T>::get() const noexcept {
+T *UniquePtr<T>::get() const noexcept {
     return m_data;
 }
 

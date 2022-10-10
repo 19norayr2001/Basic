@@ -9,12 +9,13 @@
 #include <queue.h>
 #include <linked_list.h>
 
+#include <memory>
 #include <list>
 
 TEST(LinearListsTest, Vector) {
     const size_t SIZE = 10;
 
-    Vector<int> vec;
+    Vector<int, std::pmr::> vec;
     for (size_t i = 0; i < SIZE; ++i) {
         vec.push_back(i);
     }

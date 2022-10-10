@@ -8,21 +8,21 @@
 #include <atomic>
 
 template<typename T>
-class shared_ptr {
+class SharedPtr {
 public:
-    explicit shared_ptr(T* ptr);
+    explicit SharedPtr(T* ptr);
 
-    explicit shared_ptr(std::nullptr_t null);
+    explicit SharedPtr(std::nullptr_t null);
 
-    shared_ptr(const shared_ptr<T>& obj);
+    SharedPtr(const SharedPtr<T>& obj);
 
-    shared_ptr(shared_ptr<T>&& other) noexcept ;
+    SharedPtr(SharedPtr<T>&& other) noexcept ;
 
-    shared_ptr<T>& operator=(const shared_ptr<T>& other);
+    SharedPtr<T>& operator=(const SharedPtr<T>& other);
 
-    shared_ptr<T>& operator=(shared_ptr<T>&& other) noexcept;
+    SharedPtr<T>& operator=(SharedPtr<T>&& other) noexcept;
 
-    ~shared_ptr();
+    ~SharedPtr();
 
 public:
     T& operator*();
@@ -35,7 +35,7 @@ public:
 
     T* get() const noexcept;
 
-    void swap(shared_ptr<T>& other) noexcept;
+    void swap(SharedPtr<T>& other) noexcept;
 
 private:
     T* m_data;
@@ -43,15 +43,15 @@ private:
 };
 
 template<typename T>
-shared_ptr<T>::shared_ptr(T* ptr)
+SharedPtr<T>::SharedPtr(T* ptr)
         :m_data(ptr), m_count(new std::atomic<unsigned int>(1)) {}
 
 template<typename T>
-shared_ptr<T>::shared_ptr(std::nullptr_t)
+SharedPtr<T>::SharedPtr(std::nullptr_t)
         :m_data(nullptr), m_count(nullptr) {}
 
 template<typename T>
-shared_ptr<T>::shared_ptr(const shared_ptr<T>& obj)
+SharedPtr<T>::SharedPtr(const SharedPtr<T>& obj)
         :m_data(obj.m_data), m_count(obj.m_count) {
     if (m_data != nullptr) {
         ++(*m_count);
@@ -59,30 +59,30 @@ shared_ptr<T>::shared_ptr(const shared_ptr<T>& obj)
 }
 
 template<typename T>
-shared_ptr<T>::shared_ptr(shared_ptr<T>&& other) noexcept
+SharedPtr<T>::SharedPtr(SharedPtr<T>&& other) noexcept
     :m_data(std::exchange(other.m_data, nullptr))
     , m_count(std::exchange(other.m_data, nullptr)) {}
 
 template<typename T>
-shared_ptr<T> &shared_ptr<T>::operator=(const shared_ptr<T>& other) {
+SharedPtr<T> &SharedPtr<T>::operator=(const SharedPtr<T>& other) {
     if (this != &other) {
-        shared_ptr<T> copied(other);
+        SharedPtr<T> copied(other);
         this->swap(copied);
     }
     return *this;
 }
 
 template<typename T>
-shared_ptr<T> &shared_ptr<T>::operator=(shared_ptr<T>&& other) noexcept{
+SharedPtr<T> &SharedPtr<T>::operator=(SharedPtr<T>&& other) noexcept{
     if (this != &other) {
-        shared_ptr<T> moved(std::move(other));
+        SharedPtr<T> moved(std::move(other));
         this->swap(moved);
     }
     return *this;
 }
 
 template<typename T>
-shared_ptr<T>::~shared_ptr() {
+SharedPtr<T>::~SharedPtr() {
     if (m_count == nullptr) return;
     if (--(*m_count) == 0) {
         delete m_count;
@@ -91,32 +91,32 @@ shared_ptr<T>::~shared_ptr() {
 }
 
 template<typename T>
-T& shared_ptr<T>::operator*() {
+T& SharedPtr<T>::operator*() {
     return *m_data;
 }
 
 template<typename T>
-const T& shared_ptr<T>::operator*() const {
+const T& SharedPtr<T>::operator*() const {
     return *m_data;
 }
 
 template<typename T>
-T* shared_ptr<T>::operator->() {
+T* SharedPtr<T>::operator->() {
     return m_data;
 }
 
 template<typename T>
-const T* shared_ptr<T>::operator->() const {
+const T* SharedPtr<T>::operator->() const {
     return m_data;
 }
 
 template<typename T>
-T* shared_ptr<T>::get() const noexcept {
+T* SharedPtr<T>::get() const noexcept {
     return m_data;
 }
 
 template<typename T>
-void shared_ptr<T>::swap(shared_ptr<T>& other) noexcept {
+void SharedPtr<T>::swap(SharedPtr<T>& other) noexcept {
     std::swap(m_data, other.m_data);
     std::swap(m_count, other.m_count);
 }
