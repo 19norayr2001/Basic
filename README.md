@@ -1,6 +1,6 @@
 # C++ Basics
 
-Basics is a cross platform C++ library developed under `CMake`, where are implemented STL data structures, algorithms, etc.
+Basics is a cross platform C++ library developed under `CMake`, where are implemented STL data structures, algorithms, etc. Library has tests for each unit implemented using `gtest`
 
 ## Linear lists
 
@@ -31,3 +31,55 @@ for(auto it = vec.rbegin(); it != vec.rend(); ++it) {
     std::cout << *it << ' ';
 }
 ```
+
+### Stack, Queue
+
+Stack and Queue are implemented as adapter containers, by default they are using std::deque
+
+They provide
+
+- `push`, `pop`, `top`, `empty`, `size` public functions
+
+Here are some usages
+```c++
+// use stack based on deque
+Stack<char> st;
+// use queue based on linked list
+Queue<char, std::list<char>> q;
+// push some elements in stack and queue
+for(char ch = 'a'; ch <= 'z'; ++ch) {
+    st.push(ch);
+    q.push(ch);
+}
+// print stack and queue elements
+while(!st.empty() && !q.empty()) {
+    std::cout << st.top() << ' ' << q.front() << std::endl;
+}
+```
+
+### Linked list
+
+Linked list container in this library is `not template` like the others and is not providing API for read operations from list (in other words this implementation is useless for any purposes but educational)
+
+Provides
+
+- `push_back`, `push_front`, `pop_back`, `pop_front`, `insert`, `erase` public functions
+- Soon there will be added `iterator` and `template` parameter support
+
+## Smart pointers
+
+### Unique pointer
+
+Unique smart pointer using move semantics.
+
+Usage.
+```c++
+// get pointer ownership
+UniquePtr<int> ptr(new int());
+// pass pointer ownership to another smart pointer
+const UniquePtr<int> moved(std::move(ptr));
+// get raw pointer
+int* ptr = moved.get();
+```
+
+### 
