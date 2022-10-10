@@ -7,15 +7,13 @@
 #include <vector.h>
 #include <stack.h>
 #include <queue.h>
-#include <linked_list.h>
 
-#include <memory>
 #include <list>
 
 TEST(LinearListsTest, Vector) {
     const size_t SIZE = 10;
 
-    Vector<int, std::pmr::> vec;
+    Vector<int> vec;
     for (size_t i = 0; i < SIZE; ++i) {
         vec.push_back(i);
     }

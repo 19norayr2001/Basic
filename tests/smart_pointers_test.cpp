@@ -3,8 +3,8 @@
 #ifdef TEST_SMART_POINTERS
 
 #include <gtest/gtest.h>
-#include <UniquePtr.h>
-#include <SharedPtr.h>
+#include <unique_ptr.h>
+#include <shared_ptr.h>
 
 TEST(SmartPointersTest, UniqeuePtr) {
     int* cPtr = new int();
