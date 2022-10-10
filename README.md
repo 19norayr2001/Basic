@@ -70,7 +70,7 @@ Provides
 
 ### Unique pointer
 
-Unique smart pointer using move semantics.
+Smart pointer providing unique ownership of memory resource. Ownership transfers from one to another with `std::move`
 
 Usage.
 ```c++
@@ -82,4 +82,22 @@ const UniquePtr<int> moved(std::move(ptr));
 int* ptr = moved.get();
 ```
 
-### 
+### Shared pointer
+
+Smart pointer providing shared ownership of memory resource. Ownership counter type is `std::atomic<int>` and provides thread safety.
+
+Usage.
+```c++
+// create one shared ptr
+SharedPtr<int> ptr(new int());
+// create another shared ptr and share ownership with first one
+SharedPtr<int> ptr2(ptr);
+// now they are pointing at the same data
+assert(ptr.get() == ptr2.get());
+```
+
+Soon there will be added `makeUnique`, `makeShared` functions support in order to use benefits of `control block`.
+
+### Weak Pointer
+
+Not implemented yet.
