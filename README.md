@@ -101,3 +101,38 @@ Soon there will be added `makeUnique`, `makeShared` functions support in order t
 ### Weak Pointer
 
 Not implemented yet.
+
+## Trees
+
+### Binary Search Tree
+
+This container is implemented as non-balanced binary search tree and gives following functionality
+
+- `insert`
+- `remove`
+- `find`
+
+All these functions complexity is `O(h)`, where `h` is the height of the tree
+
+### Red Black Tree
+`RBTree` extends from `BinarySearchTree` and provides same interface as `BinarySearchTree`. But through his balance, this container guarantees `O(log n)` complexity for his functions.
+
+### Priority Queue
+
+Priority Queue based on heap providing following API
+
+- `top`, gives top element
+- `insert`, inserts element in priority queue
+- `pop`, removes top element from priority queue
+
+## Sorting Algorithms
+
+In this module, there are implemented several sorting algorithms
+
+- `Bubble sort`
+- `Insertion sort`
+- `Selection sort`
+- `Quick sort`
+- `Radix sort`
+- `Heap sort`
+- `Merge sort`
