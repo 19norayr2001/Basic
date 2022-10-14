@@ -12,16 +12,6 @@ struct Node {
     virtual ~Node() {}
 };
 
-struct RBNode : Node {
-    bool color;
-    RBNode *parent;
-
-    RBNode(int v = 0, bool col = true, RBNode *p = nullptr)
-            : Node(v), color(col), parent(p) {}
-
-    virtual ~RBNode() {}
-};
-
 class BinarySearchTree {
 public:
 
