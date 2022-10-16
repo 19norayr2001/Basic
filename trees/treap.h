@@ -7,71 +7,68 @@
 #include "../iterators/reverse_iterator.h"
 
 template<typename Key>
-class TreapNode {
+class Treap {
 public:
     using key_type = Key;
-
-public:
-    explicit TreapNode(const key_type &key, unsigned int priority = 0, TreapNode *left = nullptr,
-                       TreapNode *right = nullptr)
-            : key(key), _priority(priority), _left(left), _right(right), _size(1) { update(); }
-
-public:
-    void setLeft(TreapNode *node) {
-        _left = node;
-        update();
-    }
-
-    void setRight(TreapNode *node) {
-        _right = node;
-        update();
-    }
-
-    TreapNode *getLeft() { return _left; }
-
-    const TreapNode *getLeft() const { return _left; }
-
-    TreapNode *getRight() { return _right; }
-
-    const TreapNode *getRight() const { return _right; }
-
-    size_t size() const { return _size; }
-
-    size_t leftSize() const { return (_left != nullptr ? _left->_size : 0); }
-
-    size_t rightSize() const { return (_right != nullptr ? _right->_size : 0); }
-
-public:
-    TreapNode *copy() const;
-
-public:
-    static TreapNode *merge(TreapNode *node1, TreapNode *node2);
-
-    static std::pair<TreapNode *, TreapNode *> split(TreapNode *node, const key_type &value);
-
 private:
-    void update() { _size = leftSize() + rightSize() + 1; }
+    class TreapNode {
+    public:
+        explicit TreapNode(const key_type &key, unsigned int priority = 0, TreapNode *left = nullptr,
+                           TreapNode *right = nullptr)
+                : key(key), _priority(priority), _left(left), _right(right), _size(1) { update(); }
 
-public:
-    key_type key;
-private:
-    unsigned int _priority;
-    TreapNode *_left;
-    TreapNode *_right;
-    size_t _size;
-};
+    public:
+        void setLeft(TreapNode *node) {
+            _left = node;
+            update();
+        }
 
-template<typename Key>
-class Treap {
+        void setRight(TreapNode *node) {
+            _right = node;
+            update();
+        }
+
+        TreapNode *getLeft() { return _left; }
+
+        const TreapNode *getLeft() const { return _left; }
+
+        TreapNode *getRight() { return _right; }
+
+        const TreapNode *getRight() const { return _right; }
+
+        size_t size() const { return _size; }
+
+        size_t leftSize() const { return (_left != nullptr ? _left->_size : 0); }
+
+        size_t rightSize() const { return (_right != nullptr ? _right->_size : 0); }
+
+    public:
+        TreapNode *copy() const;
+
+    public:
+        static TreapNode *merge(TreapNode *node1, TreapNode *node2);
+
+        static std::pair<TreapNode *, TreapNode *> split(TreapNode *node, const key_type &value);
+
+    private:
+        void update() { _size = leftSize() + rightSize() + 1; }
+
+    public:
+        key_type key;
+    private:
+        unsigned int _priority;
+        TreapNode *_left;
+        TreapNode *_right;
+        size_t _size;
+    };
+
 public:
     int maxDepth() const;
 
-    int maxDepth(const TreapNode<Key> *node) const;
+    int maxDepth(const TreapNode *node) const;
 
 private:
-    TreapNode<Key> *_root;
-public:
-    using key_type = Key;
+    TreapNode *_root;
 public:
     Treap();
 
@@ -93,7 +90,7 @@ public:
 
     bool contains(const key_type &value) const;
 
-    const typename TreapNode<Key>::key_type &keyOfOrder(size_t index) const;
+    const key_type &keyOfOrder(size_t index) const;
 
     size_t orderOfKey(const key_type &index) const;
 
@@ -102,18 +99,18 @@ public:
     size_t size() const { return _root != nullptr ? _root->size() : 0; }
 
 private:
-    void deallocate(TreapNode<Key> *node);
+    void deallocate(TreapNode *node);
 
 private:
-    TreapNode<Key> *nodeOfKey(const key_type &value);
+    TreapNode *nodeOfKey(const key_type &value);
 
-    const TreapNode<Key> *nodeOfKey(const key_type &value) const;
+    const TreapNode *nodeOfKey(const key_type &value) const;
 
-    TreapNode<Key> *nodeOfOrder(size_t index);
+    TreapNode *nodeOfOrder(size_t index);
 
-    const TreapNode<Key> *nodeOfOrder(size_t index) const;
+    const TreapNode *nodeOfOrder(size_t index) const;
 
-    size_t orderOfKey(const key_type &value, const TreapNode<Key> *node) const;
+    size_t orderOfKey(const key_type &value, const TreapNode *node) const;
 
 private:
     template<bool B>
@@ -333,7 +330,7 @@ typename Treap<Key>::template common_iterator<B> Treap<Key>::common_iterator<B>:
 
 
 template<typename Key>
-TreapNode<Key> *TreapNode<Key>::copy() const {
+typename Treap<Key>::TreapNode *Treap<Key>::TreapNode::copy() const {
     auto *root = new TreapNode(key, _priority);
     if (_left != nullptr) {
         root->setLeft(_left->copy());
@@ -346,7 +343,7 @@ TreapNode<Key> *TreapNode<Key>::copy() const {
 
 
 template<typename Key>
-TreapNode<Key> *TreapNode<Key>::merge(TreapNode<Key> *node1, TreapNode<Key> *node2) {
+typename Treap<Key>::TreapNode *Treap<Key>::TreapNode::merge(TreapNode *node1, TreapNode *node2) {
     if (node1 == nullptr) {
         return node2;
     }
@@ -365,7 +362,8 @@ TreapNode<Key> *TreapNode<Key>::merge(TreapNode<Key> *node1, TreapNode<Key> *nod
 }
 
 template<typename Key>
-std::pair<TreapNode<Key> *, TreapNode<Key> *> TreapNode<Key>::split(TreapNode<Key> *node, const key_type &value) {
+std::pair<typename Treap<Key>::TreapNode *, typename Treap<Key>::TreapNode *>
+Treap<Key>::TreapNode::split(TreapNode *node, const key_type &value) {
     if (node == nullptr) {
         return std::make_pair(nullptr, nullptr);
     }
@@ -425,20 +423,20 @@ void Treap<Key>::insert(const key_type &value) {
         return;
     }
     static std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
-    auto *my_node = new TreapNode<Key>(value, rng());
+    auto *my_node = new TreapNode(value, rng());
     if (_root == nullptr) {
         _root = my_node;
         return;
     }
-    std::pair<TreapNode<Key> *, TreapNode<Key> *> p = TreapNode<Key>::split(_root, value);
-    _root = TreapNode<Key>::merge(p.second, TreapNode<Key>::merge(p.first, my_node));
+    std::pair<TreapNode *, TreapNode *> p = TreapNode::split(_root, value);
+    _root = TreapNode::merge(p.second, TreapNode::merge(p.first, my_node));
 }
 
 template<typename Key>
 void Treap<Key>::remove(const key_type &value) {
-    std::pair<TreapNode<Key> *, TreapNode<Key> *> first_split_pair = TreapNode<Key>::split(_root, value);
-    std::pair<TreapNode<Key> *, TreapNode<Key> *> second_split_pair = TreapNode<Key>::split(first_split_pair.second,
-                                                                                            value + 1);
+    std::pair<TreapNode *, TreapNode *> first_split_pair = TreapNode::split(_root, value);
+    std::pair<TreapNode *, TreapNode *> second_split_pair = TreapNode::split(first_split_pair.second,
+                                                                             value + 1);
     if (second_split_pair.first == nullptr) {
         throw std::runtime_error("Element not found");
     }
@@ -447,7 +445,7 @@ void Treap<Key>::remove(const key_type &value) {
         _root = nullptr;
         return;
     }
-    _root = TreapNode<Key>::merge(first_split_pair.first, second_split_pair.second);
+    _root = TreapNode::merge(first_split_pair.first, second_split_pair.second);
 }
 
 template<typename Key>
@@ -456,13 +454,13 @@ bool Treap<Key>::contains(const key_type &value) const {
 }
 
 template<typename Key>
-TreapNode<Key> *Treap<Key>::nodeOfKey(const key_type &value) {
-    return const_cast<TreapNode<Key> *>(const_cast<const Treap<Key> *>(this)->nodeOfKey(value));
+typename Treap<Key>::TreapNode *Treap<Key>::nodeOfKey(const key_type &value) {
+    return const_cast<TreapNode *>(const_cast<const Treap<Key> *>(this)->nodeOfKey(value));
 }
 
 template<typename Key>
-const TreapNode<Key> *Treap<Key>::nodeOfKey(const key_type &value) const {
-    TreapNode<Key> *root = _root;
+const typename Treap<Key>::TreapNode *Treap<Key>::nodeOfKey(const key_type &value) const {
+    TreapNode *root = _root;
     while (root != nullptr && value != root->key) {
         if (value < root->key) {
             root = root->getLeft();
@@ -474,12 +472,12 @@ const TreapNode<Key> *Treap<Key>::nodeOfKey(const key_type &value) const {
 }
 
 template<typename Key>
-TreapNode<Key> *Treap<Key>::nodeOfOrder(size_t index) {
-    return const_cast<TreapNode<Key> *>(const_cast<const Treap<Key> *>(this)->nodeOfOrder(index));
+typename Treap<Key>::TreapNode *Treap<Key>::nodeOfOrder(size_t index) {
+    return const_cast<TreapNode *>(const_cast<const Treap<Key> *>(this)->nodeOfOrder(index));
 }
 
 template<typename Key>
-const TreapNode<Key> *Treap<Key>::nodeOfOrder(size_t index) const {
+const typename Treap<Key>::TreapNode *Treap<Key>::nodeOfOrder(size_t index) const {
     if (index == size()) {
         return nullptr;
     }
@@ -487,7 +485,7 @@ const TreapNode<Key> *Treap<Key>::nodeOfOrder(size_t index) const {
         throw std::out_of_range("Index out of bounds");
     }
     ++index;
-    TreapNode<Key> *root = _root;
+    TreapNode *root = _root;
     while (root != nullptr) {
         size_t left_count = root->leftSize();
         if (index == left_count + 1) {
@@ -504,7 +502,7 @@ const TreapNode<Key> *Treap<Key>::nodeOfOrder(size_t index) const {
 }
 
 template<typename Key>
-const typename TreapNode<Key>::key_type &Treap<Key>::keyOfOrder(size_t index) const {
+const typename Treap<Key>::key_type &Treap<Key>::keyOfOrder(size_t index) const {
     return nodeOfOrder(index)->key;
 }
 
@@ -514,7 +512,7 @@ size_t Treap<Key>::orderOfKey(const key_type &key) const {
 }
 
 template<typename Key>
-size_t Treap<Key>::orderOfKey(const key_type &key, const TreapNode<Key> *root) const {
+size_t Treap<Key>::orderOfKey(const key_type &key, const TreapNode *root) const {
     if (root == nullptr) {
         throw std::runtime_error("Element not found");
     }
@@ -528,7 +526,7 @@ size_t Treap<Key>::orderOfKey(const key_type &key, const TreapNode<Key> *root) c
 }
 
 template<typename Key>
-void Treap<Key>::deallocate(TreapNode<Key> *node) {
+void Treap<Key>::deallocate(TreapNode *node) {
     if (node == nullptr) {
         return;
     }
@@ -548,7 +546,7 @@ int Treap<Key>::maxDepth() const {
 }
 
 template<typename Key>
-int Treap<Key>::maxDepth(const TreapNode<Key> *node) const {
+int Treap<Key>::maxDepth(const TreapNode *node) const {
     if (node == nullptr) {
         return 0;
     }
