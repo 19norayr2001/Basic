@@ -43,13 +43,10 @@ private:
 
         size_t rightSize() const { return (_right != nullptr ? _right->_size : 0); }
 
+        unsigned int getPriority() const { return _priority; }
+
     public:
         TreapNode *copy() const;
-
-    public:
-        static TreapNode *merge(TreapNode *node1, TreapNode *node2);
-
-        static std::pair<TreapNode *, TreapNode *> split(TreapNode *node, const key_type &value);
 
     private:
         void update() { _size = leftSize() + rightSize() + 1; }
@@ -73,7 +70,7 @@ public:
     int maxDepth(const TreapNode *node) const;
 
 public:
-    Treap(const key_compare& comparator = key_compare());
+    Treap(const key_compare &comparator = key_compare());
 
     Treap(const Treap &other);
 
@@ -100,6 +97,11 @@ public:
     bool empty() const { return size() == 0; }
 
     size_t size() const { return _root != nullptr ? _root->size() : 0; }
+
+private:
+    TreapNode *merge(TreapNode *node1, TreapNode *node2);
+
+    std::pair<TreapNode *, TreapNode *> split(TreapNode *node, const key_type &key);
 
 private:
     void deallocate(TreapNode *node);
@@ -131,7 +133,7 @@ private:
     public:
         common_iterator<B> &operator++();
 
-        common_iterator<B> operator++(int);
+        common_iterator<B> operator++(int) &;
 
         common_iterator<B> &operator+=(ptrdiff_t);
 
@@ -210,7 +212,7 @@ typename Treap<Key, Compare>::template common_iterator<B> &Treap<Key, Compare>::
 
 template<typename Key, typename Compare>
 template<bool B>
-typename Treap<Key, Compare>::template common_iterator<B> Treap<Key, Compare>::common_iterator<B>::operator++(int) {
+typename Treap<Key, Compare>::template common_iterator<B> Treap<Key, Compare>::common_iterator<B>::operator++(int) & {
     common_iterator iter = *this;
     ++(*this);
     return iter;
@@ -350,17 +352,17 @@ typename Treap<Key, Compare>::TreapNode *Treap<Key, Compare>::TreapNode::copy() 
 
 
 template<typename Key, typename Compare>
-typename Treap<Key, Compare>::TreapNode *Treap<Key, Compare>::TreapNode::merge(TreapNode *node1, TreapNode *node2) {
+typename Treap<Key, Compare>::TreapNode *Treap<Key, Compare>::merge(TreapNode *node1, TreapNode *node2) {
     if (node1 == nullptr) {
         return node2;
     }
     if (node2 == nullptr) {
         return node1;
     }
-    if (node1->key > node2->key) {
+    if (_comparator(node2->key, node1->key)) {
         std::swap(node1, node2);
     }
-    if (node1->_priority > node2->_priority) {
+    if (node1->getPriority() > node2->getPriority()) {
         node1->setRight(merge(node1->getRight(), node2));
         return node1;
     }
@@ -370,22 +372,22 @@ typename Treap<Key, Compare>::TreapNode *Treap<Key, Compare>::TreapNode::merge(T
 
 template<typename Key, typename Compare>
 std::pair<typename Treap<Key, Compare>::TreapNode *, typename Treap<Key, Compare>::TreapNode *>
-Treap<Key, Compare>::TreapNode::split(TreapNode *node, const key_type &value) {
+Treap<Key, Compare>::split(TreapNode *node, const key_type &key) {
     if (node == nullptr) {
         return std::make_pair(nullptr, nullptr);
     }
-    if (node->key < value) {
-        std::pair<TreapNode *, TreapNode *> pair_right = TreapNode::split(node->getRight(), value);
+    if (_comparator(node->key, key)) {
+        std::pair<TreapNode *, TreapNode *> pair_right = split(node->getRight(), key);
         node->setRight(pair_right.first);
         return {node, pair_right.second};
     }
-    std::pair<TreapNode *, TreapNode *> pair_left = TreapNode::split(node->getLeft(), value);
+    std::pair<TreapNode *, TreapNode *> pair_left = split(node->getLeft(), key);
     node->setLeft(pair_left.second);
     return {pair_left.first, node};
 }
 
 template<typename Key, typename Compare>
-Treap<Key, Compare>::Treap(const key_compare& comparator)
+Treap<Key, Compare>::Treap(const key_compare &comparator)
         : _root(nullptr), _comparator(comparator) {}
 
 template<typename Key, typename Compare>
@@ -422,6 +424,7 @@ Treap<Key, Compare>::~Treap() {
 template<typename Key, typename Compare>
 void Treap<Key, Compare>::swap(Treap<Key, Compare> &other) noexcept {
     std::swap(_root, other._root);
+    std::swap(_comparator, other._comparator);
 }
 
 template<typename Key, typename Compare>
@@ -435,15 +438,15 @@ void Treap<Key, Compare>::insert(const key_type &value) {
         _root = my_node;
         return;
     }
-    std::pair<TreapNode *, TreapNode *> p = TreapNode::split(_root, value);
-    _root = TreapNode::merge(p.second, TreapNode::merge(p.first, my_node));
+    std::pair<TreapNode *, TreapNode *> p = split(_root, value);
+    _root = merge(p.second, merge(p.first, my_node));
 }
 
 template<typename Key, typename Compare>
 void Treap<Key, Compare>::remove(const key_type &value) {
-    std::pair<TreapNode *, TreapNode *> first_split_pair = TreapNode::split(_root, value);
-    std::pair<TreapNode *, TreapNode *> second_split_pair = TreapNode::split(first_split_pair.second,
-                                                                             value + 1);
+    std::pair<TreapNode *, TreapNode *> first_split_pair = split(_root, value);
+    std::pair<TreapNode *, TreapNode *> second_split_pair = split(first_split_pair.second,
+                                                                  value + 1);
     if (second_split_pair.first == nullptr) {
         throw std::runtime_error("Element not found");
     }
@@ -452,7 +455,7 @@ void Treap<Key, Compare>::remove(const key_type &value) {
         _root = nullptr;
         return;
     }
-    _root = TreapNode::merge(first_split_pair.first, second_split_pair.second);
+    _root = merge(first_split_pair.first, second_split_pair.second);
 }
 
 template<typename Key, typename Compare>
@@ -469,7 +472,7 @@ template<typename Key, typename Compare>
 const typename Treap<Key, Compare>::TreapNode *Treap<Key, Compare>::nodeOfKey(const key_type &value) const {
     TreapNode *root = _root;
     while (root != nullptr && value != root->key) {
-        if (value < root->key) {
+        if (_comparator(value, root->key)) {
             root = root->getLeft();
             continue;
         }
@@ -523,13 +526,13 @@ size_t Treap<Key, Compare>::orderOfKey(const key_type &key, const TreapNode *roo
     if (root == nullptr) {
         throw std::runtime_error("Element not found");
     }
-    if (key == root->key) {
-        return 1 + root->leftSize();
-    }
-    if (key < root->key) {
+    if (_comparator(key, root->key)) {
         return orderOfKey(key, root->getLeft());
     }
-    return 1 + root->leftSize() + orderOfKey(key, root->getRight());
+    if (_comparator(root->key, key)) {
+        return 1 + root->leftSize() + orderOfKey(key, root->getRight());
+    }
+    return 1 + root->leftSize();
 }
 
 template<typename Key, typename Compare>
