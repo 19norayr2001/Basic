@@ -36,6 +36,11 @@ if(TEST_SMART_POINTERS)
     list(APPEND TESTS_SOURCES smart_pointers_test.cpp)
 endif()
 
+# if need to test, then add the trees test sources
+if(TEST_TREES)
+    list(APPEND TESTS_SOURCES trees_test.cpp)
+endif()
+
 add_executable(Basics ${TESTS_SOURCES})
 
 gtest_add_tests(
