@@ -5,6 +5,8 @@
 #include <iostream>
 #include <type_traits>
 
+#include <reverse_iterator.h>
+
 template<typename T, typename Alloc = std::allocator<T>>
 class Vector {
 public:
@@ -19,11 +21,11 @@ private:
     template<bool B>
     class common_iterator {
     public:
-        typedef std::conditional_t<B, const value_type, value_type> type;
+        using value_type = std::conditional_t<B, const Vector::value_type, Vector::value_type>;
     private:
-        type *m_ptr;
+        value_type *m_ptr;
     public:
-        common_iterator(type *);
+        common_iterator(value_type *);
 
     public:
         common_iterator<B> &operator++();
@@ -42,9 +44,9 @@ private:
         ptrdiff_t operator-(const common_iterator<B> &) const;
 
     public:
-        type &operator*();
+        value_type &operator*();
 
-        type *operator->();
+        value_type *operator->();
 
     public:
         bool operator==(const common_iterator<B> &) const;
@@ -63,56 +65,6 @@ private:
         common_iterator<B> operator+(ptrdiff_t);
 
         common_iterator<B> operator-(ptrdiff_t);
-    };
-
-private:
-    template<typename It>
-    class common_reverse_iterator {
-    public:
-        typedef typename It::type type;
-    private:
-        It m_iterator;
-    public:
-        common_reverse_iterator(const It &);
-
-    public:
-        common_reverse_iterator<It> &operator++();
-
-        common_reverse_iterator<It> operator++(int);
-
-        common_reverse_iterator<It> &operator+=(ptrdiff_t);
-
-        common_reverse_iterator<It> &operator--();
-
-        common_reverse_iterator<It> operator--(int);
-
-        common_reverse_iterator<It> &operator-=(ptrdiff_t);
-
-    public:
-        ptrdiff_t operator-(const common_reverse_iterator<It> &) const;
-
-    public:
-        type &operator*();
-
-        type *operator->();
-
-    public:
-        bool operator==(const common_reverse_iterator<It> &) const;
-
-        bool operator!=(const common_reverse_iterator<It> &) const;
-
-        bool operator<(const common_reverse_iterator<It> &) const;
-
-        bool operator>(const common_reverse_iterator<It> &) const;
-
-        bool operator<=(const common_reverse_iterator<It> &) const;
-
-        bool operator>=(const common_reverse_iterator<It> &) const;
-
-    public:
-        common_reverse_iterator<It> operator+(ptrdiff_t);
-
-        common_reverse_iterator<It> operator-(ptrdiff_t);
     };
 
 public:
@@ -204,7 +156,7 @@ std::ostream &operator<<(std::ostream &, const Vector<T, Alloc> &);
 
 template<typename T, typename Alloc>
 template<bool B>
-Vector<T, Alloc>::common_iterator<B>::common_iterator(type *ptr)
+Vector<T, Alloc>::common_iterator<B>::common_iterator(value_type *ptr)
         :m_ptr(ptr) {}
 
 template<typename T, typename Alloc>
@@ -259,13 +211,13 @@ ptrdiff_t Vector<T, Alloc>::common_iterator<B>::operator-(const common_iterator<
 
 template<typename T, typename Alloc>
 template<bool B>
-auto Vector<T, Alloc>::common_iterator<B>::operator*() -> type & {
+auto Vector<T, Alloc>::common_iterator<B>::operator*() -> value_type & {
     return *m_ptr;
 }
 
 template<typename T, typename Alloc>
 template<bool B>
-auto Vector<T, Alloc>::common_iterator<B>::operator->() -> type * {
+auto Vector<T, Alloc>::common_iterator<B>::operator->() -> value_type * {
     return m_ptr;
 }
 
@@ -316,134 +268,6 @@ template<typename T, typename Alloc>
 template<bool B>
 typename Vector<T, Alloc>::template common_iterator<B> Vector<T, Alloc>::common_iterator<B>::operator-(ptrdiff_t n) {
     common_iterator<B> iter = *this;
-    return iter -= n;
-}
-
-//======================common_reverse_iterator implementation==========================================
-
-
-template<typename T, typename Alloc>
-template<typename It>
-Vector<T, Alloc>::common_reverse_iterator<It>::common_reverse_iterator(const It &iter)
-        :m_iterator(iter) {}
-
-template<typename T, typename Alloc>
-template<typename It>
-typename Vector<T, Alloc>::template common_reverse_iterator<It> &
-Vector<T, Alloc>::common_reverse_iterator<It>::operator++() {
-    --m_iterator;
-    return *this;
-}
-
-template<typename T, typename Alloc>
-template<typename It>
-typename Vector<T, Alloc>::template common_reverse_iterator<It>
-Vector<T, Alloc>::common_reverse_iterator<It>::operator++(int) {
-    common_reverse_iterator<It> iter = *this;
-    --m_iterator;
-    return iter;
-}
-
-template<typename T, typename Alloc>
-template<typename It>
-typename Vector<T, Alloc>::template common_reverse_iterator<It> &
-Vector<T, Alloc>::common_reverse_iterator<It>::operator+=(ptrdiff_t n) {
-    m_iterator -= n;
-    return *this;
-}
-
-template<typename T, typename Alloc>
-template<typename It>
-typename Vector<T, Alloc>::template common_reverse_iterator<It> &
-Vector<T, Alloc>::common_reverse_iterator<It>::operator--() {
-    ++m_iterator;
-    return *this;
-}
-
-template<typename T, typename Alloc>
-template<typename It>
-typename Vector<T, Alloc>::template common_reverse_iterator<It>
-Vector<T, Alloc>::common_reverse_iterator<It>::operator--(int) {
-    common_reverse_iterator iter = *this;
-    ++m_iterator;
-    return iter;
-}
-
-template<typename T, typename Alloc>
-template<typename It>
-typename Vector<T, Alloc>::template common_reverse_iterator<It> &
-Vector<T, Alloc>::common_reverse_iterator<It>::operator-=(ptrdiff_t n) {
-    m_iterator += n;
-    return *this;
-}
-
-template<typename T, typename Alloc>
-template<typename It>
-ptrdiff_t Vector<T, Alloc>::common_reverse_iterator<It>::operator-(const common_reverse_iterator<It> &iter) const {
-    return iter.m_iterator - m_iterator;
-}
-
-template<typename T, typename Alloc>
-template<typename It>
-auto Vector<T, Alloc>::common_reverse_iterator<It>::operator*() -> type & {
-    return *m_iterator;
-}
-
-template<typename T, typename Alloc>
-template<typename It>
-auto Vector<T, Alloc>::common_reverse_iterator<It>::operator->() -> type * {
-    return std::addressof(*m_iterator);
-}
-
-template<typename T, typename Alloc>
-template<typename It>
-bool Vector<T, Alloc>::common_reverse_iterator<It>::operator==(const common_reverse_iterator<It> &iter) const {
-    return m_iterator == iter.m_iterator;
-}
-
-template<typename T, typename Alloc>
-template<typename It>
-bool Vector<T, Alloc>::common_reverse_iterator<It>::operator!=(const common_reverse_iterator<It> &iter) const {
-    return m_iterator != iter.m_iterator;
-}
-
-template<typename T, typename Alloc>
-template<typename It>
-bool Vector<T, Alloc>::common_reverse_iterator<It>::operator<(const common_reverse_iterator<It> &iter) const {
-    return iter.m_iterator < m_iterator;
-}
-
-template<typename T, typename Alloc>
-template<typename It>
-bool Vector<T, Alloc>::common_reverse_iterator<It>::operator>(const common_reverse_iterator<It> &iter) const {
-    return iter.m_iterator > m_iterator;
-}
-
-template<typename T, typename Alloc>
-template<typename It>
-bool Vector<T, Alloc>::common_reverse_iterator<It>::operator<=(const common_reverse_iterator<It> &iter) const {
-    return iter.m_iterator <= m_iterator;
-}
-
-template<typename T, typename Alloc>
-template<typename It>
-bool Vector<T, Alloc>::common_reverse_iterator<It>::operator>=(const common_reverse_iterator<It> &iter) const {
-    return iter.m_iterator >= m_iterator;
-}
-
-template<typename T, typename Alloc>
-template<typename It>
-typename Vector<T, Alloc>::template common_reverse_iterator<It>
-Vector<T, Alloc>::common_reverse_iterator<It>::operator+(ptrdiff_t n) {
-    typename Vector<T, Alloc>::template common_reverse_iterator<It> iter = *this;
-    return iter += n;
-}
-
-template<typename T, typename Alloc>
-template<typename It>
-typename Vector<T, Alloc>::template common_reverse_iterator<It>
-Vector<T, Alloc>::common_reverse_iterator<It>::operator-(ptrdiff_t n) {
-    typename Vector<T, Alloc>::template common_reverse_iterator<It> iter = *this;
     return iter -= n;
 }
 
@@ -590,12 +414,12 @@ typename Vector<T, Alloc>::iterator Vector<T, Alloc>::end() {
 
 template<typename T, typename Alloc>
 typename Vector<T, Alloc>::const_iterator Vector<T, Alloc>::cbegin() const {
-    return const_iterator(m_array);
+    return begin();
 }
 
 template<typename T, typename Alloc>
 typename Vector<T, Alloc>::const_iterator Vector<T, Alloc>::cend() const {
-    return const_iterator(m_array + m_size);
+    return end();
 }
 
 template<typename T, typename Alloc>
@@ -610,32 +434,32 @@ typename Vector<T, Alloc>::const_iterator Vector<T, Alloc>::end() const {
 
 template<typename T, typename Alloc>
 typename Vector<T, Alloc>::reverse_iterator Vector<T, Alloc>::rbegin() {
-    return reverse_iterator(m_array + m_size - 1);
+    return {end()};
 }
 
 template<typename T, typename Alloc>
 typename Vector<T, Alloc>::reverse_iterator Vector<T, Alloc>::rend() {
-    return reverse_iterator(m_array - 1);
+    return {begin()};
 }
 
 template<typename T, typename Alloc>
 typename Vector<T, Alloc>::const_reverse_iterator Vector<T, Alloc>::crbegin() const {
-    return const_reverse_iterator(m_array + m_size - 1);
+    return rbegin();
 }
 
 template<typename T, typename Alloc>
 typename Vector<T, Alloc>::const_reverse_iterator Vector<T, Alloc>::crend() const {
-    return const_reverse_iterator(m_array - 1);
+    return rend();
 }
 
 template<typename T, typename Alloc>
 typename Vector<T, Alloc>::const_reverse_iterator Vector<T, Alloc>::rbegin() const {
-    return const_reverse_iterator(m_array + m_size - 1);
+    return {end()};
 }
 
 template<typename T, typename Alloc>
 typename Vector<T, Alloc>::const_reverse_iterator Vector<T, Alloc>::rend() const {
-    return const_reverse_iterator(m_array - 1);
+    return {begin()};
 }
 
 template<typename T, typename Alloc>
