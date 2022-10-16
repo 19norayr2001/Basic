@@ -1,6 +1,6 @@
 # C++ Basics
 
-`Basics` is a cross platform C++ library based on `CMake`, where are implemented STL data structures, algorithms, etc. Library has tests for each unit implemented using `gtest`
+`Basics` is a cross platform C++ library based on `CMake`, where are implemented STL data structures, algorithms, etc. Library has unit tests for each module implemented using `gtest`
 
 ## Linear lists
 
