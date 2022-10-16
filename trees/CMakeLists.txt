@@ -9,5 +9,7 @@ add_library(Trees
 		red_black_tree.cpp
 		tree.h
 		tree.cpp
+		treap.h
+		treap.cpp
         binary_search_tree.h
         binary_search_tree.cpp)
