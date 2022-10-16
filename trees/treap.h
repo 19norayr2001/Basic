@@ -6,13 +6,14 @@
 #include <random>
 #include "../iterators/reverse_iterator.h"
 
-template<typename T>
+template<typename Key>
 class TreapNode {
 public:
-    using value_type = T;
+    using key_type = Key;
 
 public:
-    explicit TreapNode(const value_type& key, unsigned int priority = 0, TreapNode *left = nullptr, TreapNode *right = nullptr)
+    explicit TreapNode(const key_type &key, unsigned int priority = 0, TreapNode *left = nullptr,
+                       TreapNode *right = nullptr)
             : key(key), _priority(priority), _left(left), _right(right), _size(1) { update(); }
 
 public:
@@ -44,15 +45,15 @@ public:
     TreapNode *copy() const;
 
 public:
-    static TreapNode *merge(TreapNode* node1, TreapNode* node2);
+    static TreapNode *merge(TreapNode *node1, TreapNode *node2);
 
-    static std::pair<TreapNode *, TreapNode *> split(TreapNode* node, const value_type& value);
+    static std::pair<TreapNode *, TreapNode *> split(TreapNode *node, const key_type &value);
 
 private:
     void update() { _size = leftSize() + rightSize() + 1; }
 
 public:
-    value_type key;
+    key_type key;
 private:
     unsigned int _priority;
     TreapNode *_left;
@@ -60,15 +61,17 @@ private:
     size_t _size;
 };
 
-template<typename T>
+template<typename Key>
 class Treap {
 public:
     int maxDepth() const;
-    int maxDepth(const TreapNode<T>* node) const;
+
+    int maxDepth(const TreapNode<Key> *node) const;
+
 private:
-    TreapNode<T>* _root;
+    TreapNode<Key> *_root;
 public:
-    using value_type = T;
+    using key_type = Key;
 public:
     Treap();
 
@@ -84,46 +87,46 @@ public:
 
     void swap(Treap &other) noexcept;
 
-    void insert(const value_type& value);
+    void insert(const key_type &value);
 
-    void remove(const value_type& value);
+    void remove(const key_type &value);
 
-    bool contains(const value_type& value) const;
+    bool contains(const key_type &value) const;
 
-    const typename TreapNode<T>::value_type& keyOfOrder(size_t index) const;
+    const typename TreapNode<Key>::key_type &keyOfOrder(size_t index) const;
 
-    size_t orderOfKey(const value_type& index) const;
+    size_t orderOfKey(const key_type &index) const;
 
     bool empty() const { return size() == 0; }
 
     size_t size() const { return _root != nullptr ? _root->size() : 0; }
 
 private:
-    void deallocate(TreapNode<T>* node);
+    void deallocate(TreapNode<Key> *node);
 
 private:
-    TreapNode<T>* nodeOfKey(const value_type& value);
+    TreapNode<Key> *nodeOfKey(const key_type &value);
 
-    const TreapNode<T>* nodeOfKey(const value_type& value) const;
+    const TreapNode<Key> *nodeOfKey(const key_type &value) const;
 
-    TreapNode<T>* nodeOfOrder(size_t index);
+    TreapNode<Key> *nodeOfOrder(size_t index);
 
-    const TreapNode<T>* nodeOfOrder(size_t index) const;
+    const TreapNode<Key> *nodeOfOrder(size_t index) const;
 
-    size_t orderOfKey(const value_type& value, const TreapNode<T>* node) const;
+    size_t orderOfKey(const key_type &value, const TreapNode<Key> *node) const;
 
 private:
     template<bool B>
     class common_iterator {
     public:
-        using value_type = std::conditional_t<B, const Treap::value_type, Treap::value_type>;
+        using value_type = std::conditional_t<B, const Treap::key_type, Treap::key_type>;
         using treap_type = std::conditional_t<B, const Treap, Treap>;
     private:
-        value_type* _value;
-        treap_type& _treap;
+        value_type *_value;
+        treap_type &_treap;
         size_t _index;
     public:
-        common_iterator(value_type* value, treap_type& treap, size_t index);
+        common_iterator(value_type *value, treap_type &treap, size_t index);
 
     public:
         common_iterator<B> &operator++();
@@ -165,9 +168,6 @@ private:
         common_iterator<B> operator-(ptrdiff_t);
     };
 
-private:
-
-
 public:
     using iterator = common_iterator<true>;
     using const_iterator = common_iterator<true>;
@@ -175,158 +175,165 @@ public:
     using const_reverse_iterator = common_reverse_iterator<const_iterator>;
 public:
     iterator begin() const;
+
     iterator end() const;
+
     reverse_iterator rbegin() const;
+
     reverse_iterator rend() const;
+
     const_iterator cbegin() const;
+
     const_iterator cend() const;
+
     const_reverse_iterator crbegin() const;
+
     const_reverse_iterator crend() const;
 };
 
 //======================common_iterator implementation==========================================
 
 
-template<typename T>
+template<typename Key>
 template<bool B>
-Treap<T>::common_iterator<B>::common_iterator(value_type* value, treap_type& treap, size_t index)
+Treap<Key>::common_iterator<B>::common_iterator(value_type *value, treap_type &treap, size_t index)
         :_value(value), _treap(treap), _index(index) {}
 
-template<typename T>
+template<typename Key>
 template<bool B>
-typename Treap<T>::template common_iterator<B>& Treap<T>::common_iterator<B>::operator++() {
-    auto* node = _treap.nodeOfOrder(++_index);
+typename Treap<Key>::template common_iterator<B> &Treap<Key>::common_iterator<B>::operator++() {
+    auto *node = _treap.nodeOfOrder(++_index);
     _value = (node == nullptr ? nullptr : &node->key);
     return *this;
 }
 
 
-template<typename T>
+template<typename Key>
 template<bool B>
-typename Treap<T>::template common_iterator<B> Treap<T>::common_iterator<B>::operator++(int) {
+typename Treap<Key>::template common_iterator<B> Treap<Key>::common_iterator<B>::operator++(int) {
     common_iterator iter = *this;
     ++(*this);
     return iter;
 }
 
 
-template<typename T>
+template<typename Key>
 template<bool B>
-typename Treap<T>::template common_iterator<B> &Treap<T>::common_iterator<B>::operator+=(ptrdiff_t n) {
-    auto* node = _treap.nodeOfOrder(_index += n);
+typename Treap<Key>::template common_iterator<B> &Treap<Key>::common_iterator<B>::operator+=(ptrdiff_t n) {
+    auto *node = _treap.nodeOfOrder(_index += n);
     _value = (node == nullptr ? nullptr : &node->key);
     return *this;
 }
 
 
-template<typename T>
+template<typename Key>
 template<bool B>
-typename Treap<T>::template common_iterator<B> &Treap<T>::common_iterator<B>::operator--() {
-    auto* node = _treap.nodeOfOrder(--_index);
+typename Treap<Key>::template common_iterator<B> &Treap<Key>::common_iterator<B>::operator--() {
+    auto *node = _treap.nodeOfOrder(--_index);
     _value = (node == nullptr ? nullptr : &node->key);
     return *this;
 }
 
 
-template<typename T>
+template<typename Key>
 template<bool B>
-typename Treap<T>::template common_iterator<B> Treap<T>::common_iterator<B>::operator--(int) {
+typename Treap<Key>::template common_iterator<B> Treap<Key>::common_iterator<B>::operator--(int) {
     common_iterator iter = *this;
     --(*this);
     return iter;
 }
 
 
-template<typename T>
+template<typename Key>
 template<bool B>
-typename Treap<T>::template common_iterator<B> &Treap<T>::common_iterator<B>::operator-=(ptrdiff_t n) {
-    auto* node = _treap.nodeOfOrder(_index -= n);
+typename Treap<Key>::template common_iterator<B> &Treap<Key>::common_iterator<B>::operator-=(ptrdiff_t n) {
+    auto *node = _treap.nodeOfOrder(_index -= n);
     _value = (node == nullptr ? nullptr : &node->key);
     return *this;
 }
 
 
-template<typename T>
+template<typename Key>
 template<bool B>
-ptrdiff_t Treap<T>::common_iterator<B>::operator-(const common_iterator<B> &iter) const {
+ptrdiff_t Treap<Key>::common_iterator<B>::operator-(const common_iterator<B> &iter) const {
     return static_cast<ptrdiff_t>(_index) - iter._index;
 }
 
 
-template<typename T>
+template<typename Key>
 template<bool B>
-auto Treap<T>::common_iterator<B>::operator*() -> value_type& {
+auto Treap<Key>::common_iterator<B>::operator*() -> value_type & {
     return *_value;
 }
 
 
-template<typename T>
+template<typename Key>
 template<bool B>
-auto Treap<T>::common_iterator<B>::operator->() -> value_type* {
+auto Treap<Key>::common_iterator<B>::operator->() -> value_type * {
     return _value;
 }
 
 
-template<typename T>
+template<typename Key>
 template<bool B>
-bool Treap<T>::common_iterator<B>::operator==(const common_iterator<B> &iter) const {
+bool Treap<Key>::common_iterator<B>::operator==(const common_iterator<B> &iter) const {
     return _value == iter._value;
 }
 
 
-template<typename T>
+template<typename Key>
 template<bool B>
-bool Treap<T>::common_iterator<B>::operator!=(const common_iterator<B> &iter) const {
+bool Treap<Key>::common_iterator<B>::operator!=(const common_iterator<B> &iter) const {
     return _value != iter._value;
 }
 
 
-template<typename T>
+template<typename Key>
 template<bool B>
-bool Treap<T>::common_iterator<B>::operator<(const common_iterator<B> &iter) const {
+bool Treap<Key>::common_iterator<B>::operator<(const common_iterator<B> &iter) const {
     return _index < iter._index;
 }
 
 
-template<typename T>
+template<typename Key>
 template<bool B>
-bool Treap<T>::common_iterator<B>::operator>(const common_iterator<B> &iter) const {
+bool Treap<Key>::common_iterator<B>::operator>(const common_iterator<B> &iter) const {
     return _index > iter._index;
 }
 
 
-template<typename T>
+template<typename Key>
 template<bool B>
-bool Treap<T>::common_iterator<B>::operator<=(const common_iterator<B> &iter) const {
+bool Treap<Key>::common_iterator<B>::operator<=(const common_iterator<B> &iter) const {
     return _index <= iter._index;
 }
 
 
-template<typename T>
+template<typename Key>
 template<bool B>
-bool Treap<T>::common_iterator<B>::operator>=(const common_iterator<B> &iter) const {
+bool Treap<Key>::common_iterator<B>::operator>=(const common_iterator<B> &iter) const {
     return _index >= iter._index;
 }
 
 
-template<typename T>
+template<typename Key>
 template<bool B>
-typename Treap<T>::template common_iterator<B> Treap<T>::common_iterator<B>::operator+(ptrdiff_t n) {
+typename Treap<Key>::template common_iterator<B> Treap<Key>::common_iterator<B>::operator+(ptrdiff_t n) {
     common_iterator<B> iter = *this;
     return iter += n;
 }
 
 
-template<typename T>
+template<typename Key>
 template<bool B>
-typename Treap<T>::template common_iterator<B> Treap<T>::common_iterator<B>::operator-(ptrdiff_t n) {
+typename Treap<Key>::template common_iterator<B> Treap<Key>::common_iterator<B>::operator-(ptrdiff_t n) {
     common_iterator<B> iter = *this;
     return iter -= n;
 }
 
 
-template<typename T>
-TreapNode<T> *TreapNode<T>::copy() const {
+template<typename Key>
+TreapNode<Key> *TreapNode<Key>::copy() const {
     auto *root = new TreapNode(key, _priority);
     if (_left != nullptr) {
         root->setLeft(_left->copy());
@@ -338,8 +345,8 @@ TreapNode<T> *TreapNode<T>::copy() const {
 }
 
 
-template<typename T>
-TreapNode<T> *TreapNode<T>::merge(TreapNode<T> *node1, TreapNode<T> *node2) {
+template<typename Key>
+TreapNode<Key> *TreapNode<Key>::merge(TreapNode<Key> *node1, TreapNode<Key> *node2) {
     if (node1 == nullptr) {
         return node2;
     }
@@ -357,8 +364,8 @@ TreapNode<T> *TreapNode<T>::merge(TreapNode<T> *node1, TreapNode<T> *node2) {
     return node2;
 }
 
-template<typename T>
-std::pair<TreapNode<T> *, TreapNode<T> *> TreapNode<T>::split(TreapNode<T> *node, const value_type &value) {
+template<typename Key>
+std::pair<TreapNode<Key> *, TreapNode<Key> *> TreapNode<Key>::split(TreapNode<Key> *node, const key_type &value) {
     if (node == nullptr) {
         return std::make_pair(nullptr, nullptr);
     }
@@ -372,65 +379,66 @@ std::pair<TreapNode<T> *, TreapNode<T> *> TreapNode<T>::split(TreapNode<T> *node
     return {pair_left.first, node};
 }
 
-template<typename T>
-Treap<T>::Treap()
+template<typename Key>
+Treap<Key>::Treap()
         : _root(nullptr) {}
 
-template<typename T>
-Treap<T>::Treap(const Treap<T> &other)
+template<typename Key>
+Treap<Key>::Treap(const Treap<Key> &other)
         : _root(other._root->copy()) {}
 
-template<typename T>
-Treap<T>::Treap(Treap<T> &&other) noexcept
+template<typename Key>
+Treap<Key>::Treap(Treap<Key> &&other) noexcept
         : _root(std::exchange(other._root, nullptr)) {}
 
-template<typename T>
-Treap<T> &Treap<T>::operator=(const Treap<T> &other) {
+template<typename Key>
+Treap<Key> &Treap<Key>::operator=(const Treap<Key> &other) {
     if (this != &other) {
-        Treap<T> copied(other);
+        Treap<Key> copied(other);
         swap(copied);
     }
     return *this;
 }
 
-template<typename T>
-Treap<T> &Treap<T>::operator=(Treap<T> &&other) noexcept {
+template<typename Key>
+Treap<Key> &Treap<Key>::operator=(Treap<Key> &&other) noexcept {
     if (this != &other) {
-        Treap<T> moved(std::move(other));
+        Treap<Key> moved(std::move(other));
         swap(moved);
     }
     return *this;
 }
 
-template<typename T>
-Treap<T>::~Treap() {
+template<typename Key>
+Treap<Key>::~Treap() {
     deallocate(_root);
 }
 
-template<typename T>
-void Treap<T>::swap(Treap<T> &other) noexcept {
+template<typename Key>
+void Treap<Key>::swap(Treap<Key> &other) noexcept {
     std::swap(_root, other._root);
 }
 
-template<typename T>
-void Treap<T>::insert(const value_type &value) {
+template<typename Key>
+void Treap<Key>::insert(const key_type &value) {
     if (contains(value)) {
         return;
     }
     static std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
-    auto *my_node = new TreapNode<T>(value, rng());
+    auto *my_node = new TreapNode<Key>(value, rng());
     if (_root == nullptr) {
         _root = my_node;
         return;
     }
-    std::pair<TreapNode<T> *, TreapNode<T> *> p = TreapNode<T>::split(_root, value);
-    _root = TreapNode<T>::merge(p.second, TreapNode<T>::merge(p.first, my_node));
+    std::pair<TreapNode<Key> *, TreapNode<Key> *> p = TreapNode<Key>::split(_root, value);
+    _root = TreapNode<Key>::merge(p.second, TreapNode<Key>::merge(p.first, my_node));
 }
 
-template<typename T>
-void Treap<T>::remove(const value_type &value) {
-    std::pair<TreapNode<T> *, TreapNode<T> *> first_split_pair = TreapNode<T>::split(_root, value);
-    std::pair<TreapNode<T> *, TreapNode<T> *> second_split_pair = TreapNode<T>::split(first_split_pair.second, value + 1);
+template<typename Key>
+void Treap<Key>::remove(const key_type &value) {
+    std::pair<TreapNode<Key> *, TreapNode<Key> *> first_split_pair = TreapNode<Key>::split(_root, value);
+    std::pair<TreapNode<Key> *, TreapNode<Key> *> second_split_pair = TreapNode<Key>::split(first_split_pair.second,
+                                                                                            value + 1);
     if (second_split_pair.first == nullptr) {
         throw std::runtime_error("Element not found");
     }
@@ -439,22 +447,22 @@ void Treap<T>::remove(const value_type &value) {
         _root = nullptr;
         return;
     }
-    _root = TreapNode<T>::merge(first_split_pair.first, second_split_pair.second);
+    _root = TreapNode<Key>::merge(first_split_pair.first, second_split_pair.second);
 }
 
-template<typename T>
-bool Treap<T>::contains(const value_type &value) const {
+template<typename Key>
+bool Treap<Key>::contains(const key_type &value) const {
     return nodeOfKey(value) != nullptr;
 }
 
-template<typename T>
-TreapNode<T> *Treap<T>::nodeOfKey(const value_type &value) {
-    return const_cast<TreapNode<T> *>(const_cast<const Treap<T> *>(this)->nodeOfKey(value));
+template<typename Key>
+TreapNode<Key> *Treap<Key>::nodeOfKey(const key_type &value) {
+    return const_cast<TreapNode<Key> *>(const_cast<const Treap<Key> *>(this)->nodeOfKey(value));
 }
 
-template<typename T>
-const TreapNode<T> *Treap<T>::nodeOfKey(const value_type &value) const {
-    TreapNode<T> *root = _root;
+template<typename Key>
+const TreapNode<Key> *Treap<Key>::nodeOfKey(const key_type &value) const {
+    TreapNode<Key> *root = _root;
     while (root != nullptr && value != root->key) {
         if (value < root->key) {
             root = root->getLeft();
@@ -465,13 +473,13 @@ const TreapNode<T> *Treap<T>::nodeOfKey(const value_type &value) const {
     return root;
 }
 
-template<typename T>
-TreapNode<T> *Treap<T>::nodeOfOrder(size_t index) {
-    return const_cast<TreapNode<T> *>(const_cast<const Treap<T> *>(this)->nodeOfOrder(index));
+template<typename Key>
+TreapNode<Key> *Treap<Key>::nodeOfOrder(size_t index) {
+    return const_cast<TreapNode<Key> *>(const_cast<const Treap<Key> *>(this)->nodeOfOrder(index));
 }
 
-template<typename T>
-const TreapNode<T> *Treap<T>::nodeOfOrder(size_t index) const {
+template<typename Key>
+const TreapNode<Key> *Treap<Key>::nodeOfOrder(size_t index) const {
     if (index == size()) {
         return nullptr;
     }
@@ -479,7 +487,7 @@ const TreapNode<T> *Treap<T>::nodeOfOrder(size_t index) const {
         throw std::out_of_range("Index out of bounds");
     }
     ++index;
-    TreapNode<T> *root = _root;
+    TreapNode<Key> *root = _root;
     while (root != nullptr) {
         size_t left_count = root->leftSize();
         if (index == left_count + 1) {
@@ -495,18 +503,18 @@ const TreapNode<T> *Treap<T>::nodeOfOrder(size_t index) const {
     throw std::runtime_error("Unreachable code");
 }
 
-template<typename T>
-const typename TreapNode<T>::value_type &Treap<T>::keyOfOrder(size_t index) const {
+template<typename Key>
+const typename TreapNode<Key>::key_type &Treap<Key>::keyOfOrder(size_t index) const {
     return nodeOfOrder(index)->key;
 }
 
-template<typename T>
-size_t Treap<T>::orderOfKey(const value_type &key) const {
+template<typename Key>
+size_t Treap<Key>::orderOfKey(const key_type &key) const {
     return orderOfKey(key, _root) - 1;
 }
 
-template<typename T>
-size_t Treap<T>::orderOfKey(const value_type &key, const TreapNode<T> *root) const {
+template<typename Key>
+size_t Treap<Key>::orderOfKey(const key_type &key, const TreapNode<Key> *root) const {
     if (root == nullptr) {
         throw std::runtime_error("Element not found");
     }
@@ -519,8 +527,8 @@ size_t Treap<T>::orderOfKey(const value_type &key, const TreapNode<T> *root) con
     return 1 + root->leftSize() + orderOfKey(key, root->getRight());
 }
 
-template<typename T>
-void Treap<T>::deallocate(TreapNode<T> *node) {
+template<typename Key>
+void Treap<Key>::deallocate(TreapNode<Key> *node) {
     if (node == nullptr) {
         return;
     }
@@ -534,41 +542,41 @@ void Treap<T>::deallocate(TreapNode<T> *node) {
 }
 
 
-template<typename T>
-int Treap<T>::maxDepth() const {
+template<typename Key>
+int Treap<Key>::maxDepth() const {
     return maxDepth(_root);
 }
 
-template<typename T>
-int Treap<T>::maxDepth(const TreapNode<T> *node) const {
+template<typename Key>
+int Treap<Key>::maxDepth(const TreapNode<Key> *node) const {
     if (node == nullptr) {
         return 0;
     }
     return std::max(maxDepth(node->getRight()), maxDepth(node->getLeft())) + 1;
 }
 
-template<typename T>
-typename Treap<T>::iterator Treap<T>::begin() const {
+template<typename Key>
+typename Treap<Key>::iterator Treap<Key>::begin() const {
     return cbegin();
 }
 
-template<typename T>
-typename Treap<T>::iterator Treap<T>::end() const {
+template<typename Key>
+typename Treap<Key>::iterator Treap<Key>::end() const {
     return cend();
 }
 
-template<typename T>
-typename Treap<T>::reverse_iterator Treap<T>::rbegin() const {
+template<typename Key>
+typename Treap<Key>::reverse_iterator Treap<Key>::rbegin() const {
     return {end()};
 }
 
-template<typename T>
-typename Treap<T>::reverse_iterator Treap<T>::rend() const {
+template<typename Key>
+typename Treap<Key>::reverse_iterator Treap<Key>::rend() const {
     return {begin()};
 }
 
-template<typename T>
-typename Treap<T>::const_iterator Treap<T>::cbegin() const {
+template<typename Key>
+typename Treap<Key>::const_iterator Treap<Key>::cbegin() const {
     if (empty()) {
         return cend();
     }
@@ -576,17 +584,17 @@ typename Treap<T>::const_iterator Treap<T>::cbegin() const {
     return {&nodeOfOrder(index)->key, *this, index};
 }
 
-template<typename T>
-typename Treap<T>::const_iterator Treap<T>::cend() const {
+template<typename Key>
+typename Treap<Key>::const_iterator Treap<Key>::cend() const {
     return {nullptr, *this, size()};
 }
 
-template<typename T>
-typename Treap<T>::const_reverse_iterator Treap<T>::crbegin() const {
+template<typename Key>
+typename Treap<Key>::const_reverse_iterator Treap<Key>::crbegin() const {
     return {cend()};
 }
 
-template<typename T>
-typename Treap<T>::const_reverse_iterator Treap<T>::crend() const {
+template<typename Key>
+typename Treap<Key>::const_reverse_iterator Treap<Key>::crend() const {
     return {cbegin()};
 }
