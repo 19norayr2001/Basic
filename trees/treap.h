@@ -4,6 +4,7 @@
 #include <memory>
 #include <chrono>
 #include <random>
+#include <stack>
 #include <reverse_iterator.h>
 
 template<typename Key, typename Compare = std::less<Key>>
@@ -101,7 +102,8 @@ public:
 private:
     TreapNode *merge(TreapNode *node1, TreapNode *node2);
 
-    std::pair<TreapNode *, TreapNode *> split(TreapNode *node, const key_type &key, bool key_included = false);
+    template<bool KeyIncluded = false>
+    std::pair<TreapNode *, TreapNode *> split(TreapNode *node, const key_type &key);
 
 private:
     void deallocate(TreapNode *node);
@@ -380,20 +382,41 @@ typename Treap<Key, Compare>::TreapNode *Treap<Key, Compare>::merge(TreapNode *n
 }
 
 template<typename Key, typename Compare>
+template<bool KeyIncluded>
 std::pair<typename Treap<Key, Compare>::TreapNode *, typename Treap<Key, Compare>::TreapNode *>
-Treap<Key, Compare>::split(TreapNode *node, const key_type &key, bool key_included) {
-    if (node == nullptr) {
-        return std::make_pair(nullptr, nullptr);
+Treap<Key, Compare>::split(TreapNode *node, const key_type &key) {
+    std::stack<TreapNode *> nodes;
+    std::stack<bool> compares;
+    // gather all splittable nodes in stack
+    nodes.push(node);
+    while (nodes.top() != nullptr) {
+        auto* top = nodes.top();
+        bool compare = (KeyIncluded ? !_comparator(key, top->key) : _comparator(top->key, key));
+        nodes.push(compare ? top->get_right() : top->get_left());
+        // store comparison results in separate stack
+        compares.push(compare);
     }
-    bool compare = (key_included ? !_comparator(key, node->key) : _comparator(node->key, key));
-    if (compare) {
-        std::pair<TreapNode *, TreapNode *> pair_right = split(node->get_right(), key, key_included);
-        node->set_right(pair_right.first);
-        return {node, pair_right.second};
+    // here we need two null pointers at the top of the stack
+    nodes.push(nullptr);
+    // in this point nodes count is greater comparison count by 2
+    // so when the compares is empty, in nodes stack will be left two nodes, which are split results
+    while (!compares.empty()) {
+        bool compare = compares.top(); compares.pop();
+        auto* second = nodes.top(); nodes.pop();
+        auto* first = nodes.top(); nodes.pop();
+        if (compare) {
+            nodes.top()->set_right(first);
+            nodes.push(second);
+            continue;
+        }
+        nodes.top()->set_left(second);
+        std::swap(nodes.top(), first);
+        nodes.push(first);
     }
-    std::pair<TreapNode *, TreapNode *> pair_left = split(node->get_left(), key, key_included);
-    node->set_left(pair_left.second);
-    return {pair_left.first, node};
+    // return left last two nodes in nodes stack
+    auto* second = nodes.top(); nodes.pop();
+    auto* first = nodes.top();
+    return {first, second};
 }
 
 template<typename Key, typename Compare>
@@ -454,7 +477,7 @@ void Treap<Key, Compare>::insert(const key_type &value) {
 template<typename Key, typename Compare>
 void Treap<Key, Compare>::erase(const key_type &value) {
     std::pair<TreapNode *, TreapNode *> first_split_pair = split(_root, value);
-    std::pair<TreapNode *, TreapNode *> second_split_pair = split(first_split_pair.second, value, true);
+    std::pair<TreapNode *, TreapNode *> second_split_pair = split<true>(first_split_pair.second, value);
     if (second_split_pair.first == nullptr) {
         throw std::runtime_error("Element not found");
     }
