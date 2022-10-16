@@ -606,3 +606,6 @@ template<typename Key, typename Compare>
 typename Treap<Key, Compare>::const_reverse_iterator Treap<Key, Compare>::crend() const {
     return {cbegin()};
 }
+
+template<typename Key, typename Compare = std::less<Key>>
+using ordered_set = Treap<Key, Compare>;

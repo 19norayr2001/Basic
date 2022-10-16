@@ -8,7 +8,7 @@
 #include <algorithm>
 
 TEST(Trees, Treap) {
-    Treap<int, std::greater<>> treap;
+    ordered_set<int, std::greater<>> treap;
     std::vector<int> vec {1, 2, -5, 1, 10, 2, 1, 1, 6, 11, -1100};
     for(int elem: vec) {
         treap.insert(elem);
