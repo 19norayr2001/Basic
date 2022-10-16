@@ -70,7 +70,7 @@ public:
     int maxDepth(const TreapNode *node) const;
 
 public:
-    Treap(const key_compare &comparator = key_compare());
+    explicit Treap(const key_compare &comparator = key_compare());
 
     Treap(const Treap &other);
 
@@ -92,7 +92,7 @@ public:
 
     const key_type &keyOfOrder(size_t index) const;
 
-    size_t orderOfKey(const key_type &index) const;
+    size_t orderOfKey(const key_type &key) const;
 
     bool empty() const { return size() == 0; }
 
@@ -115,7 +115,7 @@ private:
 
     const TreapNode *nodeOfOrder(size_t index) const;
 
-    size_t orderOfKey(const key_type &value, const TreapNode *node) const;
+    size_t orderOfKey(const key_type &key, const TreapNode *root) const;
 
 private:
     template<bool B>
@@ -139,7 +139,7 @@ private:
 
         common_iterator<B> &operator--();
 
-        common_iterator<B> operator--(int);
+        common_iterator<B> operator--(int) &;
 
         common_iterator<B> &operator-=(ptrdiff_t);
 
@@ -240,7 +240,7 @@ typename Treap<Key, Compare>::template common_iterator<B> &Treap<Key, Compare>::
 
 template<typename Key, typename Compare>
 template<bool B>
-typename Treap<Key, Compare>::template common_iterator<B> Treap<Key, Compare>::common_iterator<B>::operator--(int) {
+typename Treap<Key, Compare>::template common_iterator<B> Treap<Key, Compare>::common_iterator<B>::operator--(int) & {
     common_iterator iter = *this;
     --(*this);
     return iter;
