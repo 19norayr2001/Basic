@@ -7,7 +7,7 @@
 #include <vector>
 #include <algorithm>
 
-TEST(Trees, Treap) {
+TEST(TreesTest, Treap) {
     ordered_set<int, std::greater<>> treap;
     std::vector<int> vec {1, 2, -5, 1, 10, 2, 1, 1, 6, 11, -1100};
     for(int elem: vec) {
@@ -20,6 +20,7 @@ TEST(Trees, Treap) {
         EXPECT_EQ(*it, *itVec);
     }
     EXPECT_EQ(treap.orderOfKey(2), 3);
+    EXPECT_EQ(treap.orderOfKey(18), -1);
 }
 
 #endif // TEST_TREES

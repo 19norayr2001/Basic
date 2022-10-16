@@ -191,7 +191,12 @@ public:
     const_reverse_iterator crbegin() const;
 
     const_reverse_iterator crend() const;
+public:
+    static size_t npos;
 };
+
+template <typename Key, typename Compare>
+size_t Treap<Key, Compare>::npos = -1;
 
 //======================common_iterator implementation==========================================
 
@@ -518,7 +523,21 @@ const typename Treap<Key, Compare>::key_type &Treap<Key, Compare>::keyOfOrder(si
 
 template<typename Key, typename Compare>
 size_t Treap<Key, Compare>::orderOfKey(const key_type &key) const {
-    return orderOfKey(key, _root) - 1;
+    const TreapNode *root = _root;
+    size_t pos = 0;
+    while (root != nullptr) {
+        if (_comparator(key, root->key)) {
+            root = root->getLeft();
+            continue;
+        }
+        if (_comparator(root->key, key)) {
+            pos += 1 + root->leftSize();
+            root = root->getRight();
+            continue;
+        }
+        return pos + root->leftSize();
+    }
+    return npos;
 }
 
 template<typename Key, typename Compare>
