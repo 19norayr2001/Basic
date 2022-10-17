@@ -73,6 +73,8 @@ public:
 public:
     explicit Treap(const key_compare &comparator = key_compare());
 
+    Treap(std::initializer_list<Key> il, const key_compare &comparator = key_compare());
+
     Treap(const Treap &other);
 
     Treap(Treap &&other) noexcept;
@@ -422,6 +424,14 @@ Treap<Key, Compare>::split(TreapNode *node, const key_type &key) {
 template<typename Key, typename Compare>
 Treap<Key, Compare>::Treap(const key_compare &comparator)
         : _root(nullptr), _comparator(comparator) {}
+
+template<typename Key, typename Compare>
+Treap<Key, Compare>::Treap(std::initializer_list<Key> il, const key_compare &comparator)
+    : _root(nullptr), _comparator(comparator) {
+    for (const auto& key : il) {
+        insert(key);
+    }
+}
 
 template<typename Key, typename Compare>
 Treap<Key, Compare>::Treap(const Treap<Key, Compare> &other)
