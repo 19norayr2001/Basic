@@ -251,7 +251,7 @@ typename Treap<Key, Compare>::template common_iterator<B> &Treap<Key, Compare>::
 
 template<typename Key, typename Compare>
 template<bool B>
-typename Treap<Key, Compare>::template common_iterator<B> Treap<Key, Compare>::common_iterator<B>::operator--(int) &{
+typename Treap<Key, Compare>::template common_iterator<B> Treap<Key, Compare>::common_iterator<B>::operator--(int) & {
     common_iterator iter = *this;
     --(*this);
     return iter;
@@ -520,7 +520,7 @@ const typename Treap<Key, Compare>::TreapNode *Treap<Key, Compare>::node_of_orde
         return nullptr;
     }
     if (index > size()) {
-        throw std::out_of_range("Index out of bounds");
+        throw std::out_of_range(std::to_string(index) +  " index out of bounds");
     }
     ++index;
     TreapNode *root = _root;
