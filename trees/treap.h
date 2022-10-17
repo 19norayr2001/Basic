@@ -7,7 +7,7 @@
 #include <stack>
 #include <reverse_iterator.h>
 
-template<typename Key, typename Compare = std::less<Key>, typename Allocator = std::allocator<Key>>
+template<typename Key, typename Compare, typename Allocator>
 class Treap {
 public:
     using key_type = Key;
@@ -16,7 +16,6 @@ public:
     using size_type = size_t;
 private:
     class treap_node;
-
     using alloc_traits = std::allocator_traits<allocator_type>;
     using node_allocator_type = typename alloc_traits::template rebind_alloc<treap_node>;
     using node_traits = std::allocator_traits<node_allocator_type>;
@@ -67,9 +66,6 @@ private:
         const key_type *get_key_address() const { return std::addressof(key); }
 
         key_type *get_key_address() { return std::addressof(key); }
-
-    public:
-        treap_node *copy() const;
 
     private:
         void update() { _size = left_size() + right_size() + 1; }
@@ -204,7 +200,7 @@ public:
     void insert(key_type &&key);
 
     template<typename... Args>
-    void emplace(Args &&...);
+    void emplace(Args &&... args);
 
     void erase(const key_type &key);
 
@@ -219,6 +215,10 @@ public:
     bool empty() const { return size() == 0; }
 
     size_type size() const { return _root != nullptr ? _root->size() : 0; }
+
+private:
+    template<typename... Args>
+    node_holder construct_node(Args &&... args);
 
 private:
     treap_node *merge(treap_node *node1, treap_node *node2);
@@ -410,20 +410,6 @@ Treap<Key, Compare, Allocator>::common_iterator<B>::operator-(ptrdiff_t n) {
     return iter -= n;
 }
 
-
-template<typename Key, typename Compare, typename Allocator>
-typename Treap<Key, Compare, Allocator>::treap_node *Treap<Key, Compare, Allocator>::treap_node::copy() const {
-    auto *root = new treap_node(key, _priority);
-    if (_left != nullptr) {
-        root->set_left(_left->copy());
-    }
-    if (_right != nullptr) {
-        root->set_right(_right->copy());
-    }
-    return root;
-}
-
-
 template<typename Key, typename Compare, typename Allocator>
 typename Treap<Key, Compare, Allocator>::treap_node *
 Treap<Key, Compare, Allocator>::merge(treap_node *node1, treap_node *node2) {
@@ -446,8 +432,7 @@ Treap<Key, Compare, Allocator>::merge(treap_node *node1, treap_node *node2) {
 
 template<typename Key, typename Compare, typename Allocator>
 template<bool KeyIncluded>
-std::pair<typename Treap<Key, Compare, Allocator>::treap_node *, typename Treap<Key, Compare, Allocator>::treap_node *>
-Treap<Key, Compare, Allocator>::split(treap_node *node, const key_type &key) {
+auto Treap<Key, Compare, Allocator>::split(treap_node *node, const key_type &key) -> std::pair<treap_node*, treap_node*> {
     std::stack<treap_node *> nodes;
     std::stack<bool> compares;
     // gather all splittable nodes in stack
@@ -500,12 +485,16 @@ Treap<Key, Compare, Allocator>::Treap(std::initializer_list<Key> il, const key_c
 
 template<typename Key, typename Compare, typename Allocator>
 Treap<Key, Compare, Allocator>::Treap(const Treap<Key, Compare, Allocator> &other)
-        : _root(other._root->copy()), _comparator(other._comparator), _node_allocator(other._allocator) {}
+        : _root(nullptr), _comparator(other._comparator), _node_allocator(other._node_allocator) {
+    for(auto it = other.begin(); it != other.end(); ++it) {
+        insert(*it);
+    }
+}
 
 template<typename Key, typename Compare, typename Allocator>
 Treap<Key, Compare, Allocator>::Treap(Treap<Key, Compare, Allocator> &&other) noexcept
         : _root(std::exchange(other._root, nullptr)), _comparator(std::move(other._comparator)),
-          _node_allocator(std::move(other._allocator)) {}
+          _node_allocator(std::move(other._node_allocator)) {}
 
 template<typename Key, typename Compare, typename Allocator>
 Treap<Key, Compare, Allocator> &Treap<Key, Compare, Allocator>::operator=(const Treap<Key, Compare, Allocator> &other) {
@@ -550,12 +539,8 @@ void Treap<Key, Compare, Allocator>::insert(key_type &&key) {
 template<typename Key, typename Compare, typename Allocator>
 template<typename... Args>
 void Treap<Key, Compare, Allocator>::emplace(Args &&... args) {
-    // allocate memory for new node
-    node_holder holder(node_traits::allocate(_node_allocator, 1), treap_node_destructor(_node_allocator));
-    // construct key using perfect forwarding technique
-    node_traits::construct(_node_allocator, holder->get_key_address(), std::forward<Args>(args)...);
-    // set value constructed flag true in order to destroy constructed value using deleter
-    holder.get_deleter().value_constructed = true;
+    // allocate memory for node and construct value
+    node_holder holder = construct_node(std::forward<Args>(args)...);
     // if the tree already contains key, when just return
     if (contains(holder->key)) {
         // node holder will automatically deallocate memory and destroy value
@@ -575,10 +560,22 @@ void Treap<Key, Compare, Allocator>::emplace(Args &&... args) {
 }
 
 template<typename Key, typename Compare, typename Allocator>
+template<typename... Args>
+typename Treap<Key, Compare, Allocator>::node_holder Treap<Key, Compare, Allocator>::construct_node(Args &&... args) {
+    // allocate memory for new node
+    node_holder holder(node_traits::allocate(_node_allocator, 1), treap_node_destructor(_node_allocator));
+    // construct key using perfect forwarding technique
+    node_traits::construct(_node_allocator, holder->get_key_address(), std::forward<Args>(args)...);
+    // set value constructed flag true in order to destroy constructed value using deleter
+    holder.get_deleter().value_constructed = true;
+    return holder;
+}
+
+template<typename Key, typename Compare, typename Allocator>
 void Treap<Key, Compare, Allocator>::erase(const key_type &key) {
     std::pair<treap_node *, treap_node *> first_split_pair = split(_root, key);
     std::pair<treap_node *, treap_node *> second_split_pair = split<true>(first_split_pair.second, key);
-    delete second_split_pair.first;
+    node_traits::destroy(_node_allocator, second_split_pair.first);
     if (empty()) {
         _root = nullptr;
         return;
@@ -674,7 +671,7 @@ void Treap<Key, Compare, Allocator>::deallocate(treap_node *node) {
     if (node->get_right() != nullptr) {
         deallocate(node->get_right());
     }
-    delete node;
+    node_traits::destroy(_node_allocator, node);
 }
 
 
