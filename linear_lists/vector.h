@@ -286,7 +286,7 @@ Vector<T, Alloc>::Vector(const Vector<T, Alloc> &obj)
     size_t i = 0;
     try {
         for (i = 0; i < m_size; ++i) {
-            // try to contruct
+            // try to construct
             AllocTraits::construct(m_allocator, m_array + i, obj.m_array[i]);
         }
     }
