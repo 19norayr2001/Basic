@@ -478,9 +478,6 @@ template<typename Key, typename Compare>
 void Treap<Key, Compare>::erase(const key_type &value) {
     std::pair<TreapNode *, TreapNode *> first_split_pair = split(_root, value);
     std::pair<TreapNode *, TreapNode *> second_split_pair = split<true>(first_split_pair.second, value);
-    if (second_split_pair.first == nullptr) {
-        throw std::runtime_error("Element not found");
-    }
     delete second_split_pair.first;
     if (empty()) {
         _root = nullptr;
