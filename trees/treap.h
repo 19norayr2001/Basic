@@ -12,6 +12,7 @@ class Treap {
 public:
     using key_type = Key;
     using key_compare = Compare;
+    using size_type = size_t;
 private:
     class TreapNode {
     public:
@@ -38,11 +39,11 @@ private:
 
         const TreapNode *get_right() const { return _right; }
 
-        size_t size() const { return _size; }
+        size_type size() const { return _size; }
 
-        size_t left_size() const { return (_left != nullptr ? _left->_size : 0); }
+        size_type left_size() const { return (_left != nullptr ? _left->_size : 0); }
 
-        size_t right_size() const { return (_right != nullptr ? _right->_size : 0); }
+        size_type right_size() const { return (_right != nullptr ? _right->_size : 0); }
 
         unsigned int get_priority() const { return _priority; }
 
@@ -58,7 +59,7 @@ private:
         unsigned int _priority;
         TreapNode *_left;
         TreapNode *_right;
-        size_t _size;
+        size_type _size;
     };
 
 private:
@@ -93,13 +94,13 @@ public:
 
     bool contains(const key_type &value) const;
 
-    const key_type &key_of_order(size_t index) const;
+    const key_type &key_of_order(size_type index) const;
 
-    size_t order_of_key(const key_type &key) const;
+    size_type order_of_key(const key_type &key) const;
 
     bool empty() const { return size() == 0; }
 
-    size_t size() const { return _root != nullptr ? _root->size() : 0; }
+    size_type size() const { return _root != nullptr ? _root->size() : 0; }
 
 private:
     TreapNode *merge(TreapNode *node1, TreapNode *node2);
@@ -115,9 +116,9 @@ private:
 
     const TreapNode *node_of_key(const key_type &value) const;
 
-    TreapNode *node_of_order(size_t index);
+    TreapNode *node_of_order(size_type index);
 
-    const TreapNode *node_of_order(size_t index) const;
+    const TreapNode *node_of_order(size_type index) const;
 
 private:
     template<bool B>
@@ -128,9 +129,9 @@ private:
     private:
         value_type *_value;
         treap_type &_treap;
-        size_t _index;
+        size_type _index;
     public:
-        common_iterator(value_type *value, treap_type &treap, size_t index);
+        common_iterator(value_type *value, treap_type &treap, size_type index);
 
     public:
         common_iterator<B> &operator++();
@@ -195,13 +196,13 @@ public:
     const_reverse_iterator crend() const;
 
 public:
-    static size_t npos;
+    static size_type npos;
 private:
     static std::mt19937 random_generator;
 };
 
 template<typename Key, typename Compare>
-size_t Treap<Key, Compare>::npos = -1;
+typename Treap<Key, Compare>::size_type Treap<Key, Compare>::npos = -1;
 
 template<typename Key, typename Compare>
 std::mt19937 Treap<Key, Compare>::random_generator(std::chrono::steady_clock::now().time_since_epoch().count());
@@ -211,7 +212,7 @@ std::mt19937 Treap<Key, Compare>::random_generator(std::chrono::steady_clock::no
 
 template<typename Key, typename Compare>
 template<bool B>
-Treap<Key, Compare>::common_iterator<B>::common_iterator(value_type *value, treap_type &treap, size_t index)
+Treap<Key, Compare>::common_iterator<B>::common_iterator(value_type *value, treap_type &treap, size_type index)
         :_value(value), _treap(treap), _index(index) {}
 
 template<typename Key, typename Compare>
@@ -520,12 +521,12 @@ const typename Treap<Key, Compare>::TreapNode *Treap<Key, Compare>::node_of_key(
 }
 
 template<typename Key, typename Compare>
-typename Treap<Key, Compare>::TreapNode *Treap<Key, Compare>::node_of_order(size_t index) {
+typename Treap<Key, Compare>::TreapNode *Treap<Key, Compare>::node_of_order(size_type index) {
     return const_cast<TreapNode *>(const_cast<const Treap<Key, Compare> *>(this)->node_of_order(index));
 }
 
 template<typename Key, typename Compare>
-const typename Treap<Key, Compare>::TreapNode *Treap<Key, Compare>::node_of_order(size_t index) const {
+const typename Treap<Key, Compare>::TreapNode *Treap<Key, Compare>::node_of_order(size_type index) const {
     if (index == size()) {
         return nullptr;
     }
@@ -535,7 +536,7 @@ const typename Treap<Key, Compare>::TreapNode *Treap<Key, Compare>::node_of_orde
     ++index;
     TreapNode *root = _root;
     while (root != nullptr) {
-        size_t left_count = root->left_size();
+        size_type left_count = root->left_size();
         if (index == left_count + 1) {
             return root;
         }
@@ -550,14 +551,14 @@ const typename Treap<Key, Compare>::TreapNode *Treap<Key, Compare>::node_of_orde
 }
 
 template<typename Key, typename Compare>
-const typename Treap<Key, Compare>::key_type &Treap<Key, Compare>::key_of_order(size_t index) const {
+const typename Treap<Key, Compare>::key_type &Treap<Key, Compare>::key_of_order(size_type index) const {
     return node_of_order(index)->key;
 }
 
 template<typename Key, typename Compare>
-size_t Treap<Key, Compare>::order_of_key(const key_type &key) const {
+typename Treap<Key, Compare>::size_type Treap<Key, Compare>::order_of_key(const key_type &key) const {
     const TreapNode *root = _root;
-    size_t pos = 0;
+    size_type pos = 0;
     while (root != nullptr) {
         if (_comparator(key, root->key)) {
             root = root->get_left();
@@ -626,7 +627,7 @@ typename Treap<Key, Compare>::const_iterator Treap<Key, Compare>::cbegin() const
     if (empty()) {
         return cend();
     }
-    const size_t index = 0;
+    const size_type index = 0;
     return {&node_of_order(index)->key, *this, index};
 }
 
