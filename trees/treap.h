@@ -29,7 +29,7 @@ private:
                 : key(key), _priority(priority), _left(left), _right(right), _size(1) { update(); }
 
     public:
-        void set_node_members(priority_type priority = 0, treap_node *left = nullptr, treap_node *right = nullptr) {
+        void set_members(priority_type priority = 0, treap_node *left = nullptr, treap_node *right = nullptr) {
             _priority = priority;
             _left = left;
             _right = right;
@@ -193,6 +193,15 @@ public:
 
     ~Treap();
 
+private:
+    void destroy_tree(treap_node *node);
+
+    treap_node *merge(treap_node *node1, treap_node *node2);
+
+    template<bool KeyIncluded = false>
+    std::pair<treap_node *, treap_node *> split(treap_node *node, const key_type &key);
+
+public:
     void swap(Treap &other) noexcept;
 
     void insert(const key_type &key);
@@ -219,15 +228,6 @@ public:
 private:
     template<typename... Args>
     node_holder construct_node(Args &&... args);
-
-private:
-    treap_node *merge(treap_node *node1, treap_node *node2);
-
-    template<bool KeyIncluded = false>
-    std::pair<treap_node *, treap_node *> split(treap_node *node, const key_type &key);
-
-private:
-    void deallocate(treap_node *node);
 
 private:
     const_iterator iterator_of_key(const key_type &key) const;
@@ -411,6 +411,67 @@ Treap<Key, Compare, Allocator>::common_iterator<B>::operator-(ptrdiff_t n) {
 }
 
 template<typename Key, typename Compare, typename Allocator>
+Treap<Key, Compare, Allocator>::Treap(const key_compare &comparator, const allocator_type &allocator)
+        : _root(nullptr), _comparator(comparator), _node_allocator(allocator) {}
+
+template<typename Key, typename Compare, typename Allocator>
+Treap<Key, Compare, Allocator>::Treap(std::initializer_list<Key> il, const key_compare &comparator,
+                                      const allocator_type &allocator)
+        : _root(nullptr), _comparator(comparator), _node_allocator(allocator) {
+    for (const auto &key: il) {
+        insert(key);
+    }
+}
+
+template<typename Key, typename Compare, typename Allocator>
+Treap<Key, Compare, Allocator>::Treap(const Treap<Key, Compare, Allocator> &other)
+        : _root(nullptr), _comparator(other._comparator), _node_allocator(other._node_allocator) {
+    for(auto it = other.begin(); it != other.end(); ++it) {
+        insert(*it);
+    }
+}
+
+template<typename Key, typename Compare, typename Allocator>
+Treap<Key, Compare, Allocator>::Treap(Treap<Key, Compare, Allocator> &&other) noexcept
+        : _root(std::exchange(other._root, nullptr)), _comparator(std::move(other._comparator)),
+          _node_allocator(std::move(other._node_allocator)) {}
+
+template<typename Key, typename Compare, typename Allocator>
+Treap<Key, Compare, Allocator> &Treap<Key, Compare, Allocator>::operator=(const Treap<Key, Compare, Allocator> &other) {
+    if (this != &other) {
+        Treap<Key, Compare, Allocator> copied(other);
+        this->swap(copied);
+    }
+    return *this;
+}
+
+template<typename Key, typename Compare, typename Allocator>
+Treap<Key, Compare, Allocator> &
+Treap<Key, Compare, Allocator>::operator=(Treap<Key, Compare, Allocator> &&other) noexcept {
+    if (this != &other) {
+        Treap<Key, Compare, Allocator> moved(std::move(other));
+        this->swap(moved);
+    }
+    return *this;
+}
+
+template<typename Key, typename Compare, typename Allocator>
+Treap<Key, Compare, Allocator>::~Treap() {
+    destroy_tree(_root);
+}
+
+template<typename Key, typename Compare, typename Allocator>
+void Treap<Key, Compare, Allocator>::destroy_tree(treap_node *node) {
+    if (node != nullptr) {
+        // destroy child nodes
+        destroy_tree(node->get_left());
+        destroy_tree(node->get_right());
+        // destroy node key and deallocate memory
+        node_holder holder(node, treap_node_destructor(_node_allocator, true));
+    }
+}
+
+template<typename Key, typename Compare, typename Allocator>
 typename Treap<Key, Compare, Allocator>::treap_node *
 Treap<Key, Compare, Allocator>::merge(treap_node *node1, treap_node *node2) {
     if (node1 == nullptr) {
@@ -471,56 +532,6 @@ auto Treap<Key, Compare, Allocator>::split(treap_node *node, const key_type &key
 }
 
 template<typename Key, typename Compare, typename Allocator>
-Treap<Key, Compare, Allocator>::Treap(const key_compare &comparator, const allocator_type &allocator)
-        : _root(nullptr), _comparator(comparator), _node_allocator(allocator) {}
-
-template<typename Key, typename Compare, typename Allocator>
-Treap<Key, Compare, Allocator>::Treap(std::initializer_list<Key> il, const key_compare &comparator,
-                                      const allocator_type &allocator)
-        : _root(nullptr), _comparator(comparator), _node_allocator(allocator) {
-    for (const auto &key: il) {
-        insert(key);
-    }
-}
-
-template<typename Key, typename Compare, typename Allocator>
-Treap<Key, Compare, Allocator>::Treap(const Treap<Key, Compare, Allocator> &other)
-        : _root(nullptr), _comparator(other._comparator), _node_allocator(other._node_allocator) {
-    for(auto it = other.begin(); it != other.end(); ++it) {
-        insert(*it);
-    }
-}
-
-template<typename Key, typename Compare, typename Allocator>
-Treap<Key, Compare, Allocator>::Treap(Treap<Key, Compare, Allocator> &&other) noexcept
-        : _root(std::exchange(other._root, nullptr)), _comparator(std::move(other._comparator)),
-          _node_allocator(std::move(other._node_allocator)) {}
-
-template<typename Key, typename Compare, typename Allocator>
-Treap<Key, Compare, Allocator> &Treap<Key, Compare, Allocator>::operator=(const Treap<Key, Compare, Allocator> &other) {
-    if (this != &other) {
-        Treap<Key, Compare, Allocator> copied(other);
-        this->swap(copied);
-    }
-    return *this;
-}
-
-template<typename Key, typename Compare, typename Allocator>
-Treap<Key, Compare, Allocator> &
-Treap<Key, Compare, Allocator>::operator=(Treap<Key, Compare, Allocator> &&other) noexcept {
-    if (this != &other) {
-        Treap<Key, Compare, Allocator> moved(std::move(other));
-        this->swap(moved);
-    }
-    return *this;
-}
-
-template<typename Key, typename Compare, typename Allocator>
-Treap<Key, Compare, Allocator>::~Treap() {
-    deallocate(_root);
-}
-
-template<typename Key, typename Compare, typename Allocator>
 void Treap<Key, Compare, Allocator>::swap(Treap<Key, Compare, Allocator> &other) noexcept {
     std::swap(_root, other._root);
     std::swap(_comparator, other._comparator);
@@ -547,7 +558,7 @@ void Treap<Key, Compare, Allocator>::emplace(Args &&... args) {
         return;
     }
     // initialize non-initialized memory for avoiding segfaults
-    holder->set_node_members(random_generator(), nullptr, nullptr);
+    holder->set_members(random_generator(), nullptr, nullptr);
     if (_root == nullptr) {
         _root = holder.release();
         return;
@@ -575,7 +586,7 @@ template<typename Key, typename Compare, typename Allocator>
 void Treap<Key, Compare, Allocator>::erase(const key_type &key) {
     std::pair<treap_node *, treap_node *> first_split_pair = split(_root, key);
     std::pair<treap_node *, treap_node *> second_split_pair = split<true>(first_split_pair.second, key);
-    node_traits::destroy(_node_allocator, second_split_pair.first);
+    destroy_tree(second_split_pair.first);
     if (empty()) {
         _root = nullptr;
         return;
@@ -659,21 +670,6 @@ Treap<Key, Compare, Allocator>::order_of_key(const key_type &key) const {
     auto dummy_iterator = const_iterator(nullptr, *this, 0);
     return it - dummy_iterator;
 }
-
-template<typename Key, typename Compare, typename Allocator>
-void Treap<Key, Compare, Allocator>::deallocate(treap_node *node) {
-    if (node == nullptr) {
-        return;
-    }
-    if (node->get_left() != nullptr) {
-        deallocate(node->get_left());
-    }
-    if (node->get_right() != nullptr) {
-        deallocate(node->get_right());
-    }
-    node_traits::destroy(_node_allocator, node);
-}
-
 
 template<typename Key, typename Compare, typename Allocator>
 int Treap<Key, Compare, Allocator>::maxDepth() const {
