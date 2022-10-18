@@ -117,10 +117,10 @@ private:
         using treap_type = std::conditional_t<B, const Treap, Treap>;
     private:
         value_type *_value;
-        treap_type &_treap;
+        treap_type *_treap;
         size_type _index;
     public:
-        common_iterator(value_type *value, treap_type &treap, size_type index);
+        common_iterator(value_type *value, treap_type *treap, size_type index);
 
         common_iterator(const common_iterator<false>& other);
 
@@ -283,7 +283,7 @@ std::mt19937_64 Treap<Key, Node, Compare, Allocator>::random_generator(
 
 template<typename Key, typename Node, typename Compare, typename Allocator>
 template<bool B>
-Treap<Key, Node, Compare, Allocator>::common_iterator<B>::common_iterator(value_type *value, treap_type &treap,
+Treap<Key, Node, Compare, Allocator>::common_iterator<B>::common_iterator(value_type *value, treap_type* treap,
                                                                     size_type index)
         :_value(value), _treap(treap), _index(index) {}
 
@@ -291,7 +291,7 @@ template<typename Key, typename Node, typename Compare, typename Allocator>
 template<bool B>
 typename Treap<Key, Node, Compare, Allocator>::template common_iterator<B> &
 Treap<Key, Node, Compare, Allocator>::common_iterator<B>::operator++() {
-    auto *node = _treap.node_of_order(++_index);
+    auto *node = _treap->node_of_order(++_index);
     _value = (node == nullptr ? nullptr : node->get_value_address());
     return *this;
 }
@@ -314,7 +314,7 @@ template<typename Key, typename Node, typename Compare, typename Allocator>
 template<bool B>
 typename Treap<Key, Node, Compare, Allocator>::template common_iterator<B> &
 Treap<Key, Node, Compare, Allocator>::common_iterator<B>::operator+=(ptrdiff_t n) {
-    auto *node = _treap.node_of_order(_index += n);
+    auto *node = _treap->node_of_order(_index += n);
     _value = (node == nullptr ? nullptr : node->get_value_address());
     return *this;
 }
@@ -323,7 +323,7 @@ template<typename Key, typename Node, typename Compare, typename Allocator>
 template<bool B>
 typename Treap<Key, Node, Compare, Allocator>::template common_iterator<B> &
 Treap<Key, Node, Compare, Allocator>::common_iterator<B>::operator--() {
-    auto *node = _treap.node_of_order(--_index);
+    auto *node = _treap->node_of_order(--_index);
     _value = (node == nullptr ? nullptr : node->get_value_address());
     return *this;
 }
@@ -341,7 +341,7 @@ template<typename Key, typename Node, typename Compare, typename Allocator>
 template<bool B>
 typename Treap<Key, Node, Compare, Allocator>::template common_iterator<B> &
 Treap<Key, Node, Compare, Allocator>::common_iterator<B>::operator-=(ptrdiff_t n) {
-    auto *node = _treap.node_of_order(_index -= n);
+    auto *node = _treap->node_of_order(_index -= n);
     _value = (node == nullptr ? nullptr : node->get_value_address());
     return *this;
 }
@@ -579,7 +579,7 @@ Treap<Key, Node, Compare, Allocator>::emplace(Args &&... args) {
     // release node holder, as insertion completed successfully
     auto* node = holder.release();
     size_type index = order_of_key(node->get_key());
-    return {iterator(node->get_value_address(), *this, index), true};
+    return {iterator(node->get_value_address(), this, index), true};
 }
 
 template<typename Key, typename Node, typename Compare, typename Allocator>
@@ -644,7 +644,7 @@ Treap<Key, Node, Compare, Allocator>::iterator_of_key(const key_type &key) const
             root = root->get_right();
             continue;
         }
-        return {root->get_value_address(), *this, pos + root->left_size()};
+        return {root->get_value_address(), this, pos + root->left_size()};
     }
     return end();
 }
@@ -682,10 +682,10 @@ Treap<Key, Node, Compare, Allocator>::node_of_order(size_type index) const {
 template<typename Key, typename Node, typename Compare, typename Allocator>
 typename Treap<Key, Node, Compare, Allocator>::iterator
 Treap<Key, Node, Compare, Allocator>::const_cast_iterator(const const_iterator& it) {
-    size_type index = it - const_iterator(nullptr, *this, 0);
+    size_type index = it - const_iterator(nullptr, this, 0);
     const value_type& const_value = *it;
     auto* value = const_cast<value_type*>(std::addressof(const_value));
-    return {value, *this, index};
+    return {value, this, index};
 }
 
 template<typename Key, typename Node, typename Compare, typename Allocator>
@@ -699,7 +699,7 @@ typename Treap<Key, Node, Compare, Allocator>::size_type
 Treap<Key, Node, Compare, Allocator>::order_of_key(const key_type &key) const {
     auto it = iterator_of_key(key);
     // create dummy iterator in order to avoid additional calculations and improve performance
-    auto dummy_iterator = const_iterator(nullptr, *this, 0);
+    auto dummy_iterator = const_iterator(nullptr, this, 0);
     return it - dummy_iterator;
 }
 
@@ -722,7 +722,7 @@ typename Treap<Key, Node, Compare, Allocator>::iterator Treap<Key, Node, Compare
         return end();
     }
     const size_type index = 0;
-    return {node_of_order(index)->get_value_address(), *this, index};
+    return {node_of_order(index)->get_value_address(), this, index};
 }
 
 template<typename Key, typename Node, typename Compare, typename Allocator>
@@ -732,7 +732,7 @@ typename Treap<Key, Node, Compare, Allocator>::const_iterator Treap<Key, Node, C
 
 template<typename Key, typename Node, typename Compare, typename Allocator>
 typename Treap<Key, Node, Compare, Allocator>::iterator Treap<Key, Node, Compare, Allocator>::end() {
-    return {nullptr, *this, size()};
+    return {nullptr, this, size()};
 }
 
 template<typename Key, typename Node, typename Compare, typename Allocator>
@@ -766,12 +766,12 @@ typename Treap<Key, Node, Compare, Allocator>::const_iterator Treap<Key, Node, C
         return cend();
     }
     const size_type index = 0;
-    return {node_of_order(index)->get_value_address(), *this, index};
+    return {node_of_order(index)->get_value_address(), this, index};
 }
 
 template<typename Key, typename Node, typename Compare, typename Allocator>
 typename Treap<Key, Node, Compare, Allocator>::const_iterator Treap<Key, Node, Compare, Allocator>::cend() const {
-    return {nullptr, *this, size()};
+    return {nullptr, this, size()};
 }
 
 template<typename Key, typename Node, typename Compare, typename Allocator>
