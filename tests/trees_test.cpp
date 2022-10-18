@@ -3,7 +3,8 @@
 #ifdef TEST_TREES
 
 #include <gtest/gtest.h>
-#include <treap.h>
+#include <ordered_map.h>
+#include <ordered_set.h>
 #include <vector>
 #include <algorithm>
 
