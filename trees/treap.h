@@ -279,7 +279,6 @@ Treap<Key, Compare, Allocator>::common_iterator<B>::operator++() {
     return *this;
 }
 
-
 template<typename Key, typename Compare, typename Allocator>
 template<bool B>
 typename Treap<Key, Compare, Allocator>::template common_iterator<B>
@@ -288,7 +287,6 @@ Treap<Key, Compare, Allocator>::common_iterator<B>::operator++(int) &{
     ++(*this);
     return iter;
 }
-
 
 template<typename Key, typename Compare, typename Allocator>
 template<bool B>
@@ -299,7 +297,6 @@ Treap<Key, Compare, Allocator>::common_iterator<B>::operator+=(ptrdiff_t n) {
     return *this;
 }
 
-
 template<typename Key, typename Compare, typename Allocator>
 template<bool B>
 typename Treap<Key, Compare, Allocator>::template common_iterator<B> &
@@ -308,7 +305,6 @@ Treap<Key, Compare, Allocator>::common_iterator<B>::operator--() {
     _value = (node == nullptr ? nullptr : &node->key);
     return *this;
 }
-
 
 template<typename Key, typename Compare, typename Allocator>
 template<bool B>
@@ -319,7 +315,6 @@ Treap<Key, Compare, Allocator>::common_iterator<B>::operator--(int) &{
     return iter;
 }
 
-
 template<typename Key, typename Compare, typename Allocator>
 template<bool B>
 typename Treap<Key, Compare, Allocator>::template common_iterator<B> &
@@ -329,13 +324,11 @@ Treap<Key, Compare, Allocator>::common_iterator<B>::operator-=(ptrdiff_t n) {
     return *this;
 }
 
-
 template<typename Key, typename Compare, typename Allocator>
 template<bool B>
 ptrdiff_t Treap<Key, Compare, Allocator>::common_iterator<B>::operator-(const common_iterator<B> &iter) const {
     return static_cast<ptrdiff_t>(_index) - iter._index;
 }
-
 
 template<typename Key, typename Compare, typename Allocator>
 template<bool B>
@@ -343,13 +336,11 @@ auto Treap<Key, Compare, Allocator>::common_iterator<B>::operator*() -> value_ty
     return *_value;
 }
 
-
 template<typename Key, typename Compare, typename Allocator>
 template<bool B>
 auto Treap<Key, Compare, Allocator>::common_iterator<B>::operator->() -> value_type * {
     return _value;
 }
-
 
 template<typename Key, typename Compare, typename Allocator>
 template<bool B>
@@ -357,13 +348,11 @@ bool Treap<Key, Compare, Allocator>::common_iterator<B>::operator==(const common
     return _value == iter._value;
 }
 
-
 template<typename Key, typename Compare, typename Allocator>
 template<bool B>
 bool Treap<Key, Compare, Allocator>::common_iterator<B>::operator!=(const common_iterator<B> &iter) const {
     return _value != iter._value;
 }
-
 
 template<typename Key, typename Compare, typename Allocator>
 template<bool B>
@@ -371,13 +360,11 @@ bool Treap<Key, Compare, Allocator>::common_iterator<B>::operator<(const common_
     return _index < iter._index;
 }
 
-
 template<typename Key, typename Compare, typename Allocator>
 template<bool B>
 bool Treap<Key, Compare, Allocator>::common_iterator<B>::operator>(const common_iterator<B> &iter) const {
     return _index > iter._index;
 }
-
 
 template<typename Key, typename Compare, typename Allocator>
 template<bool B>
@@ -385,13 +372,11 @@ bool Treap<Key, Compare, Allocator>::common_iterator<B>::operator<=(const common
     return _index <= iter._index;
 }
 
-
 template<typename Key, typename Compare, typename Allocator>
 template<bool B>
 bool Treap<Key, Compare, Allocator>::common_iterator<B>::operator>=(const common_iterator<B> &iter) const {
     return _index >= iter._index;
 }
-
 
 template<typename Key, typename Compare, typename Allocator>
 template<bool B>
@@ -400,7 +385,6 @@ Treap<Key, Compare, Allocator>::common_iterator<B>::operator+(ptrdiff_t n) {
     common_iterator<B> iter = *this;
     return iter += n;
 }
-
 
 template<typename Key, typename Compare, typename Allocator>
 template<bool B>
