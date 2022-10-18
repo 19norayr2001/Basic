@@ -22,7 +22,7 @@ private:
 private:
     class treap_node {
     public:
-        using priority_type = unsigned;
+        using priority_type = unsigned long long;
     public:
         explicit treap_node(const key_type &key, priority_type priority = 0, treap_node *left = nullptr,
                             treap_node *right = nullptr)
@@ -254,11 +254,11 @@ public:
     const_reverse_iterator crend() const;
 
 private:
-    static std::mt19937 random_generator;
+    static std::mt19937_64 random_generator;
 };
 
 template<typename Key, typename Compare, typename Allocator>
-std::mt19937 Treap<Key, Compare, Allocator>::random_generator(
+std::mt19937_64 Treap<Key, Compare, Allocator>::random_generator(
         std::chrono::steady_clock::now().time_since_epoch().count());
 
 //======================common_iterator implementation==========================================
