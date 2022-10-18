@@ -112,6 +112,7 @@ private:
 private:
     template<bool B>
     class common_iterator {
+        friend class common_iterator<!B>;
     public:
         using value_type = std::conditional_t<B, const Treap::value_type, Treap::value_type>;
         using treap_type = std::conditional_t<B, const Treap, Treap>;
@@ -123,6 +124,8 @@ private:
         common_iterator(value_type *value, treap_type *treap, size_type index);
 
         common_iterator(const common_iterator<false>& other);
+
+        common_iterator& operator=(const common_iterator<false>& other);
 
     public:
         common_iterator<B> &operator++();
@@ -286,6 +289,21 @@ template<bool B>
 Treap<Key, Node, Compare, Allocator>::common_iterator<B>::common_iterator(value_type *value, treap_type* treap,
                                                                     size_type index)
         :_value(value), _treap(treap), _index(index) {}
+
+template<typename Key, typename Node, typename Compare, typename Allocator>
+template<bool B>
+typename Treap<Key, Node, Compare, Allocator>::template common_iterator<B> &
+Treap<Key, Node, Compare, Allocator>::common_iterator<B>::operator=(const common_iterator<false>& other) {
+    if constexpr (!B) {
+        if(this == &other) {
+            return *this;
+        }
+    }
+    _value = other._value;
+    _treap = other._treap;
+    _index = other._index;
+    return *this;
+}
 
 template<typename Key, typename Node, typename Compare, typename Allocator>
 template<bool B>
