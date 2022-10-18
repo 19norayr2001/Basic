@@ -13,6 +13,22 @@ private:
 public:
     common_reverse_iterator(It base_iterator);
 
+    template<class Iter2, class = std::enable_if_t<!std::is_same_v<Iter2, It>
+                                                   && std::is_convertible_v<Iter2 const &, It>>>
+    common_reverse_iterator(const common_reverse_iterator <Iter2> &other)
+        :_base_iterator(other.base()) {}
+
+    template<class Iter2, class = std::enable_if_t<!std::is_same_v<Iter2, It>
+            && std::is_convertible_v<Iter2 const &, It>
+            && std::is_assignable_v<It, Iter2 const &>>>
+    common_reverse_iterator &operator=(const common_reverse_iterator <Iter2> &other) {
+        _base_iterator = other.base();
+        return *this;
+    }
+
+public:
+    It base() const { return _base_iterator; }
+
 public:
     common_reverse_iterator<It> &operator++();
 
@@ -75,14 +91,14 @@ common_reverse_iterator<It> common_reverse_iterator<It>::operator++(int) {
 
 
 template<typename It>
-common_reverse_iterator<It>& common_reverse_iterator<It>::operator+=(ptrdiff_t n) {
+common_reverse_iterator<It> &common_reverse_iterator<It>::operator+=(ptrdiff_t n) {
     _base_iterator -= n;
     return *this;
 }
 
 
 template<typename It>
-common_reverse_iterator<It>& common_reverse_iterator<It>::operator--() {
+common_reverse_iterator<It> &common_reverse_iterator<It>::operator--() {
     ++_base_iterator;
     return *this;
 }
@@ -97,7 +113,7 @@ common_reverse_iterator<It> common_reverse_iterator<It>::operator--(int) {
 
 
 template<typename It>
-common_reverse_iterator<It>& common_reverse_iterator<It>::operator-=(ptrdiff_t n) {
+common_reverse_iterator<It> &common_reverse_iterator<It>::operator-=(ptrdiff_t n) {
     _base_iterator += n;
     return *this;
 }
