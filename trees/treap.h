@@ -99,6 +99,7 @@ public:
     using key_compare = Compare;
     using allocator_type = Allocator;
     using size_type = size_t;
+
 private:
     using treap_node = Node;
     using alloc_traits = std::allocator_traits<allocator_type>;
@@ -113,6 +114,7 @@ private:
     template<bool B>
     class common_iterator {
         friend class common_iterator<!B>;
+
     public:
         using value_type = std::conditional_t<B, const Treap::value_type, Treap::value_type>;
         using treap_type = std::conditional_t<B, const Treap, Treap>;
@@ -123,9 +125,9 @@ private:
     public:
         common_iterator(value_type *value, treap_type *treap, size_type index);
 
-        common_iterator(const common_iterator<false>& other);
+        common_iterator(const common_iterator<false> &other);
 
-        common_iterator& operator=(const common_iterator<false>& other);
+        common_iterator &operator=(const common_iterator<false> &other);
 
     public:
         common_iterator<B> &operator++();
@@ -237,7 +239,7 @@ private:
     node_holder construct_node(Args &&... args);
 
 private:
-    iterator iterator_of_key(const key_type& key);
+    iterator iterator_of_key(const key_type &key);
 
     const_iterator iterator_of_key(const key_type &key) const;
 
@@ -246,7 +248,7 @@ private:
     const treap_node *node_of_order(size_type index) const;
 
 private:
-    iterator const_cast_iterator(const const_iterator& it);
+    iterator const_cast_iterator(const const_iterator &it);
 
 public:
     iterator begin();
@@ -286,16 +288,16 @@ std::mt19937_64 Treap<Node, Compare, Allocator>::random_generator(
 
 template<typename Node, typename Compare, typename Allocator>
 template<bool B>
-Treap<Node, Compare, Allocator>::common_iterator<B>::common_iterator(value_type *value, treap_type* treap,
-                                                                    size_type index)
+Treap<Node, Compare, Allocator>::common_iterator<B>::common_iterator(value_type *value, treap_type *treap,
+                                                                     size_type index)
         :_value(value), _treap(treap), _index(index) {}
 
 template<typename Node, typename Compare, typename Allocator>
 template<bool B>
 typename Treap<Node, Compare, Allocator>::template common_iterator<B> &
-Treap<Node, Compare, Allocator>::common_iterator<B>::operator=(const common_iterator<false>& other) {
+Treap<Node, Compare, Allocator>::common_iterator<B>::operator=(const common_iterator<false> &other) {
     if constexpr (!B) {
-        if(this == &other) {
+        if (this == &other) {
             return *this;
         }
     }
@@ -316,7 +318,7 @@ Treap<Node, Compare, Allocator>::common_iterator<B>::operator++() {
 
 template<typename Node, typename Compare, typename Allocator>
 template<bool B>
-Treap<Node, Compare, Allocator>::common_iterator<B>::common_iterator(const common_iterator<false>& other)
+Treap<Node, Compare, Allocator>::common_iterator<B>::common_iterator(const common_iterator<false> &other)
         :_value(other._value), _treap(other._treap), _index(other._index) {}
 
 template<typename Node, typename Compare, typename Allocator>
@@ -440,7 +442,7 @@ Treap<Node, Compare, Allocator>::Treap(const key_compare &comparator, const allo
 
 template<typename Node, typename Compare, typename Allocator>
 Treap<Node, Compare, Allocator>::Treap(std::initializer_list<value_type> il, const key_compare &comparator,
-                                      const allocator_type &allocator)
+                                       const allocator_type &allocator)
         : _root(nullptr), _comparator(comparator), _node_allocator(allocator) {
     for (const auto &value: il) {
         emplace(value);
@@ -450,7 +452,7 @@ Treap<Node, Compare, Allocator>::Treap(std::initializer_list<value_type> il, con
 template<typename Node, typename Compare, typename Allocator>
 Treap<Node, Compare, Allocator>::Treap(const Treap<Node, Compare, Allocator> &other)
         : _root(nullptr), _comparator(other._comparator), _node_allocator(other._node_allocator) {
-    for(auto it = other.begin(); it != other.end(); ++it) {
+    for (auto it = other.begin(); it != other.end(); ++it) {
         insert(*it);
     }
 }
@@ -461,7 +463,8 @@ Treap<Node, Compare, Allocator>::Treap(Treap<Node, Compare, Allocator> &&other) 
           _node_allocator(std::move(other._node_allocator)) {}
 
 template<typename Node, typename Compare, typename Allocator>
-Treap<Node, Compare, Allocator> &Treap<Node, Compare, Allocator>::operator=(const Treap<Node, Compare, Allocator> &other) {
+Treap<Node, Compare, Allocator> &
+Treap<Node, Compare, Allocator>::operator=(const Treap<Node, Compare, Allocator> &other) {
     if (this != &other) {
         Treap<Node, Compare, Allocator> copied(other);
         this->swap(copied);
@@ -517,7 +520,8 @@ Treap<Node, Compare, Allocator>::merge(treap_node *node1, treap_node *node2) {
 
 template<typename Node, typename Compare, typename Allocator>
 template<bool KeyIncluded>
-auto Treap<Node, Compare, Allocator>::split(treap_node *node, const key_type &key) -> std::pair<treap_node*, treap_node*> {
+auto
+Treap<Node, Compare, Allocator>::split(treap_node *node, const key_type &key) -> std::pair<treap_node *, treap_node *> {
     std::stack<treap_node *> nodes;
     std::stack<bool> compares;
     // gather all splittable nodes in stack
@@ -589,13 +593,13 @@ Treap<Node, Compare, Allocator>::emplace(Args &&... args) {
     holder->set_members(random_generator(), nullptr, nullptr);
     if (_root == nullptr) {
         _root = holder.release();
-        return { begin(), true};
+        return {begin(), true};
     }
     // insert new constructed node into tree
     std::pair<treap_node *, treap_node *> p = split(_root, holder->get_key());
     _root = merge(p.second, merge(p.first, holder.get()));
     // release node holder, as insertion completed successfully
-    auto* node = holder.release();
+    auto *node = holder.release();
     size_type index = order_of_key(node->get_key());
     return {iterator(node->get_value_address(), this, index), true};
 }
@@ -644,7 +648,7 @@ Treap<Node, Compare, Allocator>::find(const key_type &key) const {
 template<typename Node, typename Compare, typename Allocator>
 typename Treap<Node, Compare, Allocator>::iterator
 Treap<Node, Compare, Allocator>::iterator_of_key(const key_type &key) {
-    return const_cast_iterator(const_cast<const Treap*>(this)->iterator_of_key(key));
+    return const_cast_iterator(const_cast<const Treap *>(this)->iterator_of_key(key));
 }
 
 template<typename Node, typename Compare, typename Allocator>
@@ -697,12 +701,13 @@ Treap<Node, Compare, Allocator>::node_of_order(size_type index) const {
     }
     throw std::runtime_error("Unreachable code");
 }
+
 template<typename Node, typename Compare, typename Allocator>
 typename Treap<Node, Compare, Allocator>::iterator
-Treap<Node, Compare, Allocator>::const_cast_iterator(const const_iterator& it) {
+Treap<Node, Compare, Allocator>::const_cast_iterator(const const_iterator &it) {
     size_type index = it - const_iterator(nullptr, this, 0);
-    const value_type& const_value = *it;
-    auto* value = const_cast<value_type*>(std::addressof(const_value));
+    const value_type &const_value = *it;
+    auto *value = const_cast<value_type *>(std::addressof(const_value));
     return {value, this, index};
 }
 
