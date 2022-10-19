@@ -175,8 +175,9 @@ public:
     using reverse_iterator = common_reverse_iterator<iterator>;
     using const_reverse_iterator = common_reverse_iterator<const_iterator>;
 
-private:
+protected:
     treap_node *_root;
+private:
     key_compare _comparator;
     node_allocator_type _node_allocator;
 public:
@@ -200,8 +201,10 @@ public:
 
     ~Treap();
 
-private:
+protected:
     void destroy_tree(treap_node *node);
+
+private:
 
     treap_node *merge(treap_node *node1, treap_node *node2);
 
@@ -234,7 +237,7 @@ public:
 
     size_type size() const { return _root != nullptr ? _root->size() : 0; }
 
-private:
+protected:
     template<typename... Args>
     node_holder construct_node(Args &&... args);
 
@@ -275,7 +278,7 @@ public:
 
     const_reverse_iterator crend() const;
 
-private:
+protected:
     static std::mt19937_64 random_generator;
 };
 
@@ -589,8 +592,6 @@ Treap<Node, Compare, Allocator>::emplace(Args &&... args) {
         // node holder will automatically deallocate memory and destroy value
         return {it, false};
     }
-    // initialize non-initialized memory for avoiding segfaults
-    holder->set_members(random_generator(), nullptr, nullptr);
     if (_root == nullptr) {
         _root = holder.release();
         return {begin(), true};
@@ -613,6 +614,8 @@ typename Treap<Node, Compare, Allocator>::node_holder Treap<Node, Compare, Alloc
     node_traits::construct(_node_allocator, holder->get_value_address(), std::forward<Args>(args)...);
     // set value constructed flag true in order to destroy constructed value using deleter
     holder.get_deleter().value_constructed = true;
+    // initialize non-initialized memory for avoiding segfaults
+    holder->set_members(random_generator(), nullptr, nullptr);
     return holder;
 }
 
