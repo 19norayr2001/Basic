@@ -30,9 +30,9 @@ private:
 };
 
 template<typename Key, typename Value, typename Compare = std::less<Key>, typename Allocator = std::allocator<Key>>
-class ordered_map : public Treap<Key, ordered_map_node<Key, Value>, Compare, Allocator> {
+class ordered_map : public Treap<ordered_map_node<Key, Value>, Compare, Allocator> {
 private:
-    using base_type = Treap<Key, ordered_map_node<Key, Value>, Compare, Allocator>;
+    using base_type = Treap<ordered_map_node<Key, Value>, Compare, Allocator>;
 public:
     using typename base_type::iterator;
     using typename base_type::const_iterator;
