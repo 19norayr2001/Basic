@@ -7,7 +7,7 @@
 #include <ordered_set.h>
 #include <vector>
 #include <algorithm>
-#include <implicit_treap.h>
+#include <vector_tree.h>
 
 TEST(TreesTest, OrderedSet) {
     ordered_set<int, std::greater<>> treap {1, 2, -5, 1, 10, 2, 1, 1, 6, 11, -1100};
@@ -41,6 +41,16 @@ TEST(TreesTest, OrderedMap) {
     for(int i = 0; i < 1000; ++i) {
         EXPECT_EQ(mp.order_of_key(i), i);
         EXPECT_EQ(mp.key_of_order(i), i);
+    }
+}
+
+TEST(TreesTest, VectorTree) {
+    vector_tree<int> vec;
+    for (int i = 0; i < 1000; ++i) {
+        vec.push_back(i);
+    }
+    for(int i = 0; i < 1000; ++i) {
+        EXPECT_EQ(i, vec[i]);
     }
 }
 
