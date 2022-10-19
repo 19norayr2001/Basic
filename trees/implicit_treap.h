@@ -1,59 +1,196 @@
 #pragma once
+
 #include <utility>
+#include <treap.h>
 
-class ImplicitTreapNode {
-public:
-	explicit ImplicitTreapNode(int v = 0, unsigned int p = 0, ImplicitTreapNode* lf = nullptr, ImplicitTreapNode* rg = nullptr)
-		:mValue(v)
-		, mPriority(p)
-		, mLeft(lf)
-		, mRight(rg)
-		, mSize(1)
-	{ update(); }
-public:
-	void setLeft(ImplicitTreapNode* node) {mLeft = node; update(); }
-	void setRight(ImplicitTreapNode* node) {mRight = node; update(); }
-	ImplicitTreapNode* getLeft() {return mLeft; }
-	const ImplicitTreapNode* getLeft() const {return mLeft; }
-	ImplicitTreapNode* getRight() {return mRight; }
-	const ImplicitTreapNode* getRight() const {return mRight; }
-	size_t size() const { return mSize; }
-	size_t leftSize() const {return (mLeft != nullptr ? mLeft->mSize : 0); }
-	size_t rightSize() const {return (mRight != nullptr ? mRight->mSize : 0); }
-	const int& getValue() const {return mValue; }
-public:
-	static ImplicitTreapNode* merge(ImplicitTreapNode*, ImplicitTreapNode*);
-	static std::pair<ImplicitTreapNode*, ImplicitTreapNode*> split(ImplicitTreapNode*, size_t);
+template<typename T>
+class implicit_treap_node : public treap_node_base<implicit_treap_node<T>> {
 private:
-	void update() { mSize = leftSize() + rightSize() + 1; }
+    using base_type = treap_node_base<implicit_treap_node<T>>;
+    using typename base_type::priority_type;
+public:
+    using key_type = size_t;
+    using value_type = T;
+public:
+    explicit implicit_treap_node(const value_type &value, priority_type priority = 0,
+                                 implicit_treap_node *left = nullptr,
+                                 implicit_treap_node *right = nullptr)
+            : base_type(priority, left, right), _value(value) {}
+
+    const value_type *get_value_address() const { return std::addressof(_value); }
+
+    value_type *get_value_address() { return std::addressof(_value); }
+
+    key_type get_key() const { return base_type::left_size(); }
+
+    value_type &get_value() { return _value; }
+
+    const value_type &get_value() const { return _value; }
+
 private:
-	int mValue;
-	unsigned int mPriority;
-	ImplicitTreapNode* mLeft;
-	ImplicitTreapNode* mRight;
-	size_t mSize;
+    value_type _value;
 };
 
-
-class ImplicitTreap {
+template<typename T, typename Allocator>
+class implicit_treap : public Treap<implicit_treap_node<T>, std::less<size_t>, Allocator> {
+    using base_type = Treap<implicit_treap_node<T>, std::less<size_t>, Allocator>;
 public:
-	ImplicitTreap();
-	~ImplicitTreap();
-	void pushBack(const int&);
-	void insert(const int&, size_t);
-	void remove(size_t);
-    int maxDepth() const;
-#ifdef TREAP_REVERSE
-	void reverse(size_t, size_t);
-#endif // TREAP_REVERSE
-	int keyOfOrder(size_t) const;
-	bool empty() const { return size() == 0; }
-	size_t size() const { return mRoot != nullptr ? mRoot->size() : 0; }
+    using typename base_type::key_type;
+    using typename base_type::value_type;
+    using typename base_type::allocator_type;
+    using typename base_type::size_type;
+
 private:
-	void deallocate(ImplicitTreapNode*);
+    using treap_node = implicit_treap_node<T>;
+    using alloc_traits = std::allocator_traits<allocator_type>;
+    using node_allocator_type = typename alloc_traits::template rebind_alloc<treap_node>;
+    using node_traits = std::allocator_traits<node_allocator_type>;
+
 private:
-	int keyOfOrder(size_t, ImplicitTreapNode*) const;
-	int maxDepth(const ImplicitTreapNode*) const;
+    using node_destructor = treap_node_destructor<node_allocator_type>;
+    using node_holder = std::unique_ptr<treap_node, node_destructor>;
+
+public:
+    using typename base_type::iterator;
+    using typename base_type::const_iterator;
+    using typename base_type::reverse_iterator;
+    using typename base_type::const_reverse_iterator;
+
+public:
+    iterator push_back(const value_type &value);
+
+    iterator push_back(value_type &&value);
+
+    iterator insert(const value_type &value, size_type index);
+
+    iterator insert(value_type &&value, size_type index);
+
+    template<typename... Args>
+    iterator emplace_back(Args &&... args);
+
+    void erase(size_type index);
+
+    value_type &operator[](size_type index);
+
+    const value_type &operator[](size_type index) const;
+
+public:
+    using base_type::size;
+
+    using base_type::empty;
+
 private:
-	ImplicitTreapNode* mRoot;
+    template<typename... Args>
+    iterator emplace(size_type index, Args &&... args);
+
+private:
+    treap_node *merge(treap_node *node1, treap_node *node2);
+
+    std::pair<treap_node *, treap_node *> split(treap_node *node, size_type index);
 };
+
+template<typename T, typename Allocator>
+typename implicit_treap<T, Allocator>::treap_node *
+implicit_treap<T, Allocator>::merge(treap_node *node1, treap_node *node2) {
+    if (node1 == nullptr) {
+        return node2;
+    }
+    if (node2 == nullptr) {
+        return node1;
+    }
+    if (node1->get_priority() > node2->get_priority()) {
+        node1->set_right(merge(node1->get_right(), node2));
+        return node1;
+    }
+    node2->set_left(merge(node1, node2->get_left()));
+    return node2;
+}
+
+template<typename T, typename Allocator>
+auto implicit_treap<T, Allocator>::split(treap_node *node, size_type index) -> std::pair<treap_node *, treap_node *> {
+    if (node == nullptr || index <= 0) {
+        return std::make_pair(nullptr, node);
+    }
+    if (index >= node->size()) {
+        return std::make_pair(node, nullptr);
+    }
+    if (node->left_size() < index) {
+        auto right_pair = split(node->get_right(), index - node->left_size() - 1);
+        node->set_right(right_pair.first);
+        return {node, right_pair.second};
+    }
+    auto left_pair = split(node->get_left(), index);
+    node->set_left(left_pair.second);
+    return { left_pair.first, node};
+}
+
+template<typename T, typename Allocator>
+typename implicit_treap<T, Allocator>::iterator implicit_treap<T, Allocator>::push_back(const value_type &value) {
+    return emplace_back(value);
+}
+
+template<typename T, typename Allocator>
+typename implicit_treap<T, Allocator>::iterator implicit_treap<T, Allocator>::push_back(value_type &&value) {
+    return emplace_back(value);
+}
+
+template<typename T, typename Allocator>
+typename implicit_treap<T, Allocator>::iterator implicit_treap<T, Allocator>::insert(const value_type &value, size_type index) {
+    return emplace(index, value);
+}
+
+template<typename T, typename Allocator>
+typename implicit_treap<T, Allocator>::iterator implicit_treap<T, Allocator>::insert(value_type &&value, size_type index) {
+    return emplace(index, value);
+}
+
+template<typename T, typename Allocator>
+template<typename ...Args>
+typename implicit_treap<T, Allocator>::iterator implicit_treap<T, Allocator>::emplace_back(Args &&...args) {
+    return emplace(size(), std::forward<Args>(args)...);
+}
+
+template<typename T, typename Allocator>
+void implicit_treap<T, Allocator>::erase(size_type index) {
+    treap_node*& root = base_type::_root;
+    auto first_split_pair = split(root, index);
+    auto second_split_pair = split(first_split_pair.second, 1);
+    base_type::destroy_tree(second_split_pair.first);
+    if (empty()) {
+        root = nullptr;
+        return;
+    }
+    root = merge(first_split_pair.first, second_split_pair.second);
+}
+
+template<typename T, typename Allocator>
+typename implicit_treap<T, Allocator>::value_type& implicit_treap<T, Allocator>::operator[](size_type index) {
+    return *(base_type::begin() + index);
+}
+
+template<typename T, typename Allocator>
+const typename implicit_treap<T, Allocator>::value_type& implicit_treap<T, Allocator>::operator[](size_type index) const {
+    return *(base_type::cbegin() + index);
+}
+
+template<typename T, typename Allocator>
+template<typename ...Args>
+typename implicit_treap<T, Allocator>::iterator implicit_treap<T, Allocator>::emplace(size_type index, Args &&...args) {
+    if (index > size()) {
+        index = size();
+    }
+    treap_node*& root = base_type::_root;
+    // allocate memory for node and construct value
+    node_holder holder = base_type::construct_node(std::forward<Args>(args)...);
+    if (base_type::empty()) {
+        root = holder.release();
+        return base_type::begin();
+    }
+    // insert new constructed node into tree
+    std::pair<treap_node *, treap_node *> p = split(root, index);
+    root = merge(merge(p.first, holder.get()), p.second);
+    // release node holder, as insertion completed successfully
+    auto *node = holder.release();
+    return {node->get_value_address(), this, index};
+}
+
