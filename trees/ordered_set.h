@@ -29,8 +29,8 @@ private:
 };
 
 template<typename Key, typename Compare = std::less<Key>, typename Allocator = std::allocator<Key>>
-class ordered_set : public Treap<ordered_set_node<const Key>, Compare, Allocator> {
-    using base_type = Treap<ordered_set_node<const Key>, Compare, Allocator>;
+class ordered_set : public treap<ordered_set_node<const Key>, Compare, Allocator> {
+    using base_type = treap<ordered_set_node<const Key>, Compare, Allocator>;
 public:
 public:
     using typename base_type::key_type;

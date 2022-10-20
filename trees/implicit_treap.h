@@ -1,7 +1,8 @@
-#pragma once
+#ifndef BASICS_IMPLICIT_TREAP_BASE_H
+#define BASICS_IMPLICIT_TREAP_BASE_H
 
 #include <utility>
-#include <treap.h>
+#include <treap_base.h>
 
 template<typename T>
 class implicit_treap_node : public treap_node_base<implicit_treap_node<T>> {
@@ -32,8 +33,8 @@ private:
 };
 
 template<typename T, typename Allocator>
-class implicit_treap : public Treap<implicit_treap_node<T>, std::less<size_t>, Allocator> {
-    using base_type = Treap<implicit_treap_node<T>, std::less<size_t>, Allocator>;
+class implicit_treap : public treap_base<implicit_treap_node<T>, Allocator> {
+    using base_type = treap_base<implicit_treap_node<T>, Allocator>;
 public:
     using typename base_type::key_type;
     using typename base_type::value_type;
@@ -194,3 +195,4 @@ typename implicit_treap<T, Allocator>::iterator implicit_treap<T, Allocator>::em
     return {node->get_value_address(), this, index};
 }
 
+#endif // BASICS_IMPLICIT_TREAP_BASE_H
