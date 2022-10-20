@@ -179,10 +179,6 @@ public:
 protected:
     treap_node *_root = nullptr;
     node_allocator_type _node_allocator;
-public:
-    int maxDepth() const;
-
-    int maxDepth(const treap_node *node) const;
 
 public:
     explicit treap_base(const allocator_type &allocator = allocator_type());
@@ -454,19 +450,6 @@ typename treap_base<Node, Allocator>::node_holder treap_base<Node, Allocator>::c
     // initialize non-initialized memory for avoiding segfaults
     holder->set_members(random_generator(), nullptr, nullptr);
     return holder;
-}
-
-template<typename Node, typename Allocator>
-int treap_base<Node, Allocator>::maxDepth() const {
-    return maxDepth(_root);
-}
-
-template<typename Node, typename Allocator>
-int treap_base<Node, Allocator>::maxDepth(const treap_node *node) const {
-    if (node == nullptr) {
-        return 0;
-    }
-    return std::max(maxDepth(node->get_right()), maxDepth(node->get_left())) + 1;
 }
 
 template<typename Node, typename Allocator>
