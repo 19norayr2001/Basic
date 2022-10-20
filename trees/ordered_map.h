@@ -3,6 +3,8 @@
 
 #include <treap.h>
 
+namespace nstd {
+
 template<typename Key, typename Value>
 class ordered_map_node : public treap_node_base<ordered_map_node<Key, Value>> {
     using base_type = treap_node_base<ordered_map_node<Key, Value>>;
@@ -72,5 +74,7 @@ public:
         return base_type::find(key)->second;
     }
 };
+
+} // namespace nstd
 
 #endif //BASICS_ORDERED_MAP_H

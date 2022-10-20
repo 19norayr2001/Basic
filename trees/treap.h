@@ -8,6 +8,8 @@
 #include <stack>
 #include <treap_base.h>
 
+namespace nstd {
+
 template<typename Node, typename Compare, typename Allocator>
 class treap : public treap_base<Node, Allocator> {
     using _base = treap_base<Node, Allocator>;
@@ -34,7 +36,8 @@ private:
     key_compare _comparator;
 
 public:
-    explicit treap(const key_compare &comparator = key_compare(), const allocator_type &allocator = allocator_type());
+    explicit treap(const key_compare &comparator = key_compare(),
+                   const allocator_type &allocator = allocator_type());
 
     treap(const treap &other);
 
@@ -164,7 +167,8 @@ treap<Node, Compare, Allocator>::merge(treap_node *node1, treap_node *node2) {
 template<typename Node, typename Compare, typename Allocator>
 template<bool KeyIncluded>
 auto
-treap<Node, Compare, Allocator>::split(treap_node *node, const key_type &key) -> std::pair<treap_node *, treap_node *> {
+treap<Node, Compare, Allocator>::split(treap_node *node,
+                                       const key_type &key) -> std::pair<treap_node *, treap_node *> {
     std::stack<treap_node *> nodes;
     std::stack<bool> compares;
     // gather all splittable nodes in stack
@@ -323,5 +327,7 @@ treap<Node, Compare, Allocator>::order_of_key(const key_type &key) const {
     auto dummy_iterator = const_iterator(nullptr, this, 0);
     return it - dummy_iterator;
 }
+
+} // namespace nstd
 
 #endif // BASICS_TREAP_H

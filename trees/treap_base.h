@@ -7,6 +7,8 @@
 #include <chrono>
 #include <random>
 
+namespace nstd {
+
 template<typename Node>
 class treap_node_base {
     using treap_node = Node;
@@ -251,7 +253,7 @@ std::mt19937_64 treap_base<Node, Allocator>::random_generator(
 template<typename Node, typename Allocator>
 template<bool B>
 treap_base<Node, Allocator>::common_iterator<B>::common_iterator(value_type *value, treap_type *treap,
-                                                                     size_type index)
+                                                                 size_type index)
         :_value(value), _treap(treap), _index(index) {}
 
 template<typename Node, typename Allocator>
@@ -565,5 +567,7 @@ template<typename Node, typename Allocator>
 typename treap_base<Node, Allocator>::const_reverse_iterator treap_base<Node, Allocator>::crend() const {
     return {cbegin()};
 }
+
+} // namespace nstd
 
 #endif //BASICS_TREAP_BASE_H

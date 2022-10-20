@@ -3,6 +3,8 @@
 
 #include <treap.h>
 
+namespace nstd {
+
 template<typename Key>
 class ordered_set_node : public treap_node_base<ordered_set_node<Key>> {
 private:
@@ -66,6 +68,8 @@ public:
     reverse_iterator rbegin() const { return base_type::crbegin(); }
 
     reverse_iterator rend() const { return base_type::crend(); }
-};
+    };
+
+} // namespace nstd
 
 #endif //BASICS_ORDERED_SET_H

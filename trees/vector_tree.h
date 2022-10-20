@@ -3,6 +3,8 @@
 
 #include <implicit_treap.h>
 
+namespace nstd {
+
 template<typename T, typename Allocator = std::allocator<T>>
 class vector_tree : public implicit_treap<T, Allocator> {
     using base_type = implicit_treap<T, Allocator>;
@@ -29,5 +31,7 @@ public:
         }
     }
 };
+
+} // namespace nstd
 
 #endif //BASICS_VECTOR_TREE_H

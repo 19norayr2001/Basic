@@ -4,6 +4,8 @@
 #include <utility>
 #include <treap_base.h>
 
+namespace nstd {
+
 template<typename T>
 class implicit_treap_node : public treap_node_base<implicit_treap_node<T>> {
 private:
@@ -154,7 +156,8 @@ implicit_treap<T, Allocator>::merge(treap_node *node1, treap_node *node2) {
 }
 
 template<typename T, typename Allocator>
-auto implicit_treap<T, Allocator>::split(treap_node *node, size_type index) -> std::pair<treap_node *, treap_node *> {
+auto
+implicit_treap<T, Allocator>::split(treap_node *node, size_type index) -> std::pair<treap_node *, treap_node *> {
     if (node == nullptr || index <= 0) {
         return std::make_pair(nullptr, node);
     }
@@ -224,7 +227,8 @@ implicit_treap<T, Allocator>::operator[](size_type index) const {
 
 template<typename T, typename Allocator>
 template<typename ...Args>
-typename implicit_treap<T, Allocator>::iterator implicit_treap<T, Allocator>::emplace(size_type index, Args &&...args) {
+typename implicit_treap<T, Allocator>::iterator
+implicit_treap<T, Allocator>::emplace(size_type index, Args &&...args) {
     if (index > size()) {
         index = size();
     }
@@ -241,5 +245,7 @@ typename implicit_treap<T, Allocator>::iterator implicit_treap<T, Allocator>::em
     auto *node = holder.release();
     return {node->get_value_address(), this, index};
 }
+
+} // namespace nstd
 
 #endif // BASICS_IMPLICIT_TREAP_BASE_H
