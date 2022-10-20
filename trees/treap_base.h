@@ -9,12 +9,32 @@
 
 namespace nstd {
 
+/**
+ * Treap node base class
+ * Implements basic part of the treap node (left, right child nodes, priority)
+ * Serves as base class for all kind of treap nodes
+ * Does not have key, value getter functions, as they are different for each data structure
+ * @tparam Node Treap node class, which inherits from treap_node_base
+ * Template parameter is for avoiding persistent down casts
+ */
 template<typename Node>
 class treap_node_base {
     using treap_node = Node;
+
 protected:
     using size_type = size_t;
     using priority_type = unsigned long long;
+
+private:
+    // node priority presented in integer type
+    priority_type _priority;
+    // left child
+    treap_node *_left;
+    // right child
+    treap_node *_right;
+    // size showing how many nodes are lying under tree with root of this node
+    size_type _size;
+
 public:
     explicit treap_node_base(priority_type priority = 0, treap_node *left = nullptr,
                              treap_node *right = nullptr)
@@ -56,15 +76,17 @@ public:
     priority_type get_priority() const { return _priority; }
 
 private:
+    /**
+     * Updates size member corresponding to left and right nodes
+     */
     void update() { _size = left_size() + right_size() + 1; }
-
-private:
-    priority_type _priority;
-    treap_node *_left;
-    treap_node *_right;
-    size_type _size;
 };
 
+/**
+ * Treap Node destructor class
+ * Is used as unique pointer destructor class
+ * @tparam Allocator Treap node allocator class
+ */
 template<typename Allocator>
 class treap_node_destructor {
     using allocator_type = Allocator;
@@ -83,6 +105,10 @@ public:
     explicit treap_node_destructor(allocator_type &allocator, bool value_constructed = false) noexcept
             : _allocator(allocator), value_constructed(value_constructed) {}
 
+    /**
+     * Destroys underlying value, if it's constructed and deallocates node memory
+     * @param node treap node pointer
+     */
     void operator()(pointer node) _NOEXCEPT {
         if (value_constructed) {
             allocator_traits::destroy(_allocator, node->get_value_address());
@@ -112,6 +138,10 @@ protected:
     using node_holder = std::unique_ptr<treap_node, node_destructor>;
 
 private:
+    /**
+     * Iterator class for treap data structure
+     * @tparam B determines is iterator class for const elements or not
+     */
     template<bool B>
     class common_iterator {
         friend class common_iterator<!B>;
@@ -183,10 +213,12 @@ protected:
 public:
     explicit treap_base(const allocator_type &allocator = allocator_type());
 
+    /** In base treap class we already don't know how to insert elements, so copy constructor is deleted */
     treap_base(const treap_base &other) = delete;
 
     treap_base(treap_base &&other) noexcept;
 
+    /** In base treap class we already don't know how to insert elements, so copy assignment operator is deleted */
     treap_base &operator=(const treap_base &other) = delete;
 
     treap_base &operator=(treap_base &&other) noexcept;
@@ -194,13 +226,30 @@ public:
     ~treap_base();
 
 protected:
+    /**
+     * Destroys underlying tree node values and deallocates memory
+     * @param node
+     */
     void destroy_tree(treap_node *node);
 
+    /**
+     * Constructs treap node and it's value with passed constructor arguments
+     * Uses perfect forwarding technique
+     * @tparam Args constructor argument types
+     * @param args constructor arguments
+     * @return node holder, i.e. unique_pointer with special destructor class
+     */
     template<typename... Args>
     node_holder construct_node(Args &&... args);
 
     treap_node *node_of_order(size_type index);
 
+    /**
+     * Works with O(log size) complexity
+     * @param index order of node
+     * @return proper treap node index, when index < size, nullptr when index = size
+     * Throws std::out_of_range exception, when index > size
+     */
     const treap_node *node_of_order(size_type index) const;
 
 public:
