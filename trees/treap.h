@@ -125,7 +125,7 @@ template<typename Node, typename Compare, typename Allocator>
 treap<Node, Compare, Allocator> &
 treap<Node, Compare, Allocator>::operator=(const treap &other) {
     if (this != &other) {
-        treap<Node, Compare, Allocator> copied(other);
+        treap copied(other);
         this->swap(copied);
     }
     return *this;
@@ -135,7 +135,7 @@ template<typename Node, typename Compare, typename Allocator>
 treap<Node, Compare, Allocator> &
 treap<Node, Compare, Allocator>::operator=(treap &&other) noexcept {
     if (this != &other) {
-        treap<Node, Compare, Allocator> moved(std::move(other));
+        treap moved(std::move(other));
         this->swap(moved);
     }
     return *this;

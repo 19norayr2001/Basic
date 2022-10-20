@@ -62,6 +62,19 @@ public:
     using typename base_type::const_reverse_iterator;
 
 public:
+    explicit implicit_treap(const allocator_type &allocator = allocator_type());
+
+    implicit_treap(const implicit_treap &other);
+
+    implicit_treap(implicit_treap &&other) noexcept;
+
+    implicit_treap &operator=(const implicit_treap &other);
+
+    implicit_treap &operator=(implicit_treap &&other) noexcept;
+
+    ~implicit_treap() = default;
+
+public:
     iterator push_back(const value_type &value);
 
     iterator push_back(value_type &&value);
@@ -93,6 +106,42 @@ private:
 
     std::pair<treap_node *, treap_node *> split(treap_node *node, size_type index);
 };
+
+template<typename Node, typename Allocator>
+implicit_treap<Node, Allocator>::implicit_treap(const allocator_type &allocator)
+        : base_type(allocator) {}
+
+template<typename Node, typename Allocator>
+implicit_treap<Node, Allocator>::implicit_treap(const implicit_treap &other)
+        : base_type(other._node_allocator) {
+    for (auto it = other.begin(); it != other.end(); ++it) {
+        emplace_back(*it);
+    }
+}
+
+template<typename Node, typename Allocator>
+implicit_treap<Node, Allocator>::implicit_treap(implicit_treap &&other) noexcept
+        : base_type(std::move(other)) {}
+
+template<typename Node, typename Allocator>
+implicit_treap<Node, Allocator> &
+implicit_treap<Node, Allocator>::operator=(const implicit_treap &other) {
+    if (this != &other) {
+        implicit_treap copied(other);
+        this->swap(copied);
+    }
+    return *this;
+}
+
+template<typename Node, typename Allocator>
+implicit_treap<Node, Allocator> &
+implicit_treap<Node, Allocator>::operator=(implicit_treap &&other) noexcept {
+    if (this != &other) {
+        implicit_treap moved(std::move(other));
+        this->swap(moved);
+    }
+    return *this;
+}
 
 template<typename T, typename Allocator>
 typename implicit_treap<T, Allocator>::treap_node *
