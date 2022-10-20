@@ -36,9 +36,6 @@ private:
 public:
     explicit treap(const key_compare &comparator = key_compare(), const allocator_type &allocator = allocator_type());
 
-    treap(std::initializer_list<value_type> il, const key_compare &comparator = key_compare(),
-          const allocator_type &allocator = allocator_type());
-
     treap(const treap &other);
 
     treap(treap &&other) noexcept;
@@ -111,15 +108,6 @@ private:
 template<typename Node, typename Compare, typename Allocator>
 treap<Node, Compare, Allocator>::treap(const key_compare &comparator, const allocator_type &allocator)
         : _base(allocator), _comparator(comparator) {}
-
-template<typename Node, typename Compare, typename Allocator>
-treap<Node, Compare, Allocator>::treap(std::initializer_list<value_type> il, const key_compare &comparator,
-                                       const allocator_type &allocator)
-        : _base(allocator), _comparator(comparator) {
-    for (const auto &value: il) {
-        emplace(value);
-    }
-}
 
 template<typename Node, typename Compare, typename Allocator>
 treap<Node, Compare, Allocator>::treap(const treap &other)

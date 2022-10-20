@@ -22,7 +22,7 @@ public:
 
     const key_type &get_key() const { return _key; }
 
-    const value_type &get_value() const {return _key; }
+    const value_type &get_value() const { return _key; }
 
 private:
     key_type _key;
@@ -32,9 +32,8 @@ template<typename Key, typename Compare = std::less<Key>, typename Allocator = s
 class ordered_set : public treap<ordered_set_node<const Key>, Compare, Allocator> {
     using base_type = treap<ordered_set_node<const Key>, Compare, Allocator>;
 public:
-public:
-    using typename base_type::key_type;
-    using typename base_type::value_type;
+    using key_type = Key;
+    using value_type = Key;
     using typename base_type::key_compare;
     using typename base_type::allocator_type;
     using typename base_type::size_type;
@@ -45,18 +44,28 @@ public:
     using reverse_iterator = const_reverse_iterator;
 public:
     using base_type::base_type;
+
+    ordered_set(std::initializer_list<key_type> il,
+                const key_compare &comparator = key_compare(),
+                const allocator_type &allocator = allocator_type())
+            : base_type(comparator, allocator) {
+        for (const auto &key: il) {
+            base_type::emplace(key);
+        }
+    }
+
 public:
-    iterator find(const key_type& key) const {
+    iterator find(const key_type &key) const {
         return base_type::find(key);
     }
 
     iterator begin() const { return base_type::cbegin(); }
 
-    iterator end() const {return base_type::cend(); }
+    iterator end() const { return base_type::cend(); }
 
     reverse_iterator rbegin() const { return base_type::crbegin(); }
 
-    reverse_iterator rend() const {return base_type::crend(); }
+    reverse_iterator rend() const { return base_type::crend(); }
 };
 
 #endif //BASICS_ORDERED_SET_H
