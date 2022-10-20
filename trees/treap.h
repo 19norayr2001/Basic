@@ -122,7 +122,7 @@ treap<Node, Compare, Allocator>::treap(std::initializer_list<value_type> il, con
 }
 
 template<typename Node, typename Compare, typename Allocator>
-treap<Node, Compare, Allocator>::treap(const treap<Node, Compare, Allocator> &other)
+treap<Node, Compare, Allocator>::treap(const treap &other)
         : _base(other._node_allocator), _comparator(other._comparator) {
     for (auto it = other.begin(); it != other.end(); ++it) {
         insert(*it);
@@ -130,12 +130,12 @@ treap<Node, Compare, Allocator>::treap(const treap<Node, Compare, Allocator> &ot
 }
 
 template<typename Node, typename Compare, typename Allocator>
-treap<Node, Compare, Allocator>::treap(treap<Node, Compare, Allocator> &&other) noexcept
+treap<Node, Compare, Allocator>::treap(treap &&other) noexcept
         : _base(std::move(other)), _comparator(std::move(other._comparator)) {}
 
 template<typename Node, typename Compare, typename Allocator>
 treap<Node, Compare, Allocator> &
-treap<Node, Compare, Allocator>::operator=(const treap<Node, Compare, Allocator> &other) {
+treap<Node, Compare, Allocator>::operator=(const treap &other) {
     if (this != &other) {
         treap<Node, Compare, Allocator> copied(other);
         this->swap(copied);
@@ -145,7 +145,7 @@ treap<Node, Compare, Allocator>::operator=(const treap<Node, Compare, Allocator>
 
 template<typename Node, typename Compare, typename Allocator>
 treap<Node, Compare, Allocator> &
-treap<Node, Compare, Allocator>::operator=(treap<Node, Compare, Allocator> &&other) noexcept {
+treap<Node, Compare, Allocator>::operator=(treap &&other) noexcept {
     if (this != &other) {
         treap<Node, Compare, Allocator> moved(std::move(other));
         this->swap(moved);
