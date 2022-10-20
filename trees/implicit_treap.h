@@ -35,7 +35,7 @@ private:
 template<typename T, typename Allocator>
 class implicit_treap : public treap_base<implicit_treap_node<T>, Allocator> {
     using base_type = treap_base<implicit_treap_node<T>, Allocator>;
-
+    using treap_node = implicit_treap_node<T>;
 public:
     using typename base_type::key_type;
     using typename base_type::value_type;
@@ -43,14 +43,7 @@ public:
     using typename base_type::size_type;
 
 private:
-    using treap_node = implicit_treap_node<T>;
-    using alloc_traits = std::allocator_traits<allocator_type>;
-    using node_allocator_type = typename alloc_traits::template rebind_alloc<treap_node>;
-    using node_traits = std::allocator_traits<node_allocator_type>;
-
-private:
-    using node_destructor = treap_node_destructor<node_allocator_type>;
-    using node_holder = std::unique_ptr<treap_node, node_destructor>;
+    using typename base_type::node_holder;
 
 private:
     using base_type::_root;
