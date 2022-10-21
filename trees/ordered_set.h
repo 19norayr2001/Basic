@@ -41,9 +41,9 @@ public:
     using typename base_type::size_type;
 public:
     using const_iterator = typename base_type::const_iterator;
-    using iterator = const_iterator;
+    using iterator = typename base_type::iterator;
     using const_reverse_iterator = typename base_type::const_reverse_iterator;
-    using reverse_iterator = const_reverse_iterator;
+    using reverse_iterator = typename base_type::reverse_iterator;
 public:
     using base_type::base_type;
 
@@ -55,20 +55,6 @@ public:
             base_type::emplace(key);
         }
     }
-
-public:
-    iterator find(const key_type &key) const {
-        return base_type::find(key);
-    }
-
-    iterator begin() const { return base_type::cbegin(); }
-
-    iterator end() const { return base_type::cend(); }
-
-    reverse_iterator rbegin() const { return base_type::crbegin(); }
-
-    reverse_iterator rend() const { return base_type::crend(); }
-
 };
 
 } // namespace nstd
