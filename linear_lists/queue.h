@@ -10,9 +10,9 @@ class queue {
 public:
     typedef T value_type;
 public:
-    bool empty() const { return m_container.empty(); }
+    bool empty() const { return _container.empty(); }
 
-    size_t size() const { return m_container.size(); }
+    size_t size() const { return _container.size(); }
 
 public:
     value_type& front();
@@ -26,33 +26,33 @@ public:
     void pop();
 
 private:
-    Container m_container;
+    Container _container;
 };
 
 
 template<typename T, typename Container>
 const T& queue<T, Container>::front() const {
-    return m_container.front();
+    return _container.front();
 }
 
 template<typename T, typename Container>
 T& queue<T, Container>::front() {
-    return m_container.front();
+    return _container.front();
 }
 
 template<typename T, typename Container>
 void queue<T, Container>::push(const value_type& value) {
-    m_container.emplace_back(value);
+    _container.emplace_back(value);
 }
 
 template<typename T, typename Container>
 void queue<T, Container>::push(value_type&& value) {
-    m_container.emplace_back(std::move(value));
+    _container.emplace_back(std::move(value));
 }
 
 template<typename T, typename Container>
 void queue<T, Container>::pop() {
-    m_container.pop_front();
+    _container.pop_front();
 }
 
 } // namespace nstd

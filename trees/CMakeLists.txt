@@ -6,8 +6,6 @@ add_library(Trees
 		vector_tree.h
 		ordered_set.h
 		ordered_map.h
-		list_search_tree.h
-		list_search_tree.cpp
 		priority_queue.h
 		priority_queue.cpp
 		red_black_tree.h

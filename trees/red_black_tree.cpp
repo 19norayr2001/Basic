@@ -1,30 +1,30 @@
 #include "red_black_tree.h"
 
 RBTree::RBTree()
-        : m_root(nullptr), m_size(0) {}
+        : _root(nullptr), _size(0) {}
 
 RBTree::RBTree(const RBTree& obj)
-        : m_root(nullptr), m_size(obj.m_size) {
+        : _root(nullptr), _size(obj._size) {
     allocate(obj);
 }
 
 RBTree& RBTree::operator=(const RBTree& obj) {
     if (this != &obj) {
-        deallocate(m_root);
+        deallocate(_root);
         allocate(obj);
     }
     return *this;
 }
 
 RBTree::~RBTree() {
-    deallocate(m_root);
+    deallocate(_root);
 }
 
 void RBTree::insert(const int& val) {
-    m_size++;
-    if (m_root == nullptr) {
-        get_root() = m_root = new RBNode(val);
-        nill(m_root);
+    _size++;
+    if (_root == nullptr) {
+        get_root() = _root = new RBNode(val);
+        nill(_root);
         return;
     }
     RBNode* ptr = dynamic(insert_node(val));
@@ -37,7 +37,7 @@ void RBTree::remove(const int& val) {
     if (!find(val)) {
         return;
     }
-    m_size--;
+    _size--;
     RBNode* ptr = dynamic(remove_node(val));
     replace_child(ptr);
     if (!ptr->color) {
@@ -52,8 +52,8 @@ void RBTree::allocate(const RBTree& obj) {
         *this = RBTree();
         return;
     }
-    get_root() = m_root = new RBNode(obj.m_root->value);
-    alloc_help(m_root, obj.m_root);
+    get_root() = _root = new RBNode(obj._root->value);
+    alloc_help(_root, obj._root);
 }
 
 void RBTree::alloc_help(RBNode* root1, RBNode* root2) {
@@ -84,7 +84,7 @@ void RBTree::left_rotate(RBNode* p) {
     din->parent = p;
     p1->llink = p;
     if (p1->parent == nullptr) {
-        get_root() = m_root = p1;
+        get_root() = _root = p1;
     } else if (p1->parent->rlink == p) {
         p1->parent->rlink = p1;
     } else {
@@ -102,7 +102,7 @@ void RBTree::right_rotate(RBNode* p) {
     din->parent = p;
     p1->rlink = p;
     if (p1->parent == nullptr) {
-        get_root() = m_root = p1;
+        get_root() = _root = p1;
     } else if (p1->parent->llink == p) {
         p1->parent->llink = p1;
     } else {
@@ -154,7 +154,7 @@ void RBTree::black_uncle(RBNode* ptr, RBNode* father, RBNode* grand, RBNode* unc
 
 void RBTree::uncle_part_insert(RBNode* ptr, const int& val) {
     ptr->color = false;
-    while (ptr != m_root && !(ptr->parent->color)) {
+    while (ptr != _root && !(ptr->parent->color)) {
         RBNode* father = ptr->parent;
         RBNode* grand = father->parent;
         RBNode* uncl = uncle(ptr);
@@ -168,13 +168,13 @@ void RBTree::uncle_part_insert(RBNode* ptr, const int& val) {
         black_uncle(ptr, father, grand, uncl);
         break;
     }
-    m_root->color = true;
+    _root->color = true;
 }
 
 void RBTree::remove_part1(RBNode* ptr) {
     if (ptr->parent == nullptr) {
         if (is_nill(ptr)) {
-            get_root() = m_root = nullptr;
+            get_root() = _root = nullptr;
             delete ptr;
         }
     } else {

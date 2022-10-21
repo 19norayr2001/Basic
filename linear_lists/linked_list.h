@@ -42,8 +42,8 @@ private:
     void deallocate();
 
 private:
-    Node* m_head;
-    Node* m_tail;
+    Node* _head;
+    Node* _tail;
 };
 
 #endif

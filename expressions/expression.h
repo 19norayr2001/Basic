@@ -20,7 +20,7 @@ public:
     virtual int calculate(std::unordered_map<std::string, int>&) const = 0;
 
 protected:
-    std::vector<Symbol> m_infix;
+    std::vector<Symbol> _infix;
 };
 
 #endif // EXPRESSION_H

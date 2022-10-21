@@ -29,7 +29,7 @@ public:
     void remove(const int&);
 
 public:
-    int size() const { return m_size; }
+    int size() const { return _size; }
 
 private:
     void allocate(const RBTree&);
@@ -71,8 +71,8 @@ private:
     RBNode* dynamic(Node* ptr) const { return dynamic_cast<RBNode*>(ptr); }
 
 private:
-    RBNode* m_root;
-    int m_size;
+    RBNode* _root;
+    int _size;
 };
 
 #endif // RB_TREE_H

@@ -19,8 +19,8 @@ public:
     friend std::istream& operator>><mod, integer_type>(std::istream&, Field<mod, T>&);
 
 public:
-    Field(integer_type x = 0)
-            : value((x % mod + mod) % mod) {
+    Field(integer_type value = 0)
+            : _value((value % mod + mod) % mod) {
     }
 
     Field<mod, T>& operator=(const Field<mod, T>&);
@@ -56,7 +56,7 @@ private:
 
     static_assert(checkMod(), "Mod must be a prime number");
 private:
-    integer_type value;
+    integer_type _value;
 };
 
 template<int mod, typename T>
@@ -97,22 +97,22 @@ std::ostream& operator<<(std::ostream& out, const Field<mod, T>& num) {
 
 template<int mod, typename T>
 std::istream& operator>>(std::istream& in, Field<mod, T>& num) {
-    in >> num.value;
+    in >> num._value;
     return in;
 }
 
 template<int mod, typename T>
 Field<mod, T>& Field<mod, T>::operator=(const Field<mod, T>& num) {
     if (this != &num) {
-        this->value = num.value;
+        this->_value = num._value;
     }
     return *this;
 }
 
 template<int mod, typename T>
 Field<mod, T>& Field<mod, T>::operator*=(const Field<mod, T>& num) {
-    this->value *= num.value;
-    this->value %= mod;
+    this->_value *= num._value;
+    this->_value %= mod;
     return *this;
 }
 
@@ -129,21 +129,21 @@ Field<mod, T>& Field<mod, T>::operator%=(const Field<mod, T>& num) {
     if (num == 0) {
         throw DividedByZeroException();
     }
-    this->value %= num.value;
+    this->_value %= num._value;
     return *this;
 }
 
 template<int mod, typename T>
 Field<mod, T>& Field<mod, T>::operator+=(const Field<mod, T>& num) {
-    this->value += num.value;
-    this->value %= mod;
+    this->_value += num._value;
+    this->_value %= mod;
     return *this;
 }
 
 template<int mod, typename T>
 Field<mod, T>& Field<mod, T>::operator-=(const Field<mod, T>& num) {
-    this->value += (mod - num.value);
-    this->value %= mod;
+    this->_value += (mod - num._value);
+    this->_value %= mod;
     return *this;
 }
 
@@ -154,12 +154,12 @@ Field<mod, T> Field<mod, T>::pow(integer_type num) const {
 
 template<int mod, typename T>
 bool Field<mod, T>::operator==(const Field<mod, T>& num) const {
-    return this->value == num.value;
+    return this->_value == num._value;
 }
 
 template<int mod, typename T>
 bool Field<mod, T>::operator<(const Field<mod, T>& num) const {
-    return this->value < num.value;
+    return this->_value < num._value;
 }
 
 template<int mod, typename T>
@@ -214,7 +214,7 @@ bool operator!=(const Field<mod, T>& num1, const Field<mod, T>& num2) {
 
 template<int mod, typename T>
 Field<mod, T>::operator integer_type() const {
-    return this->value;
+    return this->_value;
 }
 
 template<int mod, typename T>

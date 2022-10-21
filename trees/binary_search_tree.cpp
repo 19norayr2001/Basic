@@ -1,29 +1,29 @@
 #include "binary_search_tree.h"
 
 BinarySearchTree::BinarySearchTree()
-        : m_root(nullptr) {}
+        : _root(nullptr) {}
 
 BinarySearchTree::BinarySearchTree(const BinarySearchTree& obj)
-        : m_root(nullptr) {
+        : _root(nullptr) {
     allocate(obj);
 }
 
 BinarySearchTree& BinarySearchTree::operator=(const BinarySearchTree& obj) {
     if (this != &obj) {
-        deallocate(m_root);
+        deallocate(_root);
         allocate(obj);
     }
     return *this;
 }
 
 BinarySearchTree::~BinarySearchTree() {
-    deallocate(m_root);
+    deallocate(_root);
 }
 
 void BinarySearchTree::insert(const int& value) {
-    if (m_root == nullptr) {
-        m_root = new Node(value);
-        nill(m_root);
+    if (_root == nullptr) {
+        _root = new Node(value);
+        nill(_root);
         return;
     }
     Node* ptr = insert_node(value);
@@ -36,9 +36,9 @@ void BinarySearchTree::remove(const int& value) {
     }
     Node* ptr = remove_node(value);
     replace_child(ptr);
-    if (is_nill(m_root)) {
-        delete m_root;
-        m_root = nullptr;
+    if (is_nill(_root)) {
+        delete _root;
+        _root = nullptr;
     }
 }
 
@@ -52,8 +52,8 @@ void BinarySearchTree::allocate(const BinarySearchTree& obj) {
         *this = BinarySearchTree();
         return;
     }
-    m_root = new Node(obj.m_root->value);
-    alloc_help(m_root, obj.m_root);
+    _root = new Node(obj._root->value);
+    alloc_help(_root, obj._root);
 }
 
 void BinarySearchTree::alloc_help(Node* root1, Node* root2) {
@@ -91,7 +91,7 @@ void BinarySearchTree::deallocate(Node* root) {
 }
 
 Node* BinarySearchTree::insert_node(const int& value) {
-    Node* ptr = m_root;
+    Node* ptr = _root;
     do {
         if (ptr->value > value)
             ptr = ptr->llink;
@@ -114,9 +114,9 @@ Node* BinarySearchTree::remove_node(const int& value) {
 }
 
 Node* BinarySearchTree::find_node(const int& value) const {
-    Node* ptr = m_root;
-    if (m_root == nullptr) {
-        return m_root;
+    Node* ptr = _root;
+    if (_root == nullptr) {
+        return _root;
     }
     while (!is_nill(ptr) && ptr->value != value) {
         if (ptr->value > value) {

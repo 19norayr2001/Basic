@@ -3,10 +3,10 @@
 #include "linked_list.h"
 
 LinkedList::LinkedList()
-        : m_head(nullptr), m_tail(nullptr) {
-    m_head = m_tail = new Node();
-    m_head->next = m_head;
-    m_head->previous = m_head;
+        : _head(nullptr), _tail(nullptr) {
+    _head = _tail = new Node();
+    _head->next = _head;
+    _head->previous = _head;
 }
 
 LinkedList::LinkedList(const LinkedList& object) {
@@ -26,40 +26,40 @@ LinkedList::~LinkedList() {
 }
 
 void LinkedList::push_back(const int& num) {
-    m_tail->next = new Node(num);
-    m_tail->next->previous = m_tail;
-    m_tail = m_tail->next;
-    m_tail->next = m_head;
+    _tail->next = new Node(num);
+    _tail->next->previous = _tail;
+    _tail = _tail->next;
+    _tail->next = _head;
 }
 
 void LinkedList::pop_back() {
-    if (m_head != m_tail) {
-        m_tail = m_tail->previous;
-        delete m_tail->next;
-        m_tail->next = m_head;
+    if (_head != _tail) {
+        _tail = _tail->previous;
+        delete _tail->next;
+        _tail->next = _head;
     }
 }
 
 void LinkedList::push_front(const int& num) {
-    m_head->value = num;
-    m_head->previous = new Node();
-    m_head->previous->next = m_head;
-    m_head = m_head->previous;
-    m_head->previous = m_tail;
-    m_tail->next = m_head;
+    _head->value = num;
+    _head->previous = new Node();
+    _head->previous->next = _head;
+    _head = _head->previous;
+    _head->previous = _tail;
+    _tail->next = _head;
 }
 
 void LinkedList::pop_front() {
-    if (m_head != m_tail) {
-        m_head = m_head->next;
-        delete m_head->previous;
-        m_head->previous = m_tail;
-        m_tail->next = m_head;
+    if (_head != _tail) {
+        _head = _head->next;
+        delete _head->previous;
+        _head->previous = _tail;
+        _tail->next = _head;
     }
 }
 
 void LinkedList::insert(const int& value, Node* prev) {
-    if (prev == m_tail) {
+    if (prev == _tail) {
         this->push_back(value);
     } else {
         Node* temp = new Node(value);
@@ -71,7 +71,7 @@ void LinkedList::insert(const int& value, Node* prev) {
 }
 
 void LinkedList::erase(Node* obj) {
-    if (obj == m_tail) {
+    if (obj == _tail) {
         this->pop_back();
     } else {
         obj->previous->next = obj->next;
@@ -81,8 +81,8 @@ void LinkedList::erase(Node* obj) {
 }
 
 std::ostream& operator<<(std::ostream& print, LinkedList& obj) {
-    LinkedList::Node* ptr = obj.m_head->next;
-    while (ptr != obj.m_head) {
+    LinkedList::Node* ptr = obj._head->next;
+    while (ptr != obj._head) {
         print << ptr->value << std::endl;
         ptr = ptr->next;
     }
@@ -90,26 +90,26 @@ std::ostream& operator<<(std::ostream& print, LinkedList& obj) {
 }
 
 void LinkedList::allocate(const LinkedList& object) {
-    Node* ptrobj = object.m_head;
-    m_head = new Node();
-    Node* ptrthis = m_head;
-    while (ptrobj->next != object.m_head) {
+    Node* ptrobj = object._head;
+    _head = new Node();
+    Node* ptrthis = _head;
+    while (ptrobj->next != object._head) {
         ptrthis->next = new Node();
         ptrthis->next->previous = ptrthis;
         ptrthis->next->value = ptrobj->next->value;
         ptrthis = ptrthis->next;
         ptrobj = ptrobj->next;
     }
-    m_tail = ptrthis;
-    m_tail->next = m_head;
-    m_head->previous = m_tail;
+    _tail = ptrthis;
+    _tail->next = _head;
+    _head->previous = _tail;
 }
 
 void LinkedList::deallocate() {
-    Node* ptr = m_head;
-    while (ptr != m_tail) {
+    Node* ptr = _head;
+    while (ptr != _tail) {
         ptr = ptr->next;
         delete ptr->previous;
     }
-    delete m_tail;
+    delete _tail;
 }

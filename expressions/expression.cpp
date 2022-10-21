@@ -14,13 +14,13 @@ Expression::Expression(const std::string& s) {
             continue;
         }
         if (!str.empty()) {
-            m_infix.emplace_back(str);
+            _infix.emplace_back(str);
         }
         str = ch;
-        m_infix.emplace_back(str);
+        _infix.emplace_back(str);
         str.clear();
     }
     if (!str.empty()) {
-        m_infix.emplace_back(str);
+        _infix.emplace_back(str);
     }
 }

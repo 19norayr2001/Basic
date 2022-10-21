@@ -24,7 +24,7 @@ public:
     virtual ~BinarySearchTree();
 
 public:
-    bool empty() const { return m_root == nullptr; }
+    bool empty() const { return _root == nullptr; }
 
     virtual void insert(const int&);
 
@@ -46,7 +46,7 @@ protected:
 protected:
     bool is_nill(Node* ptr) const { return ptr->llink == nullptr && ptr->rlink == nullptr; }
 
-    Node*& get_root() { return m_root; }
+    Node*& get_root() { return _root; }
 
 protected:
     Node* insert_node(const int&);
@@ -61,7 +61,7 @@ private:
     void replace_child(Node*);
 
 private:
-    Node* m_root;
+    Node* _root;
 };
 
 #endif // BINARY_SEARCH_TREE_H

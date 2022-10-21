@@ -19,7 +19,7 @@ public:
     void toPostfix();
 
 private:
-    std::vector<Symbol> m_postfix;
+    std::vector<Symbol> _postfix;
 };
 
 #endif // POSTFIX_H

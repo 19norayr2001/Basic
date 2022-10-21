@@ -16,15 +16,15 @@ public:
     using difference_type = std::ptrdiff_t;
     typedef typename Container::iterator iterator_type;
 private:
-    Container* m_container;
-    iterator_type m_iterator;
+    Container* _container;
+    iterator_type _iterator;
 public:
     insert_iterator(Container& container, const iterator_type& iterator)
-            : m_container(std::addressof(container)), m_iterator(iterator) {}
+            : _container(std::addressof(container)), _iterator(iterator) {}
 
     insert_iterator<Container>& operator=(const typename Container::value_type& value) {
-        m_iterator = m_container->insert(m_iterator, value);
-        ++m_iterator;
+        _iterator = _container->insert(_iterator, value);
+        ++_iterator;
         return *this;
     }
 

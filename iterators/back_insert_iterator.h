@@ -8,7 +8,7 @@ namespace nstd {
 template<typename Container>
 class back_insert_iterator {
 private:
-    Container* m_container;
+    Container* _container;
 public:
     using iterator_category = std::output_iterator_tag;
     using value_type = void;
@@ -18,10 +18,10 @@ public:
     using difference_type = std::ptrdiff_t;
 public:
     explicit back_insert_iterator(Container& container)
-            : m_container(std::addressof(container)) {}
+            : _container(std::addressof(container)) {}
 
     back_insert_iterator<Container>& operator=(const typename Container::value_type& value) {
-        m_container->push_back(value);
+        _container->push_back(value);
         return *this;
     }
 

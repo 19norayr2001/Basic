@@ -26,8 +26,8 @@ private:
     void deallocate();
 
 private:
-    std::vector<int> m_heap;
-    int m_size;
+    std::vector<int> _heap;
+    int _size;
 };
 
 #endif // PRIORITY_QUEUE_H

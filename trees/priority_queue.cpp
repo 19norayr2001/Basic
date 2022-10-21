@@ -3,8 +3,8 @@
 #include "priority_queue.h"
 
 PriorityQueue::PriorityQueue()
-        : m_size(0) {
-    m_heap.push_back(0);
+        : _size(0) {
+    _heap.push_back(0);
 }
 
 PriorityQueue::PriorityQueue(const PriorityQueue& object) {
@@ -25,47 +25,47 @@ PriorityQueue::~PriorityQueue() {
 
 
 const int& PriorityQueue::top() const {
-    return m_heap[1];
+    return _heap[1];
 }
 
 void PriorityQueue::insert(const int& value) {
-    m_heap.push_back(value);
-    m_size++;
-    int id = m_size;
-    while (id != 1 && m_heap[id] < m_heap[id / 2]) {
-        std::swap(m_heap[id], m_heap[id / 2]);
+    _heap.push_back(value);
+    _size++;
+    int id = _size;
+    while (id != 1 && _heap[id] < _heap[id / 2]) {
+        std::swap(_heap[id], _heap[id / 2]);
         id /= 2;
     }
 }
 
 void PriorityQueue::pop() {
-    m_size--;
-    if (m_size == 0) {
-        m_heap.pop_back();
+    _size--;
+    if (_size == 0) {
+        _heap.pop_back();
     } else {
-        m_heap[1] = m_heap[m_size + 1];
-        m_heap.pop_back();
+        _heap[1] = _heap[_size + 1];
+        _heap.pop_back();
         int id = 1;
-        while ((2 * id <= m_size && m_heap[id] > m_heap[2 * id]) ||
-               (2 * id + 1 <= m_size && m_heap[id] > m_heap[2 * id + 1])) {
-            int* minn = &m_heap[2 * id];
+        while ((2 * id <= _size && _heap[id] > _heap[2 * id]) ||
+               (2 * id + 1 <= _size && _heap[id] > _heap[2 * id + 1])) {
+            int* minn = &_heap[2 * id];
             id *= 2;
-            if (id + 1 <= m_size && m_heap[id + 1] < m_heap[id]) {
-                minn = &m_heap[id + 1];
+            if (id + 1 <= _size && _heap[id + 1] < _heap[id]) {
+                minn = &_heap[id + 1];
                 id++;
             }
-            std::swap(*minn, m_heap[id / 2]);
+            std::swap(*minn, _heap[id / 2]);
         }
     }
 }
 
 void PriorityQueue::allocate(const PriorityQueue& object) {
-    m_size = object.m_size;
-    for (int i = 0; i < m_size; ++i) {
-        m_heap.push_back(object.m_heap[i]);
+    _size = object._size;
+    for (int i = 0; i < _size; ++i) {
+        _heap.push_back(object._heap[i]);
     }
 }
 
 void PriorityQueue::deallocate() {
-    m_heap.clear();
+    _heap.clear();
 }

@@ -10,9 +10,9 @@ class stack {
 public:
     typedef T value_type;
 public:
-    bool empty() const { return m_container.empty(); }
+    bool empty() const { return _container.empty(); }
 
-    size_t size() const { return m_container.size(); }
+    size_t size() const { return _container.size(); }
 
     const value_type& top() const;
 
@@ -25,32 +25,32 @@ public:
     void pop();
 
 private:
-    Container m_container;
+    Container _container;
 };
 
 template<typename T, typename Container>
 T& stack<T, Container>::top() {
-    return m_container.back();
+    return _container.back();
 }
 
 template<typename T, typename Container>
 const T& stack<T, Container>::top() const {
-    return m_container.back();
+    return _container.back();
 }
 
 template<typename T, typename Container>
 void stack<T, Container>::push(const value_type& value) {
-    m_container.emplace_back(value);
+    _container.emplace_back(value);
 }
 
 template<typename T, typename Container>
 void stack<T, Container>::push(value_type&& value) {
-    m_container.emplace_back(std::move(value));
+    _container.emplace_back(std::move(value));
 }
 
 template<typename T, typename Container>
 void stack<T, Container>::pop() {
-    m_container.pop_back();
+    _container.pop_back();
 }
 
 } // nstd namespace

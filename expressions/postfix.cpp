@@ -9,7 +9,7 @@ Postfix::Postfix(const std::string& s)
 
 int Postfix::calculate(std::unordered_map<std::string, int>& mp) const {
     std::stack<int> st;
-    for (const auto& smb: m_postfix) {
+    for (const auto& smb: _postfix) {
         if (smb.isNumber()) {
             st.push(smb.asNumber());
         } else if (smb.isIdentifier()) {
@@ -27,38 +27,38 @@ int Postfix::calculate(std::unordered_map<std::string, int>& mp) const {
 
 void Postfix::toPostfix() {
     std::stack<int> index;
-    size_t sz = m_infix.size();
+    size_t sz = _infix.size();
     for (int i = 0; i < sz; ++i) {
-        Symbol& s = m_infix[i];
+        Symbol& s = _infix[i];
         if (s.isNumber() || s.isIdentifier()) {
-            m_postfix.push_back(s);
+            _postfix.push_back(s);
         } else if (s.isOpenBracket()) {
             index.push(i);
         } else if (s.isCloseBracket()) {
-            while (!m_infix[index.top()].isOpenBracket()) {
-                m_postfix.push_back(m_infix[index.top()]);
+            while (!_infix[index.top()].isOpenBracket()) {
+                _postfix.push_back(_infix[index.top()]);
                 index.pop();
             }
             index.pop();
         } else if (s.isOperation()) {
             Operation op = s.asOperator();
             while (!index.empty()) {
-                Symbol& smb = m_infix[index.top()];
+                Symbol& smb = _infix[index.top()];
                 if (!smb.isOperation() || smb.asOperator().priority() < op.priority()) break;
-                m_postfix.push_back(smb);
+                _postfix.push_back(smb);
                 index.pop();
             }
             index.push(i);
         }
     }
     while (!index.empty()) {
-        m_postfix.push_back(m_infix[index.top()]);
+        _postfix.push_back(_infix[index.top()]);
         index.pop();
     }
 }
 
 std::ostream& operator<<(std::ostream& out, const Postfix& obj) {
-    for (const auto& smb: obj.m_postfix) {
+    for (const auto& smb: obj._postfix) {
         if (smb.isIdentifier()) {
             out << smb.asIdentifier();
         } else if (smb.isNumber()) {
