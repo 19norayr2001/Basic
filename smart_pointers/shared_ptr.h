@@ -7,22 +7,24 @@
 
 #include <atomic>
 
+namespace nstd {
+
 template<typename T>
-class SharedPtr {
+class shared_ptr {
 public:
-    explicit SharedPtr(T* ptr);
+    explicit shared_ptr(T* ptr);
 
-    explicit SharedPtr(std::nullptr_t null);
+    explicit shared_ptr(std::nullptr_t null);
 
-    SharedPtr(const SharedPtr<T>& obj);
+    shared_ptr(const shared_ptr<T>& obj);
 
-    SharedPtr(SharedPtr<T>&& other) noexcept;
+    shared_ptr(shared_ptr<T>&& other) noexcept;
 
-    SharedPtr<T>& operator=(const SharedPtr<T>& other);
+    shared_ptr<T>& operator=(const shared_ptr<T>& other);
 
-    SharedPtr<T>& operator=(SharedPtr<T>&& other) noexcept;
+    shared_ptr<T>& operator=(shared_ptr<T>&& other) noexcept;
 
-    ~SharedPtr();
+    ~shared_ptr();
 
 public:
     T& operator*();
@@ -35,89 +37,91 @@ public:
 
     T* get() const noexcept;
 
-    void swap(SharedPtr<T>& other) noexcept;
+    void swap(shared_ptr<T>& other) noexcept;
 
 private:
-    T* m_data;
-    std::atomic<unsigned int>* m_count;
+    T* _data;
+    std::atomic<unsigned int>* _count;
 };
 
 template<typename T>
-SharedPtr<T>::SharedPtr(T* ptr)
-        :m_data(ptr), m_count(new std::atomic<unsigned int>(1)) {}
+shared_ptr<T>::shared_ptr(T* ptr)
+        :_data(ptr), _count(new std::atomic<unsigned int>(1)) {}
 
 template<typename T>
-SharedPtr<T>::SharedPtr(std::nullptr_t)
-        :m_data(nullptr), m_count(nullptr) {}
+shared_ptr<T>::shared_ptr(std::nullptr_t)
+        :_data(nullptr), _count(nullptr) {}
 
 template<typename T>
-SharedPtr<T>::SharedPtr(const SharedPtr<T>& obj)
-        :m_data(obj.m_data), m_count(obj.m_count) {
-    if (m_data != nullptr) {
-        ++(*m_count);
+shared_ptr<T>::shared_ptr(const shared_ptr<T>& obj)
+        :_data(obj._data), _count(obj._count) {
+    if (_data != nullptr) {
+        ++(*_count);
     }
 }
 
 template<typename T>
-SharedPtr<T>::SharedPtr(SharedPtr<T>&& other) noexcept
-        :m_data(std::exchange(other.m_data, nullptr)), m_count(std::exchange(other.m_data, nullptr)) {}
+shared_ptr<T>::shared_ptr(shared_ptr<T>&& other) noexcept
+        :_data(std::exchange(other._data, nullptr)), _count(std::exchange(other._data, nullptr)) {}
 
 template<typename T>
-SharedPtr<T>& SharedPtr<T>::operator=(const SharedPtr<T>& other) {
+shared_ptr<T>& shared_ptr<T>::operator=(const shared_ptr<T>& other) {
     if (this != &other) {
-        SharedPtr<T> copied(other);
+        shared_ptr<T> copied(other);
         this->swap(copied);
     }
     return *this;
 }
 
 template<typename T>
-SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr<T>&& other) noexcept {
+shared_ptr<T>& shared_ptr<T>::operator=(shared_ptr<T>&& other) noexcept {
     if (this != &other) {
-        SharedPtr<T> moved(std::move(other));
+        shared_ptr<T> moved(std::move(other));
         this->swap(moved);
     }
     return *this;
 }
 
 template<typename T>
-SharedPtr<T>::~SharedPtr() {
-    if (m_count == nullptr) return;
-    if (--(*m_count) == 0) {
-        delete m_count;
-        delete m_data;
+shared_ptr<T>::~shared_ptr() {
+    if (_count == nullptr) return;
+    if (--(*_count) == 0) {
+        delete _count;
+        delete _data;
     }
 }
 
 template<typename T>
-T& SharedPtr<T>::operator*() {
-    return *m_data;
+T& shared_ptr<T>::operator*() {
+    return *_data;
 }
 
 template<typename T>
-const T& SharedPtr<T>::operator*() const {
-    return *m_data;
+const T& shared_ptr<T>::operator*() const {
+    return *_data;
 }
 
 template<typename T>
-T* SharedPtr<T>::operator->() {
-    return m_data;
+T* shared_ptr<T>::operator->() {
+    return _data;
 }
 
 template<typename T>
-const T* SharedPtr<T>::operator->() const {
-    return m_data;
+const T* shared_ptr<T>::operator->() const {
+    return _data;
 }
 
 template<typename T>
-T* SharedPtr<T>::get() const noexcept {
-    return m_data;
+T* shared_ptr<T>::get() const noexcept {
+    return _data;
 }
 
 template<typename T>
-void SharedPtr<T>::swap(SharedPtr<T>& other) noexcept {
-    std::swap(m_data, other.m_data);
-    std::swap(m_count, other.m_count);
+void shared_ptr<T>::swap(shared_ptr<T>& other) noexcept {
+    std::swap(_data, other._data);
+    std::swap(_count, other._count);
 }
+
+} // nstd namespace
 
 #endif //BASICS_SHARED_PTR_H

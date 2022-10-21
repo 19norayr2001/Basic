@@ -8,21 +8,21 @@
 
 TEST(SmartPointersTest, UniqeuePtr) {
     int* cPtr = new int();
-    UniquePtr<int> ptr(cPtr);
+    nstd::unique_ptr<int> ptr(cPtr);
     EXPECT_EQ(ptr.get(), cPtr);
-    const UniquePtr<int> moved(std::move(ptr));
+    const nstd::unique_ptr<int> moved(std::move(ptr));
     EXPECT_EQ(moved.get(), cPtr);
     EXPECT_EQ(ptr.get(), nullptr);
 }
 
 TEST(SmartPointersTest, SharedPtr) {
     char* cPtr = new char();
-    SharedPtr<char> smart_ptr(cPtr);
-    SharedPtr<char> smart_ptr2(smart_ptr);
+    nstd::shared_ptr<char> smart_ptr(cPtr);
+    nstd::shared_ptr<char> smart_ptr2(smart_ptr);
     EXPECT_EQ(smart_ptr2.get(), cPtr);
     EXPECT_EQ(smart_ptr.get(), cPtr);
-    SharedPtr<char> null(nullptr);
-    SharedPtr<char> null2(null);
+    nstd::shared_ptr<char> null(nullptr);
+    nstd::shared_ptr<char> null2(null);
     EXPECT_EQ(null.get(), nullptr);
     EXPECT_EQ(null2.get(), nullptr);
 }

@@ -141,37 +141,37 @@ Priority Queue based on heap data structure, provides following API
 - `insert`, inserts element in priority queue
 - `pop`, removes top element from priority queue
 
-## Smart pointers
+## Smart Pointers
 
-### Unique pointer
+### Unique Pointer
 
 Smart pointer providing unique ownership of memory resource. Ownership transfers from one to another with `std::move`
 
 Usage.
 ```c++
 // get pointer ownership
-UniquePtr<int> ptr(new int());
+nstd::unique_ptr<int> ptr(new int());
 // pass pointer ownership to another smart pointer
-const UniquePtr<int> moved(std::move(ptr));
+const nstd::unique_ptr<int> moved(std::move(ptr));
 // get raw pointer
 int* ptr = moved.get();
 ```
 
-### Shared pointer
+### Shared Pointer
 
 Smart pointer providing shared ownership of memory resource. Ownership counter type is `std::atomic<int>` and provides thread safety.
 
 Usage.
 ```c++
 // create one shared ptr
-SharedPtr<int> ptr(new int());
+nstd::shared_ptr<int> ptr(new int());
 // create another shared ptr and share ownership with first one
-SharedPtr<int> ptr2(ptr);
+nstd::shared_ptr<int> ptr2(ptr);
 // now they are pointing at the same data
 assert(ptr.get() == ptr2.get());
 ```
 
-Soon there will be added `makeUnique`, `makeShared` functions support in order to use benefits of `control block`.
+Soon there will be added `make_unique`, `make_shared` functions support in order to use benefits of `control block`.
 
 ### Weak Pointer
 
