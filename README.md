@@ -59,7 +59,7 @@ while(!st.empty() && !q.empty()) {
 
 ### Linked list
 
-Linked list container in this library is `not template` like the others and is not providing API for read operations from list (in other words this implementation is useless for any purposes but educational)
+Linked list container in this library is `not template` unlike the others and is not providing API for read operations from list (in other words this implementation is useless for any purposes but educational)
 
 Provides
 
