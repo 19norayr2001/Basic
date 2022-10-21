@@ -4,9 +4,9 @@
 
 #include <gtest/gtest.h>
 
-#include <vector.h>
-#include <stack.h>
-#include <queue.h>
+#include <vector.hpp>
+#include <stack.hpp>
+#include <queue.hpp>
 
 #include <list>
 

@@ -1,7 +1,7 @@
 #ifndef RB_TREE_H
 #define RB_TREE_H
 
-#include "binary_search_tree.h"
+#include "binary_search_tree.hpp"
 
 struct RBNode : Node {
     bool color;

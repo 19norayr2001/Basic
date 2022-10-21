@@ -1,7 +1,7 @@
 #ifndef ALGORITHMS_IMPL_H
 #define ALGORITHMS_IMPL_H
 
-#include "algorithms.h"
+#include "algorithms.hpp"
 #include <algorithm>
 #include <vector>
 #include <queue>

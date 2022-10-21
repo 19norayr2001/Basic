@@ -1,7 +1,7 @@
-#ifndef BASICS_VECTOR_TREE_H
-#define BASICS_VECTOR_TREE_H
+#ifndef BASICS_VECTOR_TREE_HPP
+#define BASICS_VECTOR_TREE_HPP
 
-#include <implicit_treap.h>
+#include <implicit_treap.hpp>
 
 namespace nstd {
 
@@ -34,4 +34,4 @@ public:
 
 } // namespace nstd
 
-#endif //BASICS_VECTOR_TREE_H
+#endif //BASICS_VECTOR_TREE_HPP

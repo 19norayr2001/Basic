@@ -2,7 +2,7 @@
 #define BASICS_IMPLICIT_TREAP_BASE_H
 
 #include <utility>
-#include <treap_base.h>
+#include <treap_base.hpp>
 
 namespace nstd {
 

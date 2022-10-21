@@ -2,8 +2,8 @@
 // Created by Norayr on 10.09.22.
 //
 
-#ifndef BASICS_SHARED_PTR_H
-#define BASICS_SHARED_PTR_H
+#ifndef BASICS_SHARED_PTR_HPP
+#define BASICS_SHARED_PTR_HPP
 
 #include <atomic>
 
@@ -124,4 +124,4 @@ void shared_ptr<T>::swap(shared_ptr<T>& other) noexcept {
 
 } // nstd namespace
 
-#endif //BASICS_SHARED_PTR_H
+#endif //BASICS_SHARED_PTR_HPP

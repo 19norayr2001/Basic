@@ -2,8 +2,8 @@
 // Created by Norayr on 27.08.22.
 //
 
-#ifndef BASICS_OPERATION_H
-#define BASICS_OPERATION_H
+#ifndef BASICS_OPERATION_HPP
+#define BASICS_OPERATION_HPP
 
 #include <ostream>
 
@@ -27,4 +27,4 @@ private:
 };
 
 
-#endif //BASICS_OPERATION_H
+#endif //BASICS_OPERATION_HPP

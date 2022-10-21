@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <type_traits>
-#include "divided_by_zero_exception.h"
+#include "divided_by_zero_exception.hpp"
 
 template<int mod, typename T>
 class Field;

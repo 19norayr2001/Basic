@@ -1,7 +1,7 @@
-#ifndef BASICS_ORDERED_MAP_H
-#define BASICS_ORDERED_MAP_H
+#ifndef BASICS_ORDERED_MAP_HPP
+#define BASICS_ORDERED_MAP_HPP
 
-#include <treap.h>
+#include <treap.hpp>
 
 namespace nstd {
 
@@ -77,4 +77,4 @@ public:
 
 } // namespace nstd
 
-#endif //BASICS_ORDERED_MAP_H
+#endif //BASICS_ORDERED_MAP_HPP

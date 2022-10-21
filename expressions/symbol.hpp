@@ -2,10 +2,10 @@
 // Created by Norayr on 27.08.22.
 //
 
-#ifndef BASICS_SYMBOL_H
-#define BASICS_SYMBOL_H
+#ifndef BASICS_SYMBOL_HPP
+#define BASICS_SYMBOL_HPP
 
-#include "operation.h"
+#include "operation.hpp"
 #include <string>
 
 class Symbol {
@@ -58,4 +58,4 @@ private:
 };
 
 
-#endif //BASICS_SYMBOL_H
+#endif //BASICS_SYMBOL_HPP

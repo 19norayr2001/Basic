@@ -2,8 +2,8 @@
 // Created by Norayr on 10.09.22.
 //
 
-#ifndef BASICS_UNIQUE_PTR_H
-#define BASICS_UNIQUE_PTR_H
+#ifndef BASICS_UNIQUE_PTR_HPP
+#define BASICS_UNIQUE_PTR_HPP
 
 namespace nstd {
 
@@ -95,4 +95,4 @@ T* unique_ptr<T>::get() const noexcept {
 
 } // nstd namespace
 
-#endif //BASICS_UNIQUE_PTR_H
+#endif //BASICS_UNIQUE_PTR_HPP

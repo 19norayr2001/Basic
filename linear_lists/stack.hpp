@@ -1,7 +1,7 @@
 #ifndef STACK_H
 #define STACK_H
 
-#include <vector.h>
+#include <vector.hpp>
 
 namespace nstd {
 

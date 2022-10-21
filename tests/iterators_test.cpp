@@ -6,8 +6,8 @@
 #include <vector>
 #include <algorithm>
 
-#include <back_insert_iterator.h>
-#include <insert_iterator.h>
+#include <back_insert_iterator.hpp>
+#include <insert_iterator.hpp>
 
 
 TEST(IteratorTest, BackInserter) {

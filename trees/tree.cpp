@@ -3,7 +3,7 @@
 #include <queue>
 #include <stack>
 
-#include "tree.h"
+#include "tree.hpp"
 
 int BinaryTree::count_leaf(Node* root) {
     if (root == nullptr) {

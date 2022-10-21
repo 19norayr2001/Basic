@@ -1,12 +1,12 @@
-#ifndef BASICS_TREAP_H
-#define BASICS_TREAP_H
+#ifndef BASICS_TREAP_HPP
+#define BASICS_TREAP_HPP
 
 #include <utility>
 #include <memory>
 #include <chrono>
 #include <random>
 #include <stack>
-#include <treap_base.h>
+#include <treap_base.hpp>
 
 namespace nstd {
 
@@ -425,4 +425,4 @@ treap<Node, Compare, Allocator>::order_of_key(const key_type& key) const {
 
 } // namespace nstd
 
-#endif // BASICS_TREAP_H
+#endif // BASICS_TREAP_HPP

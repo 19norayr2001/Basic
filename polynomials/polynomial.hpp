@@ -1,7 +1,7 @@
 #ifndef POLYNOMIAL_H
 #define POLYNOMIAL_H
 
-#include "divided_by_zero_exception.h"
+#include "divided_by_zero_exception.hpp"
 #include <iostream>
 #include <utility>
 #include <vector>

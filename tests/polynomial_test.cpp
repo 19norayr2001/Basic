@@ -4,8 +4,8 @@
 
 #include <gtest/gtest.h>
 
-#include <polynomial.h>
-#include <field.h>
+#include <polynomial.hpp>
+#include <field.hpp>
 
 TEST(PolynomialTest, PolynomialWithField2) {
     typedef Polynomial<Field<5>> Polynomial5;

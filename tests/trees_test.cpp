@@ -3,11 +3,11 @@
 #ifdef TEST_TREES
 
 #include <gtest/gtest.h>
-#include <ordered_map.h>
-#include <ordered_set.h>
+#include <ordered_map.hpp>
+#include <ordered_set.hpp>
 #include <vector>
 #include <algorithm>
-#include <vector_tree.h>
+#include <vector_tree.hpp>
 
 TEST(TreesTest, OrderedSetIterators) {
     std::initializer_list<int> il{1, 2, -5, 1, 10, 2, 1, 1, 6, 11, -1100};

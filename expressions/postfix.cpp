@@ -1,4 +1,4 @@
-#include "postfix.h"
+#include "postfix.hpp"
 #include <stack>
 #include <iostream>
 

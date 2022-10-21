@@ -37,6 +37,6 @@ void merge(InputIt, InputIt, InputIt, InputIt, OutIt);
 // This check breaks include recursion
 #ifndef ALGORITHMS_IMPL_H
 
-#include "algorithms.impl.h"
+#include "algorithms.impl.hpp"
 
 #endif

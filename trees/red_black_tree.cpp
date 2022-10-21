@@ -1,4 +1,4 @@
-#include "red_black_tree.h"
+#include "red_black_tree.hpp"
 
 RBTree::RBTree()
         : _root(nullptr), _size(0) {}

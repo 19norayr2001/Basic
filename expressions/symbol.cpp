@@ -2,7 +2,7 @@
 // Created by Norayr on 27.08.22.
 //
 
-#include "symbol.h"
+#include "symbol.hpp"
 
 #include <algorithm>
 #include <cctype>

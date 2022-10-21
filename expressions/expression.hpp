@@ -1,7 +1,7 @@
 #ifndef EXPRESSION_H
 #define EXPRESSION_H
 
-#include "symbol.h"
+#include "symbol.hpp"
 
 #include <unordered_map>
 #include <utility>

@@ -1,5 +1,5 @@
-#ifndef BASICS_REVERSE_ITERATOR_H
-#define BASICS_REVERSE_ITERATOR_H
+#ifndef BASICS_REVERSE_ITERATOR_HPP
+#define BASICS_REVERSE_ITERATOR_HPP
 
 #include <cstddef>
 #include <memory>
@@ -191,4 +191,4 @@ common_reverse_iterator<It> common_reverse_iterator<It>::operator-(ptrdiff_t n) 
 
 } // nstd namespace
 
-#endif //BASICS_REVERSE_ITERATOR_H
+#endif //BASICS_REVERSE_ITERATOR_HPP

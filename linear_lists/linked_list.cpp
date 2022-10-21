@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "linked_list.h"
+#include "linked_list.hpp"
 
 LinkedList::LinkedList()
         : _head(nullptr), _tail(nullptr) {

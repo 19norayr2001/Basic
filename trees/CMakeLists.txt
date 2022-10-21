@@ -1,16 +1,16 @@
 cmake_minimum_required(VERSION 3.16)
 
 add_library(Trees
-		treap.h
-		implicit_treap.h
-		vector_tree.h
-		ordered_set.h
-		ordered_map.h
-		priority_queue.h
+		treap.hpp
+		implicit_treap.hpp
+		vector_tree.hpp
+		ordered_set.hpp
+		ordered_map.hpp
+		priority_queue.hpp
 		priority_queue.cpp
-		red_black_tree.h
+		red_black_tree.hpp
 		red_black_tree.cpp
-		tree.h
+		tree.hpp
 		tree.cpp
-        binary_search_tree.h
+		binary_search_tree.hpp
         binary_search_tree.cpp)

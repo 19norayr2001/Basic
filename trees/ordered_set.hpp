@@ -1,7 +1,7 @@
-#ifndef BASICS_ORDERED_SET_H
-#define BASICS_ORDERED_SET_H
+#ifndef BASICS_ORDERED_SET_HPP
+#define BASICS_ORDERED_SET_HPP
 
-#include <treap.h>
+#include <treap.hpp>
 
 namespace nstd {
 
@@ -59,4 +59,4 @@ public:
 
 } // namespace nstd
 
-#endif //BASICS_ORDERED_SET_H
+#endif //BASICS_ORDERED_SET_HPP
