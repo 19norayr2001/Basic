@@ -9,7 +9,7 @@
 
 namespace nstd {
 
-template<typename T>
+template <typename T>
 class shared_ptr {
 public:
     explicit shared_ptr(T* ptr);
@@ -44,15 +44,15 @@ private:
     std::atomic<unsigned int>* _count;
 };
 
-template<typename T>
+template <typename T>
 shared_ptr<T>::shared_ptr(T* ptr)
         :_data(ptr), _count(new std::atomic<unsigned int>(1)) {}
 
-template<typename T>
+template <typename T>
 shared_ptr<T>::shared_ptr(std::nullptr_t)
         :_data(nullptr), _count(nullptr) {}
 
-template<typename T>
+template <typename T>
 shared_ptr<T>::shared_ptr(const shared_ptr<T>& obj)
         :_data(obj._data), _count(obj._count) {
     if (_data != nullptr) {
@@ -60,11 +60,11 @@ shared_ptr<T>::shared_ptr(const shared_ptr<T>& obj)
     }
 }
 
-template<typename T>
+template <typename T>
 shared_ptr<T>::shared_ptr(shared_ptr<T>&& other) noexcept
         :_data(std::exchange(other._data, nullptr)), _count(std::exchange(other._data, nullptr)) {}
 
-template<typename T>
+template <typename T>
 shared_ptr<T>& shared_ptr<T>::operator=(const shared_ptr<T>& other) {
     if (this != &other) {
         shared_ptr<T> copied(other);
@@ -73,7 +73,7 @@ shared_ptr<T>& shared_ptr<T>::operator=(const shared_ptr<T>& other) {
     return *this;
 }
 
-template<typename T>
+template <typename T>
 shared_ptr<T>& shared_ptr<T>::operator=(shared_ptr<T>&& other) noexcept {
     if (this != &other) {
         shared_ptr<T> moved(std::move(other));
@@ -82,7 +82,7 @@ shared_ptr<T>& shared_ptr<T>::operator=(shared_ptr<T>&& other) noexcept {
     return *this;
 }
 
-template<typename T>
+template <typename T>
 shared_ptr<T>::~shared_ptr() {
     if (_count == nullptr) return;
     if (--(*_count) == 0) {
@@ -91,32 +91,32 @@ shared_ptr<T>::~shared_ptr() {
     }
 }
 
-template<typename T>
+template <typename T>
 T& shared_ptr<T>::operator*() {
     return *_data;
 }
 
-template<typename T>
+template <typename T>
 const T& shared_ptr<T>::operator*() const {
     return *_data;
 }
 
-template<typename T>
+template <typename T>
 T* shared_ptr<T>::operator->() {
     return _data;
 }
 
-template<typename T>
+template <typename T>
 const T* shared_ptr<T>::operator->() const {
     return _data;
 }
 
-template<typename T>
+template <typename T>
 T* shared_ptr<T>::get() const noexcept {
     return _data;
 }
 
-template<typename T>
+template <typename T>
 void shared_ptr<T>::swap(shared_ptr<T>& other) noexcept {
     std::swap(_data, other._data);
     std::swap(_count, other._count);

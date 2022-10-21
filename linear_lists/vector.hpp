@@ -9,7 +9,7 @@
 
 namespace nstd {
 
-template<typename T, typename Alloc = std::allocator<T>>
+template <typename T, typename Alloc = std::allocator<T>>
 class vector {
 public:
     typedef T value_type;
@@ -20,7 +20,7 @@ private:
     Alloc _allocator;
     value_type* _array;
 private:
-    template<bool B>
+    template <bool B>
     class common_iterator {
         friend class common_iterator<!B>;
 
@@ -92,7 +92,7 @@ public:
     ~vector();
 
 public:
-    template<typename... Args>
+    template <typename... Args>
     void emplace_back(Args&& ...);
 
     void push_back(const value_type&);
@@ -155,129 +155,129 @@ private:
     static const size_t MAX_SIZE = 2;
 };
 
-template<typename T, typename Alloc>
+template <typename T, typename Alloc>
 std::ostream& operator<<(std::ostream&, const vector<T, Alloc>&);
 
 //======================common_iterator implementation==========================================
 
-template<typename T, typename Alloc>
-template<bool B>
+template <typename T, typename Alloc>
+template <bool B>
 vector<T, Alloc>::common_iterator<B>::common_iterator(value_type* ptr)
         :_ptr(ptr) {}
 
-template<typename T, typename Alloc>
-template<bool B>
+template <typename T, typename Alloc>
+template <bool B>
 vector<T, Alloc>::common_iterator<B>::common_iterator(const common_iterator<false>& other)
         :_ptr(other._ptr) {}
 
-template<typename T, typename Alloc>
-template<bool B>
+template <typename T, typename Alloc>
+template <bool B>
 typename vector<T, Alloc>::template common_iterator<B>& vector<T, Alloc>::common_iterator<B>::operator++() {
     ++_ptr;
     return *this;
 }
 
-template<typename T, typename Alloc>
-template<bool B>
+template <typename T, typename Alloc>
+template <bool B>
 typename vector<T, Alloc>::template common_iterator<B> vector<T, Alloc>::common_iterator<B>::operator++(int)& {
     common_iterator iter = *this;
     ++_ptr;
     return iter;
 }
 
-template<typename T, typename Alloc>
-template<bool B>
+template <typename T, typename Alloc>
+template <bool B>
 typename vector<T, Alloc>::template common_iterator<B>& vector<T, Alloc>::common_iterator<B>::operator+=(ptrdiff_t n) {
     _ptr += n;
     return *this;
 }
 
-template<typename T, typename Alloc>
-template<bool B>
+template <typename T, typename Alloc>
+template <bool B>
 typename vector<T, Alloc>::template common_iterator<B>& vector<T, Alloc>::common_iterator<B>::operator--() {
     --_ptr;
     return *this;
 }
 
-template<typename T, typename Alloc>
-template<bool B>
+template <typename T, typename Alloc>
+template <bool B>
 typename vector<T, Alloc>::template common_iterator<B> vector<T, Alloc>::common_iterator<B>::operator--(int)& {
     common_iterator iter = *this;
     --_ptr;
     return iter;
 }
 
-template<typename T, typename Alloc>
-template<bool B>
+template <typename T, typename Alloc>
+template <bool B>
 typename vector<T, Alloc>::template common_iterator<B>& vector<T, Alloc>::common_iterator<B>::operator-=(ptrdiff_t n) {
     _ptr -= n;
     return *this;
 }
 
-template<typename T, typename Alloc>
-template<bool B>
+template <typename T, typename Alloc>
+template <bool B>
 ptrdiff_t vector<T, Alloc>::common_iterator<B>::operator-(const common_iterator<B>& iter) const {
     return _ptr - iter._ptr;
 }
 
-template<typename T, typename Alloc>
-template<bool B>
+template <typename T, typename Alloc>
+template <bool B>
 auto vector<T, Alloc>::common_iterator<B>::operator*() const -> value_type& {
     return *_ptr;
 }
 
-template<typename T, typename Alloc>
-template<bool B>
+template <typename T, typename Alloc>
+template <bool B>
 auto vector<T, Alloc>::common_iterator<B>::operator->() const -> value_type* {
     return _ptr;
 }
 
-template<typename T, typename Alloc>
-template<bool B>
+template <typename T, typename Alloc>
+template <bool B>
 bool vector<T, Alloc>::common_iterator<B>::operator==(const common_iterator<B>& iter) const {
     return _ptr == iter._ptr;
 }
 
-template<typename T, typename Alloc>
-template<bool B>
+template <typename T, typename Alloc>
+template <bool B>
 bool vector<T, Alloc>::common_iterator<B>::operator!=(const common_iterator<B>& iter) const {
     return _ptr != iter._ptr;
 }
 
-template<typename T, typename Alloc>
-template<bool B>
+template <typename T, typename Alloc>
+template <bool B>
 bool vector<T, Alloc>::common_iterator<B>::operator<(const common_iterator<B>& iter) const {
     return _ptr < iter._ptr;
 }
 
-template<typename T, typename Alloc>
-template<bool B>
+template <typename T, typename Alloc>
+template <bool B>
 bool vector<T, Alloc>::common_iterator<B>::operator>(const common_iterator<B>& iter) const {
     return _ptr > iter._ptr;
 }
 
-template<typename T, typename Alloc>
-template<bool B>
+template <typename T, typename Alloc>
+template <bool B>
 bool vector<T, Alloc>::common_iterator<B>::operator<=(const common_iterator<B>& iter) const {
     return _ptr <= iter._ptr;
 }
 
-template<typename T, typename Alloc>
-template<bool B>
+template <typename T, typename Alloc>
+template <bool B>
 bool vector<T, Alloc>::common_iterator<B>::operator>=(const common_iterator<B>& iter) const {
     return _ptr >= iter._ptr;
 }
 
-template<typename T, typename Alloc>
-template<bool B>
+template <typename T, typename Alloc>
+template <bool B>
 typename vector<T, Alloc>::template common_iterator<B>
 vector<T, Alloc>::common_iterator<B>::operator+(ptrdiff_t n) const {
     common_iterator<B> iter = *this;
     return iter += n;
 }
 
-template<typename T, typename Alloc>
-template<bool B>
+template <typename T, typename Alloc>
+template <bool B>
 typename vector<T, Alloc>::template common_iterator<B>
 vector<T, Alloc>::common_iterator<B>::operator-(ptrdiff_t n) const {
     common_iterator<B> iter = *this;
@@ -286,12 +286,12 @@ vector<T, Alloc>::common_iterator<B>::operator-(ptrdiff_t n) const {
 
 //=================================== Sequential List implementation ===================================
 
-template<typename T, typename Alloc>
+template <typename T, typename Alloc>
 vector<T, Alloc>::vector(const Alloc& allocator)
         : _capacity(MAX_SIZE), _size(0), _allocator(allocator),
           _array(AllocTraits::allocate(_allocator, _capacity)) {}
 
-template<typename T, typename Alloc>
+template <typename T, typename Alloc>
 vector<T, Alloc>::vector(const vector& obj)
         : _capacity(obj._capacity), _size(obj._size), _allocator(obj._allocator),
           _array(AllocTraits::allocate(_allocator, _capacity)) {
@@ -316,7 +316,7 @@ vector<T, Alloc>::vector(const vector& obj)
 }
 
 
-template<typename T, typename Alloc>
+template <typename T, typename Alloc>
 vector<T, Alloc>::vector(vector<T, Alloc>&& obj) noexcept
         :_capacity(obj._capacity), _size(obj._size), _allocator(obj._allocator), _array(obj._array) {
     obj._capacity = 0;
@@ -324,7 +324,7 @@ vector<T, Alloc>::vector(vector<T, Alloc>&& obj) noexcept
     obj._array = nullptr;
 }
 
-template<typename T, typename Alloc>
+template <typename T, typename Alloc>
 vector<T, Alloc>& vector<T, Alloc>::operator=(const vector& obj)& {
     if (this != &obj) {
         vector copy_obj(obj);
@@ -333,7 +333,7 @@ vector<T, Alloc>& vector<T, Alloc>::operator=(const vector& obj)& {
     return *this;
 }
 
-template<typename T, typename Alloc>
+template <typename T, typename Alloc>
 vector<T, Alloc>& vector<T, Alloc>::operator=(vector&& obj)& noexcept {
     if (this != &obj) {
         vector moved_obj(std::move(obj));
@@ -342,13 +342,13 @@ vector<T, Alloc>& vector<T, Alloc>::operator=(vector&& obj)& noexcept {
     return *this;
 }
 
-template<typename T, typename Alloc>
+template <typename T, typename Alloc>
 vector<T, Alloc>::~vector() {
     destroy();
 }
 
-template<typename T, typename Alloc>
-template<typename... Args>
+template <typename T, typename Alloc>
+template <typename... Args>
 void vector<T, Alloc>::emplace_back(Args&& ... args) {
     // reserve more capacity if current is fully filled
     if (is_full()) {
@@ -358,17 +358,17 @@ void vector<T, Alloc>::emplace_back(Args&& ... args) {
     ++_size;
 }
 
-template<typename T, typename Alloc>
+template <typename T, typename Alloc>
 void vector<T, Alloc>::push_back(const value_type& elem) {
     emplace_back(elem);
 }
 
-template<typename T, typename Alloc>
+template <typename T, typename Alloc>
 void vector<T, Alloc>::push_back(value_type&& elem) {
     emplace_back(std::move(elem));
 }
 
-template<typename T, typename Alloc>
+template <typename T, typename Alloc>
 void vector<T, Alloc>::pop_back() {
     if (!empty()) {
         --_size;
@@ -376,7 +376,7 @@ void vector<T, Alloc>::pop_back() {
     }
 }
 
-template<typename T, typename Alloc>
+template <typename T, typename Alloc>
 void vector<T, Alloc>::reserve(size_t n) {
     // if there already present enought memory, just return
     if (n <= _capacity) return;
@@ -415,84 +415,84 @@ void vector<T, Alloc>::reserve(size_t n) {
     _array = new_array;
 }
 
-template<typename T, typename Alloc>
+template <typename T, typename Alloc>
 typename vector<T, Alloc>::iterator vector<T, Alloc>::begin() {
     return iterator(_array);
 }
 
-template<typename T, typename Alloc>
+template <typename T, typename Alloc>
 typename vector<T, Alloc>::iterator vector<T, Alloc>::end() {
     return iterator(_array + _size);
 }
 
-template<typename T, typename Alloc>
+template <typename T, typename Alloc>
 typename vector<T, Alloc>::const_iterator vector<T, Alloc>::cbegin() const {
     return begin();
 }
 
-template<typename T, typename Alloc>
+template <typename T, typename Alloc>
 typename vector<T, Alloc>::const_iterator vector<T, Alloc>::cend() const {
     return end();
 }
 
-template<typename T, typename Alloc>
+template <typename T, typename Alloc>
 typename vector<T, Alloc>::const_iterator vector<T, Alloc>::begin() const {
     return const_iterator(_array);
 }
 
-template<typename T, typename Alloc>
+template <typename T, typename Alloc>
 typename vector<T, Alloc>::const_iterator vector<T, Alloc>::end() const {
     return const_iterator(_array + _size);
 }
 
-template<typename T, typename Alloc>
+template <typename T, typename Alloc>
 typename vector<T, Alloc>::reverse_iterator vector<T, Alloc>::rbegin() {
     return {end()};
 }
 
-template<typename T, typename Alloc>
+template <typename T, typename Alloc>
 typename vector<T, Alloc>::reverse_iterator vector<T, Alloc>::rend() {
     return {begin()};
 }
 
-template<typename T, typename Alloc>
+template <typename T, typename Alloc>
 typename vector<T, Alloc>::const_reverse_iterator vector<T, Alloc>::crbegin() const {
     return rbegin();
 }
 
-template<typename T, typename Alloc>
+template <typename T, typename Alloc>
 typename vector<T, Alloc>::const_reverse_iterator vector<T, Alloc>::crend() const {
     return rend();
 }
 
-template<typename T, typename Alloc>
+template <typename T, typename Alloc>
 typename vector<T, Alloc>::const_reverse_iterator vector<T, Alloc>::rbegin() const {
     return {end()};
 }
 
-template<typename T, typename Alloc>
+template <typename T, typename Alloc>
 typename vector<T, Alloc>::const_reverse_iterator vector<T, Alloc>::rend() const {
     return {begin()};
 }
 
-template<typename T, typename Alloc>
+template <typename T, typename Alloc>
 typename vector<T, Alloc>::value_type& vector<T, Alloc>::operator[](size_t ind) {
     return _array[ind];
 }
 
-template<typename T, typename Alloc>
+template <typename T, typename Alloc>
 const typename vector<T, Alloc>::value_type& vector<T, Alloc>::operator[](size_t ind) const {
     return _array[ind];
 }
 
-template<typename T, typename Alloc>
+template <typename T, typename Alloc>
 void vector<T, Alloc>::swap(vector<T, Alloc>& obj) {
     std::swap(_capacity, obj._capacity);
     std::swap(_size, obj._size);
     std::swap(_array, obj._array);
 }
 
-template<typename T, typename Alloc>
+template <typename T, typename Alloc>
 void vector<T, Alloc>::destroy() {
     // destroy elements and deallocate memory
     for (size_t i = _size; i > 0; --i) {
@@ -501,7 +501,7 @@ void vector<T, Alloc>::destroy() {
     AllocTraits::deallocate(_allocator, _array, _capacity);
 }
 
-template<typename T, typename Alloc>
+template <typename T, typename Alloc>
 std::ostream& operator<<(std::ostream& out, const vector<T, Alloc>& obj) {
     for (auto it = obj.cbegin(); it != obj.cend(); ++it) {
         std::cout << *it << ' ';

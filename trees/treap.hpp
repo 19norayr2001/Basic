@@ -10,7 +10,7 @@
 
 namespace nstd {
 
-template<typename Node, typename Compare, typename Allocator>
+template <typename Node, typename Compare, typename Allocator>
 class treap : public treap_base<Node, Allocator> {
     using base_type = treap_base<Node, Allocator>;
 public:
@@ -73,7 +73,7 @@ private:
      *         And the second tree will consist of nodes, where key is greater than passed key
      *         The node having passed key will be one of this two trees depending on KeyIncluded template parameter
      */
-    template<bool KeyIncluded = false>
+    template <bool KeyIncluded = false>
     std::pair<treap_node*, treap_node*> split(treap_node* node, const key_type& key);
 
 public:
@@ -91,7 +91,7 @@ public:
      * @param key key
      * @return pair, where the first one is inserted iterator and the second one is boolean showing whether the key was actually inserted or not
      */
-    template<typename... Args>
+    template <typename... Args>
     std::pair<iterator, bool> emplace(Args&& ... args);
 
     /**
@@ -168,11 +168,11 @@ private:
     iterator const_cast_iterator(const const_iterator& it);
 };
 
-template<typename Node, typename Compare, typename Allocator>
+template <typename Node, typename Compare, typename Allocator>
 treap<Node, Compare, Allocator>::treap(const key_compare& comparator, const allocator_type& allocator)
         : base_type(allocator), _comparator(comparator) {}
 
-template<typename Node, typename Compare, typename Allocator>
+template <typename Node, typename Compare, typename Allocator>
 treap<Node, Compare, Allocator>::treap(const treap& other)
         : base_type(other._node_allocator), _comparator(other._comparator) {
     for (auto it = other.begin(); it != other.end(); ++it) {
@@ -180,11 +180,11 @@ treap<Node, Compare, Allocator>::treap(const treap& other)
     }
 }
 
-template<typename Node, typename Compare, typename Allocator>
+template <typename Node, typename Compare, typename Allocator>
 treap<Node, Compare, Allocator>::treap(treap&& other) noexcept
         : base_type(std::move(other)), _comparator(std::move(other._comparator)) {}
 
-template<typename Node, typename Compare, typename Allocator>
+template <typename Node, typename Compare, typename Allocator>
 treap<Node, Compare, Allocator>&
 treap<Node, Compare, Allocator>::operator=(const treap& other) {
     if (this != &other) {
@@ -194,7 +194,7 @@ treap<Node, Compare, Allocator>::operator=(const treap& other) {
     return *this;
 }
 
-template<typename Node, typename Compare, typename Allocator>
+template <typename Node, typename Compare, typename Allocator>
 treap<Node, Compare, Allocator>&
 treap<Node, Compare, Allocator>::operator=(treap&& other) noexcept {
     if (this != &other) {
@@ -204,7 +204,7 @@ treap<Node, Compare, Allocator>::operator=(treap&& other) noexcept {
     return *this;
 }
 
-template<typename Node, typename Compare, typename Allocator>
+template <typename Node, typename Compare, typename Allocator>
 typename treap<Node, Compare, Allocator>::treap_node*
 treap<Node, Compare, Allocator>::merge(treap_node* node1, treap_node* node2) {
     // return nullptr when both values are null pointers
@@ -256,8 +256,8 @@ treap<Node, Compare, Allocator>::merge(treap_node* node1, treap_node* node2) {
     return child;
 }
 
-template<typename Node, typename Compare, typename Allocator>
-template<bool KeyIncluded>
+template <typename Node, typename Compare, typename Allocator>
+template <bool KeyIncluded>
 auto
 treap<Node, Compare, Allocator>::split(treap_node* node,
                                        const key_type& key) -> std::pair<treap_node*, treap_node*> {
@@ -298,26 +298,26 @@ treap<Node, Compare, Allocator>::split(treap_node* node,
     return {first, second};
 }
 
-template<typename Node, typename Compare, typename Allocator>
+template <typename Node, typename Compare, typename Allocator>
 void treap<Node, Compare, Allocator>::swap(treap<Node, Compare, Allocator>& other) noexcept {
     base_type::swap(other);
     std::swap(_comparator, other._comparator);
 }
 
-template<typename Node, typename Compare, typename Allocator>
+template <typename Node, typename Compare, typename Allocator>
 std::pair<typename treap<Node, Compare, Allocator>::iterator, bool>
 treap<Node, Compare, Allocator>::insert(const key_type& key) {
     return emplace(key);
 }
 
-template<typename Node, typename Compare, typename Allocator>
+template <typename Node, typename Compare, typename Allocator>
 std::pair<typename treap<Node, Compare, Allocator>::iterator, bool>
 treap<Node, Compare, Allocator>::insert(key_type&& key) {
     return emplace(std::move(key));
 }
 
-template<typename Node, typename Compare, typename Allocator>
-template<typename... Args>
+template <typename Node, typename Compare, typename Allocator>
+template <typename... Args>
 std::pair<typename treap<Node, Compare, Allocator>::iterator, bool>
 treap<Node, Compare, Allocator>::emplace(Args&& ... args) {
     // allocate memory for node and construct value
@@ -341,7 +341,7 @@ treap<Node, Compare, Allocator>::emplace(Args&& ... args) {
     return {iterator(node->get_value_address(), this, index), true};
 }
 
-template<typename Node, typename Compare, typename Allocator>
+template <typename Node, typename Compare, typename Allocator>
 void treap<Node, Compare, Allocator>::erase(const key_type& key) {
     std::pair<treap_node*, treap_node*> first_split_pair = split(_root, key);
     std::pair<treap_node*, treap_node*> second_split_pair = split<true>(first_split_pair.second, key);
@@ -353,30 +353,30 @@ void treap<Node, Compare, Allocator>::erase(const key_type& key) {
     _root = merge(first_split_pair.first, second_split_pair.second);
 }
 
-template<typename Node, typename Compare, typename Allocator>
+template <typename Node, typename Compare, typename Allocator>
 bool treap<Node, Compare, Allocator>::contains(const key_type& key) const {
     return iterator_of_key(key) != end();
 }
 
-template<typename Node, typename Compare, typename Allocator>
+template <typename Node, typename Compare, typename Allocator>
 typename treap<Node, Compare, Allocator>::iterator
 treap<Node, Compare, Allocator>::find(const key_type& key) {
     return iterator_of_key(key);
 }
 
-template<typename Node, typename Compare, typename Allocator>
+template <typename Node, typename Compare, typename Allocator>
 typename treap<Node, Compare, Allocator>::const_iterator
 treap<Node, Compare, Allocator>::find(const key_type& key) const {
     return iterator_of_key(key);
 }
 
-template<typename Node, typename Compare, typename Allocator>
+template <typename Node, typename Compare, typename Allocator>
 typename treap<Node, Compare, Allocator>::iterator
 treap<Node, Compare, Allocator>::iterator_of_key(const key_type& key) {
     return const_cast_iterator(const_cast<const treap*>(this)->iterator_of_key(key));
 }
 
-template<typename Node, typename Compare, typename Allocator>
+template <typename Node, typename Compare, typename Allocator>
 typename treap<Node, Compare, Allocator>::const_iterator
 treap<Node, Compare, Allocator>::iterator_of_key(const key_type& key) const {
     const treap_node* root = _root;
@@ -396,7 +396,7 @@ treap<Node, Compare, Allocator>::iterator_of_key(const key_type& key) const {
     return end();
 }
 
-template<typename Node, typename Compare, typename Allocator>
+template <typename Node, typename Compare, typename Allocator>
 typename treap<Node, Compare, Allocator>::iterator
 treap<Node, Compare, Allocator>::const_cast_iterator(const const_iterator& it) {
     size_type index = it - const_iterator(nullptr, this, 0);
@@ -405,7 +405,7 @@ treap<Node, Compare, Allocator>::const_cast_iterator(const const_iterator& it) {
     return {value, this, index};
 }
 
-template<typename Node, typename Compare, typename Allocator>
+template <typename Node, typename Compare, typename Allocator>
 const typename treap<Node, Compare, Allocator>::key_type&
 treap<Node, Compare, Allocator>::key_of_order(size_type index) const {
     if (index >= size()) {
@@ -414,7 +414,7 @@ treap<Node, Compare, Allocator>::key_of_order(size_type index) const {
     return base_type::node_of_order(index)->get_key();
 }
 
-template<typename Node, typename Compare, typename Allocator>
+template <typename Node, typename Compare, typename Allocator>
 typename treap<Node, Compare, Allocator>::size_type
 treap<Node, Compare, Allocator>::order_of_key(const key_type& key) const {
     auto it = iterator_of_key(key);

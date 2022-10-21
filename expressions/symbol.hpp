@@ -20,21 +20,21 @@ private:
 public:
     explicit Symbol(const std::string& s);
 
-    [[nodiscard]] bool isOpenBracket() const;
+     bool isOpenBracket() const;
 
-    [[nodiscard]] bool isCloseBracket() const;
+     bool isCloseBracket() const;
 
-    [[nodiscard]] bool isIdentifier() const;
+     bool isIdentifier() const;
 
-    [[nodiscard]] bool isOperation() const;
+     bool isOperation() const;
 
-    [[nodiscard]] bool isNumber() const;
+     bool isNumber() const;
 
-    [[nodiscard]] const std::string& asIdentifier() const;
+     const std::string& asIdentifier() const;
 
-    [[nodiscard]] int asNumber() const;
+     int asNumber() const;
 
-    [[nodiscard]] Operation asOperator() const;
+     Operation asOperator() const;
 
 private:
     static SymbolType determineSymbolType(const std::string& str);

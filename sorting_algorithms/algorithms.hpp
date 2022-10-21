@@ -6,28 +6,28 @@
 
 namespace nstd {
 
-template<typename ForwardIterator>
+template <typename ForwardIterator>
 void bubble_sort(ForwardIterator begin, ForwardIterator end);
 
-template<typename ForwardIterator>
+template <typename ForwardIterator>
 void insertion_sort(ForwardIterator begin, ForwardIterator end);
 
-template<typename ForwardIterator>
+template <typename ForwardIterator>
 void selection_sort(ForwardIterator begin, ForwardIterator end);
 
-template<typename RandIt>
+template <typename RandIt>
 void quick_sort(RandIt, RandIt);
 
-template<typename ForwardIterator, typename = std::enable_if_t<std::is_integral_v<typename std::iterator_traits<ForwardIterator>::value_type>>>
+template <typename ForwardIterator, typename = std::enable_if_t<std::is_integral_v<typename std::iterator_traits<ForwardIterator>::value_type>>>
 void radix_sort(ForwardIterator begin, ForwardIterator end);
 
-template<typename ForwardIterator>
+template <typename ForwardIterator>
 void heap_sort(ForwardIterator begin, ForwardIterator end);
 
-template<typename RandIt>
+template <typename RandIt>
 void merge_sort(RandIt, RandIt);
 
-template<typename InputIt, typename OutIt>
+template <typename InputIt, typename OutIt>
 void merge(InputIt, InputIt, InputIt, InputIt, OutIt);
 
 } // nstd namespace

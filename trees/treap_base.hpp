@@ -17,7 +17,7 @@ namespace nstd {
  * @tparam Node Treap node class, which inherits from treap_node_base
  * Template parameter is for avoiding persistent down casts
  */
-template<typename Node>
+template <typename Node>
 class treap_node_base {
     using treap_node = Node;
 
@@ -87,7 +87,7 @@ private:
 * Is used as unique pointer destructor class
 * @tparam Allocator Treap node allocator class
 */
-template<typename Allocator>
+template <typename Allocator>
 class treap_node_destructor {
     using allocator_type = Allocator;
     using allocator_traits = std::allocator_traits<Allocator>;
@@ -119,7 +119,7 @@ public:
     }
 };
 
-template<typename Node, typename Allocator>
+template <typename Node, typename Allocator>
 class treap_base {
 public:
     using key_type = typename Node::key_type;
@@ -142,7 +142,7 @@ private:
      * Iterator class for treap data structure
      * @tparam B determines is iterator class for const elements or not
      */
-    template<bool B>
+    template <bool B>
     class common_iterator {
         friend class common_iterator<!B>;
 
@@ -242,7 +242,7 @@ protected:
      * @param args constructor arguments
      * @return node holder, i.e. unique_pointer with special destructor class
      */
-    template<typename... Args>
+    template <typename... Args>
     node_holder construct_node(Args&& ... args);
 
     treap_node* node_of_order(size_type index);
@@ -291,26 +291,26 @@ protected:
     static std::mt19937_64 random_generator;
 };
 
-template<typename Node, typename Allocator>
+template <typename Node, typename Allocator>
 std::mt19937_64 treap_base<Node, Allocator>::random_generator(
         std::chrono::steady_clock::now().time_since_epoch().count());
 
 //======================common_iterator implementation==========================================
 
 
-template<typename Node, typename Allocator>
-template<bool B>
+template <typename Node, typename Allocator>
+template <bool B>
 treap_base<Node, Allocator>::common_iterator<B>::common_iterator(value_type* value, treap_type* treap,
                                                                  size_type index)
         :_value(value), _treap(treap), _index(index) {}
 
-template<typename Node, typename Allocator>
-template<bool B>
+template <typename Node, typename Allocator>
+template <bool B>
 treap_base<Node, Allocator>::common_iterator<B>::common_iterator(const common_iterator<false>& other)
         :_value(other._value), _treap(other._treap), _index(other._index) {}
 
-template<typename Node, typename Allocator>
-template<bool B>
+template <typename Node, typename Allocator>
+template <bool B>
 typename treap_base<Node, Allocator>::template common_iterator<B>&
 treap_base<Node, Allocator>::common_iterator<B>::operator++() {
     auto* node = _treap->node_of_order(++_index);
@@ -318,8 +318,8 @@ treap_base<Node, Allocator>::common_iterator<B>::operator++() {
     return *this;
 }
 
-template<typename Node, typename Allocator>
-template<bool B>
+template <typename Node, typename Allocator>
+template <bool B>
 typename treap_base<Node, Allocator>::template common_iterator<B>
 treap_base<Node, Allocator>::common_iterator<B>::operator++(int)& {
     common_iterator iter = *this;
@@ -327,8 +327,8 @@ treap_base<Node, Allocator>::common_iterator<B>::operator++(int)& {
     return iter;
 }
 
-template<typename Node, typename Allocator>
-template<bool B>
+template <typename Node, typename Allocator>
+template <bool B>
 typename treap_base<Node, Allocator>::template common_iterator<B>&
 treap_base<Node, Allocator>::common_iterator<B>::operator+=(ptrdiff_t n) {
     auto* node = _treap->node_of_order(_index += n);
@@ -336,8 +336,8 @@ treap_base<Node, Allocator>::common_iterator<B>::operator+=(ptrdiff_t n) {
     return *this;
 }
 
-template<typename Node, typename Allocator>
-template<bool B>
+template <typename Node, typename Allocator>
+template <bool B>
 typename treap_base<Node, Allocator>::template common_iterator<B>&
 treap_base<Node, Allocator>::common_iterator<B>::operator--() {
     auto* node = _treap->node_of_order(--_index);
@@ -345,8 +345,8 @@ treap_base<Node, Allocator>::common_iterator<B>::operator--() {
     return *this;
 }
 
-template<typename Node, typename Allocator>
-template<bool B>
+template <typename Node, typename Allocator>
+template <bool B>
 typename treap_base<Node, Allocator>::template common_iterator<B>
 treap_base<Node, Allocator>::common_iterator<B>::operator--(int)& {
     common_iterator iter = *this;
@@ -354,8 +354,8 @@ treap_base<Node, Allocator>::common_iterator<B>::operator--(int)& {
     return iter;
 }
 
-template<typename Node, typename Allocator>
-template<bool B>
+template <typename Node, typename Allocator>
+template <bool B>
 typename treap_base<Node, Allocator>::template common_iterator<B>&
 treap_base<Node, Allocator>::common_iterator<B>::operator-=(ptrdiff_t n) {
     auto* node = _treap->node_of_order(_index -= n);
@@ -363,70 +363,70 @@ treap_base<Node, Allocator>::common_iterator<B>::operator-=(ptrdiff_t n) {
     return *this;
 }
 
-template<typename Node, typename Allocator>
-template<bool B>
+template <typename Node, typename Allocator>
+template <bool B>
 ptrdiff_t treap_base<Node, Allocator>::common_iterator<B>::operator-(const common_iterator<B>& iter) const {
     return static_cast<ptrdiff_t>(_index) - iter._index;
 }
 
-template<typename Node, typename Allocator>
-template<bool B>
+template <typename Node, typename Allocator>
+template <bool B>
 auto treap_base<Node, Allocator>::common_iterator<B>::operator*() const -> value_type& {
     return *_value;
 }
 
-template<typename Node, typename Allocator>
-template<bool B>
+template <typename Node, typename Allocator>
+template <bool B>
 auto treap_base<Node, Allocator>::common_iterator<B>::operator->() const -> value_type* {
     return _value;
 }
 
-template<typename Node, typename Allocator>
-template<bool B>
+template <typename Node, typename Allocator>
+template <bool B>
 bool treap_base<Node, Allocator>::common_iterator<B>::operator==(const common_iterator<B>& iter) const {
     return _value == iter._value;
 }
 
-template<typename Node, typename Allocator>
-template<bool B>
+template <typename Node, typename Allocator>
+template <bool B>
 bool treap_base<Node, Allocator>::common_iterator<B>::operator!=(const common_iterator<B>& iter) const {
     return _value != iter._value;
 }
 
-template<typename Node, typename Allocator>
-template<bool B>
+template <typename Node, typename Allocator>
+template <bool B>
 bool treap_base<Node, Allocator>::common_iterator<B>::operator<(const common_iterator<B>& iter) const {
     return _index < iter._index;
 }
 
-template<typename Node, typename Allocator>
-template<bool B>
+template <typename Node, typename Allocator>
+template <bool B>
 bool treap_base<Node, Allocator>::common_iterator<B>::operator>(const common_iterator<B>& iter) const {
     return _index > iter._index;
 }
 
-template<typename Node, typename Allocator>
-template<bool B>
+template <typename Node, typename Allocator>
+template <bool B>
 bool treap_base<Node, Allocator>::common_iterator<B>::operator<=(const common_iterator<B>& iter) const {
     return _index <= iter._index;
 }
 
-template<typename Node, typename Allocator>
-template<bool B>
+template <typename Node, typename Allocator>
+template <bool B>
 bool treap_base<Node, Allocator>::common_iterator<B>::operator>=(const common_iterator<B>& iter) const {
     return _index >= iter._index;
 }
 
-template<typename Node, typename Allocator>
-template<bool B>
+template <typename Node, typename Allocator>
+template <bool B>
 typename treap_base<Node, Allocator>::template common_iterator<B>
 treap_base<Node, Allocator>::common_iterator<B>::operator+(ptrdiff_t n) const {
     common_iterator<B> iter = *this;
     return iter += n;
 }
 
-template<typename Node, typename Allocator>
-template<bool B>
+template <typename Node, typename Allocator>
+template <bool B>
 typename treap_base<Node, Allocator>::template common_iterator<B>
 treap_base<Node, Allocator>::common_iterator<B>::operator-(ptrdiff_t n) const {
     common_iterator<B> iter = *this;
@@ -435,16 +435,16 @@ treap_base<Node, Allocator>::common_iterator<B>::operator-(ptrdiff_t n) const {
 
 //==========================================Treap base implementation==========================================
 
-template<typename Node, typename Allocator>
+template <typename Node, typename Allocator>
 treap_base<Node, Allocator>::treap_base(const allocator_type& allocator)
         : _root(nullptr), _node_allocator(allocator) {}
 
-template<typename Node, typename Allocator>
+template <typename Node, typename Allocator>
 treap_base<Node, Allocator>::treap_base(treap_base<Node, Allocator>&& other) noexcept
         : _root(std::exchange(other._root, nullptr)),
           _node_allocator(std::move(other._node_allocator)) {}
 
-template<typename Node, typename Allocator>
+template <typename Node, typename Allocator>
 treap_base<Node, Allocator>&
 treap_base<Node, Allocator>::operator=(treap_base<Node, Allocator>&& other) noexcept {
     if (this != &other) {
@@ -454,12 +454,12 @@ treap_base<Node, Allocator>::operator=(treap_base<Node, Allocator>&& other) noex
     return *this;
 }
 
-template<typename Node, typename Allocator>
+template <typename Node, typename Allocator>
 treap_base<Node, Allocator>::~treap_base() {
     destroy_tree(_root);
 }
 
-template<typename Node, typename Allocator>
+template <typename Node, typename Allocator>
 void treap_base<Node, Allocator>::destroy_tree(treap_node* node) {
     if (node != nullptr) {
         // destroy child nodes
@@ -470,13 +470,13 @@ void treap_base<Node, Allocator>::destroy_tree(treap_node* node) {
     }
 }
 
-template<typename Node, typename Allocator>
+template <typename Node, typename Allocator>
 void treap_base<Node, Allocator>::swap(treap_base<Node, Allocator>& other) noexcept {
     std::swap(_root, other._root);
 }
 
-template<typename Node, typename Allocator>
-template<typename... Args>
+template <typename Node, typename Allocator>
+template <typename... Args>
 typename treap_base<Node, Allocator>::node_holder treap_base<Node, Allocator>::construct_node(Args&& ... args) {
     // allocate memory for new node
     node_holder holder(node_traits::allocate(_node_allocator, 1), treap_node_destructor(_node_allocator));
@@ -489,12 +489,12 @@ typename treap_base<Node, Allocator>::node_holder treap_base<Node, Allocator>::c
     return holder;
 }
 
-template<typename Node, typename Allocator>
+template <typename Node, typename Allocator>
 typename treap_base<Node, Allocator>::treap_node* treap_base<Node, Allocator>::node_of_order(size_type index) {
     return const_cast<treap_node*>(const_cast<const treap_base<Node, Allocator>*>(this)->node_of_order(index));
 }
 
-template<typename Node, typename Allocator>
+template <typename Node, typename Allocator>
 const typename treap_base<Node, Allocator>::treap_node*
 treap_base<Node, Allocator>::node_of_order(size_type index) const {
     if (index == size()) {
@@ -520,7 +520,7 @@ treap_base<Node, Allocator>::node_of_order(size_type index) const {
     throw std::runtime_error("Unreachable code");
 }
 
-template<typename Node, typename Allocator>
+template <typename Node, typename Allocator>
 typename treap_base<Node, Allocator>::iterator treap_base<Node, Allocator>::begin() {
     if (empty()) {
         return end();
@@ -529,42 +529,42 @@ typename treap_base<Node, Allocator>::iterator treap_base<Node, Allocator>::begi
     return {node_of_order(index)->get_value_address(), this, index};
 }
 
-template<typename Node, typename Allocator>
+template <typename Node, typename Allocator>
 typename treap_base<Node, Allocator>::const_iterator treap_base<Node, Allocator>::begin() const {
     return cbegin();
 }
 
-template<typename Node, typename Allocator>
+template <typename Node, typename Allocator>
 typename treap_base<Node, Allocator>::iterator treap_base<Node, Allocator>::end() {
     return {nullptr, this, size()};
 }
 
-template<typename Node, typename Allocator>
+template <typename Node, typename Allocator>
 typename treap_base<Node, Allocator>::const_iterator treap_base<Node, Allocator>::end() const {
     return cend();
 }
 
-template<typename Node, typename Allocator>
+template <typename Node, typename Allocator>
 typename treap_base<Node, Allocator>::reverse_iterator treap_base<Node, Allocator>::rbegin() {
     return {end()};
 }
 
-template<typename Node, typename Allocator>
+template <typename Node, typename Allocator>
 typename treap_base<Node, Allocator>::const_reverse_iterator treap_base<Node, Allocator>::rbegin() const {
     return {end()};
 }
 
-template<typename Node, typename Allocator>
+template <typename Node, typename Allocator>
 typename treap_base<Node, Allocator>::reverse_iterator treap_base<Node, Allocator>::rend() {
     return {begin()};
 }
 
-template<typename Node, typename Allocator>
+template <typename Node, typename Allocator>
 typename treap_base<Node, Allocator>::const_reverse_iterator treap_base<Node, Allocator>::rend() const {
     return {begin()};
 }
 
-template<typename Node, typename Allocator>
+template <typename Node, typename Allocator>
 typename treap_base<Node, Allocator>::const_iterator treap_base<Node, Allocator>::cbegin() const {
     if (empty()) {
         return cend();
@@ -573,17 +573,17 @@ typename treap_base<Node, Allocator>::const_iterator treap_base<Node, Allocator>
     return {node_of_order(index)->get_value_address(), this, index};
 }
 
-template<typename Node, typename Allocator>
+template <typename Node, typename Allocator>
 typename treap_base<Node, Allocator>::const_iterator treap_base<Node, Allocator>::cend() const {
     return {nullptr, this, size()};
 }
 
-template<typename Node, typename Allocator>
+template <typename Node, typename Allocator>
 typename treap_base<Node, Allocator>::const_reverse_iterator treap_base<Node, Allocator>::crbegin() const {
     return {cend()};
 }
 
-template<typename Node, typename Allocator>
+template <typename Node, typename Allocator>
 typename treap_base<Node, Allocator>::const_reverse_iterator treap_base<Node, Allocator>::crend() const {
     return {cbegin()};
 }

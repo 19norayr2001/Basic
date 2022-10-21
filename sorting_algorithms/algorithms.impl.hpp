@@ -6,7 +6,7 @@
 #include <vector>
 #include <queue>
 
-template<typename ForwardIt>
+template <typename ForwardIt>
 void nstd::bubble_sort(ForwardIt begin, ForwardIt end) {
     for (ForwardIt it = begin; it != end; ++it) {
         ForwardIt itj = it;
@@ -19,7 +19,7 @@ void nstd::bubble_sort(ForwardIt begin, ForwardIt end) {
     }
 }
 
-template<typename ForwardIt>
+template <typename ForwardIt>
 void nstd::insertion_sort(ForwardIt begin, ForwardIt end) {
     for (ForwardIt it = begin; it != end; ++it) {
         for (ForwardIt itj = it, itPrev = it; itj != begin; --itj) {
@@ -30,14 +30,14 @@ void nstd::insertion_sort(ForwardIt begin, ForwardIt end) {
     }
 }
 
-template<typename ForwardIt>
+template <typename ForwardIt>
 void nstd::selection_sort(ForwardIt begin, ForwardIt end) {
     for (ForwardIt it = begin; it != end; ++it) {
         std::iter_swap(it, std::min_element(it, end));
     }
 }
 
-template<typename ForwardIt>
+template <typename ForwardIt>
 ForwardIt partition_quick(ForwardIt begin, ForwardIt end) {
     using ValueType = typename std::iterator_traits<ForwardIt>::value_type;
     ValueType value = *end;
@@ -52,7 +52,7 @@ ForwardIt partition_quick(ForwardIt begin, ForwardIt end) {
     return it2;
 }
 
-template<typename RandIt>
+template <typename RandIt>
 void quick(RandIt begin, RandIt end) {
     if (end - begin > 1) {
         auto mid = partition_quick(begin, end - 1);
@@ -61,12 +61,12 @@ void quick(RandIt begin, RandIt end) {
     }
 }
 
-template<typename RandIt>
+template <typename RandIt>
 void nstd::quick_sort(RandIt begin, RandIt end) {
     quick(begin, end);
 }
 
-template<typename ForwardIt, typename K>
+template <typename ForwardIt, typename K>
 void nstd::radix_sort(ForwardIt begin, ForwardIt end) {
     using ValueType = typename std::iterator_traits<ForwardIt>::value_type;
     std::queue<ValueType> queues[2];
@@ -92,7 +92,7 @@ void nstd::radix_sort(ForwardIt begin, ForwardIt end) {
     }
 }
 
-template<typename ForwardIt>
+template <typename ForwardIt>
 void nstd::heap_sort(ForwardIt begin, ForwardIt end) {
     using ValueType = typename std::iterator_traits<ForwardIt>::value_type;
     // use max heap
@@ -108,7 +108,7 @@ void nstd::heap_sort(ForwardIt begin, ForwardIt end) {
     }
 }
 
-template<typename InputIt, typename OutIt>
+template <typename InputIt, typename OutIt>
 void nstd::merge(InputIt begin1, InputIt end1, InputIt begin2, InputIt end2, OutIt dest) {
     auto it = begin1, it2 = begin2;
     while (it != end1 && it2 != end2) {
@@ -127,7 +127,7 @@ void nstd::merge(InputIt begin1, InputIt end1, InputIt begin2, InputIt end2, Out
     std::copy(it2, end2, dest);
 }
 
-template<typename RandIt>
+template <typename RandIt>
 void nstd::merge_sort(RandIt begin, RandIt end) {
     size_t size = end - begin;
     if (size <= 1) return;

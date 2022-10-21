@@ -7,7 +7,7 @@
 
 namespace nstd {
 
-template<typename T>
+template <typename T>
 class unique_ptr {
 public:
     explicit unique_ptr(T* ptr = nullptr);
@@ -41,15 +41,15 @@ private:
     T* _data;
 };
 
-template<typename T>
+template <typename T>
 unique_ptr<T>::unique_ptr(T* ptr)
         :_data(ptr) {}
 
-template<typename T>
+template <typename T>
 unique_ptr<T>::unique_ptr(unique_ptr<T>&& other) noexcept
         : _data(std::exchange(other._data, nullptr)) {}
 
-template<typename T>
+template <typename T>
 unique_ptr<T>& unique_ptr<T>::operator=(unique_ptr<T>&& other) noexcept {
     if (this != &other) {
         unique_ptr<T> moved = std::move(other);
@@ -58,37 +58,37 @@ unique_ptr<T>& unique_ptr<T>::operator=(unique_ptr<T>&& other) noexcept {
     return *this;
 }
 
-template<typename T>
+template <typename T>
 unique_ptr<T>::~unique_ptr() {
     delete _data;
 }
 
-template<typename T>
+template <typename T>
 T& unique_ptr<T>::operator*() {
     return *_data;
 }
 
-template<typename T>
+template <typename T>
 const T& unique_ptr<T>::operator*() const {
     return *_data;
 }
 
-template<typename T>
+template <typename T>
 T* unique_ptr<T>::operator->() {
     return _data;
 }
 
-template<typename T>
+template <typename T>
 const T* unique_ptr<T>::operator->() const {
     return _data;
 }
 
-template<typename T>
+template <typename T>
 void unique_ptr<T>::swap(unique_ptr<T>& other) noexcept {
     std::swap(_data, other._data);
 }
 
-template<typename T>
+template <typename T>
 T* unique_ptr<T>::get() const noexcept {
     return _data;
 }

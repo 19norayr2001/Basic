@@ -5,7 +5,7 @@
 
 namespace nstd {
 
-template<typename T, typename Container = nstd::vector<T>>
+template <typename T, typename Container = nstd::vector<T>>
 class stack {
 public:
     typedef T value_type;
@@ -28,27 +28,27 @@ private:
     Container _container;
 };
 
-template<typename T, typename Container>
+template <typename T, typename Container>
 T& stack<T, Container>::top() {
     return _container.back();
 }
 
-template<typename T, typename Container>
+template <typename T, typename Container>
 const T& stack<T, Container>::top() const {
     return _container.back();
 }
 
-template<typename T, typename Container>
+template <typename T, typename Container>
 void stack<T, Container>::push(const value_type& value) {
     _container.emplace_back(value);
 }
 
-template<typename T, typename Container>
+template <typename T, typename Container>
 void stack<T, Container>::push(value_type&& value) {
     _container.emplace_back(std::move(value));
 }
 
-template<typename T, typename Container>
+template <typename T, typename Container>
 void stack<T, Container>::pop() {
     _container.pop_back();
 }

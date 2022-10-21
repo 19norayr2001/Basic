@@ -6,7 +6,7 @@
 
 namespace nstd {
 
-template<typename T>
+template <typename T>
 class implicit_treap_node : public treap_node_base<implicit_treap_node<T>> {
 private:
     using base_type = treap_node_base<implicit_treap_node<T>>;
@@ -34,7 +34,7 @@ private:
     value_type _value;
 };
 
-template<typename T, typename Allocator>
+template <typename T, typename Allocator>
 class implicit_treap : public treap_base<implicit_treap_node<T>, Allocator> {
     using base_type = treap_base<implicit_treap_node<T>, Allocator>;
     using treap_node = implicit_treap_node<T>;
@@ -78,14 +78,14 @@ public:
 
     iterator push_back(value_type&& value);
 
-    template<typename... Args>
+    template <typename... Args>
     iterator emplace_back(Args&& ... args);
 
     iterator push_front(const value_type& value);
 
     iterator push_front(value_type&& value);
 
-    template<typename... Args>
+    template <typename... Args>
     iterator emplace_front(Args&& ... args);
 
     void erase(size_type index);
@@ -104,7 +104,7 @@ public:
     using base_type::empty;
 
 private:
-    template<typename... Args>
+    template <typename... Args>
     iterator emplace(size_type index, Args&& ... args);
 
 private:
@@ -113,11 +113,11 @@ private:
     std::pair<treap_node*, treap_node*> split(treap_node* node, size_type index);
 };
 
-template<typename Node, typename Allocator>
+template <typename Node, typename Allocator>
 implicit_treap<Node, Allocator>::implicit_treap(const allocator_type& allocator)
         : base_type(allocator) {}
 
-template<typename Node, typename Allocator>
+template <typename Node, typename Allocator>
 implicit_treap<Node, Allocator>::implicit_treap(const implicit_treap& other)
         : base_type(other._node_allocator) {
     for (auto it = other.begin(); it != other.end(); ++it) {
@@ -125,11 +125,11 @@ implicit_treap<Node, Allocator>::implicit_treap(const implicit_treap& other)
     }
 }
 
-template<typename Node, typename Allocator>
+template <typename Node, typename Allocator>
 implicit_treap<Node, Allocator>::implicit_treap(implicit_treap&& other) noexcept
         : base_type(std::move(other)) {}
 
-template<typename Node, typename Allocator>
+template <typename Node, typename Allocator>
 implicit_treap<Node, Allocator>&
 implicit_treap<Node, Allocator>::operator=(const implicit_treap& other) {
     if (this != &other) {
@@ -139,7 +139,7 @@ implicit_treap<Node, Allocator>::operator=(const implicit_treap& other) {
     return *this;
 }
 
-template<typename Node, typename Allocator>
+template <typename Node, typename Allocator>
 implicit_treap<Node, Allocator>&
 implicit_treap<Node, Allocator>::operator=(implicit_treap&& other) noexcept {
     if (this != &other) {
@@ -149,7 +149,7 @@ implicit_treap<Node, Allocator>::operator=(implicit_treap&& other) noexcept {
     return *this;
 }
 
-template<typename T, typename Allocator>
+template <typename T, typename Allocator>
 typename implicit_treap<T, Allocator>::treap_node*
 implicit_treap<T, Allocator>::merge(treap_node* node1, treap_node* node2) {
     if (node1 == nullptr) {
@@ -166,7 +166,7 @@ implicit_treap<T, Allocator>::merge(treap_node* node1, treap_node* node2) {
     return node2;
 }
 
-template<typename T, typename Allocator>
+template <typename T, typename Allocator>
 auto
 implicit_treap<T, Allocator>::split(treap_node* node, size_type index) -> std::pair<treap_node*, treap_node*> {
     if (node == nullptr || index <= 0) {
@@ -185,51 +185,51 @@ implicit_treap<T, Allocator>::split(treap_node* node, size_type index) -> std::p
     return {left_pair.first, node};
 }
 
-template<typename T, typename Allocator>
+template <typename T, typename Allocator>
 typename implicit_treap<T, Allocator>::iterator
 implicit_treap<T, Allocator>::insert(const value_type& value, size_type index) {
     return emplace(index, value);
 }
 
-template<typename T, typename Allocator>
+template <typename T, typename Allocator>
 typename implicit_treap<T, Allocator>::iterator
 implicit_treap<T, Allocator>::insert(value_type&& value, size_type index) {
     return emplace(index, value);
 }
 
-template<typename T, typename Allocator>
+template <typename T, typename Allocator>
 typename implicit_treap<T, Allocator>::iterator implicit_treap<T, Allocator>::push_back(const value_type& value) {
     return emplace_back(value);
 }
 
-template<typename T, typename Allocator>
+template <typename T, typename Allocator>
 typename implicit_treap<T, Allocator>::iterator implicit_treap<T, Allocator>::push_back(value_type&& value) {
     return emplace_back(value);
 }
 
-template<typename T, typename Allocator>
-template<typename ...Args>
+template <typename T, typename Allocator>
+template <typename ...Args>
 typename implicit_treap<T, Allocator>::iterator implicit_treap<T, Allocator>::emplace_back(Args&& ...args) {
     return emplace(size(), std::forward<Args>(args)...);
 }
 
-template<typename T, typename Allocator>
+template <typename T, typename Allocator>
 typename implicit_treap<T, Allocator>::iterator implicit_treap<T, Allocator>::push_front(const value_type& value) {
     return emplace_front(value);
 }
 
-template<typename T, typename Allocator>
+template <typename T, typename Allocator>
 typename implicit_treap<T, Allocator>::iterator implicit_treap<T, Allocator>::push_front(value_type&& value) {
     return emplace_front(value);
 }
 
-template<typename T, typename Allocator>
-template<typename ...Args>
+template <typename T, typename Allocator>
+template <typename ...Args>
 typename implicit_treap<T, Allocator>::iterator implicit_treap<T, Allocator>::emplace_front(Args&& ...args) {
     return emplace(0, std::forward<Args>(args)...);
 }
 
-template<typename T, typename Allocator>
+template <typename T, typename Allocator>
 void implicit_treap<T, Allocator>::erase(size_type index) {
     if (index >= size()) {
         return;
@@ -244,29 +244,29 @@ void implicit_treap<T, Allocator>::erase(size_type index) {
     _root = merge(first_split_pair.first, second_split_pair.second);
 }
 
-template<typename T, typename Allocator>
+template <typename T, typename Allocator>
 void implicit_treap<T, Allocator>::pop_back() {
     erase(size() - 1);
 }
 
-template<typename T, typename Allocator>
+template <typename T, typename Allocator>
 void implicit_treap<T, Allocator>::pop_front() {
     erase(0);
 }
 
-template<typename T, typename Allocator>
+template <typename T, typename Allocator>
 typename implicit_treap<T, Allocator>::value_type& implicit_treap<T, Allocator>::operator[](size_type index) {
     return *(base_type::begin() + index);
 }
 
-template<typename T, typename Allocator>
+template <typename T, typename Allocator>
 const typename implicit_treap<T, Allocator>::value_type&
 implicit_treap<T, Allocator>::operator[](size_type index) const {
     return *(base_type::cbegin() + index);
 }
 
-template<typename T, typename Allocator>
-template<typename ...Args>
+template <typename T, typename Allocator>
+template <typename ...Args>
 typename implicit_treap<T, Allocator>::iterator
 implicit_treap<T, Allocator>::emplace(size_type index, Args&& ...args) {
     if (index > size()) {

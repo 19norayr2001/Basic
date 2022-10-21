@@ -15,9 +15,9 @@ public:
             : _operation(ch) {
     }
 
-    [[nodiscard]] int priority() const;
+     int priority() const;
 
-    [[nodiscard]] int calculateOption(int x, int y) const;
+     int calculateOption(int x, int y) const;
 
 public:
     static bool isOperation(char ch);

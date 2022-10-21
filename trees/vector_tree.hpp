@@ -5,7 +5,7 @@
 
 namespace nstd {
 
-template<typename T, typename Allocator = std::allocator<T>>
+template <typename T, typename Allocator = std::allocator<T>>
 class vector_tree : public implicit_treap<T, Allocator> {
     using base_type = implicit_treap<T, Allocator>;
 

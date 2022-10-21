@@ -5,7 +5,7 @@
 
 namespace nstd {
 
-template<typename Container>
+template <typename Container>
 class insert_iterator {
 public:
     using iterator_category = std::output_iterator_tag;
@@ -41,7 +41,7 @@ public:
     }
 };
 
-template<typename Container>
+template <typename Container>
 nstd::insert_iterator<Container> inserter(Container& container, const typename Container::iterator& iterator) {
     return insert_iterator<Container>(container, iterator);
 }

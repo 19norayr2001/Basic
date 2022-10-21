@@ -5,7 +5,7 @@
 
 namespace nstd {
 
-template<typename Container>
+template <typename Container>
 class back_insert_iterator {
 private:
     Container* _container;
@@ -38,7 +38,7 @@ public:
     }
 };
 
-template<typename Container>
+template <typename Container>
 back_insert_iterator<Container> back_inserter(Container& container) {
     return back_insert_iterator<Container>(container);
 }

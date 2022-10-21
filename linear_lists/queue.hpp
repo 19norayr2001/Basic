@@ -5,7 +5,7 @@
 
 namespace nstd {
 
-template<typename T, typename Container = std::deque<T>>
+template <typename T, typename Container = std::deque<T>>
 class queue {
 public:
     typedef T value_type;
@@ -30,27 +30,27 @@ private:
 };
 
 
-template<typename T, typename Container>
+template <typename T, typename Container>
 const T& queue<T, Container>::front() const {
     return _container.front();
 }
 
-template<typename T, typename Container>
+template <typename T, typename Container>
 T& queue<T, Container>::front() {
     return _container.front();
 }
 
-template<typename T, typename Container>
+template <typename T, typename Container>
 void queue<T, Container>::push(const value_type& value) {
     _container.emplace_back(value);
 }
 
-template<typename T, typename Container>
+template <typename T, typename Container>
 void queue<T, Container>::push(value_type&& value) {
     _container.emplace_back(std::move(value));
 }
 
-template<typename T, typename Container>
+template <typename T, typename Container>
 void queue<T, Container>::pop() {
     _container.pop_front();
 }

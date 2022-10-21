@@ -5,7 +5,7 @@
 
 namespace nstd {
 
-template<typename Key>
+template <typename Key>
 class ordered_set_node : public treap_node_base<ordered_set_node<Key>> {
 private:
     using base_type = treap_node_base<ordered_set_node<Key>>;
@@ -30,7 +30,7 @@ private:
     key_type _key;
 };
 
-template<typename Key, typename Compare = std::less<Key>, typename Allocator = std::allocator<Key>>
+template <typename Key, typename Compare = std::less<Key>, typename Allocator = std::allocator<Key>>
 class ordered_set : public treap<ordered_set_node<const Key>, Compare, Allocator> {
     using base_type = treap<ordered_set_node<const Key>, Compare, Allocator>;
 public:
