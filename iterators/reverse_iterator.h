@@ -34,13 +34,13 @@ public:
 public:
     common_reverse_iterator<It>& operator++();
 
-    common_reverse_iterator<It> operator++(int);
+    common_reverse_iterator<It> operator++(int) &;
 
     common_reverse_iterator<It>& operator+=(ptrdiff_t);
 
     common_reverse_iterator<It>& operator--();
 
-    common_reverse_iterator<It> operator--(int);
+    common_reverse_iterator<It> operator--(int) &;
 
     common_reverse_iterator<It>& operator-=(ptrdiff_t);
 
@@ -48,9 +48,9 @@ public:
     ptrdiff_t operator-(const common_reverse_iterator<It>&) const;
 
 public:
-    value_type& operator*();
+    value_type& operator*() const;
 
-    value_type* operator->();
+    value_type* operator->() const;
 
 public:
     bool operator==(const common_reverse_iterator<It>&) const;
@@ -66,9 +66,9 @@ public:
     bool operator>=(const common_reverse_iterator<It>&) const;
 
 public:
-    common_reverse_iterator<It> operator+(ptrdiff_t);
+    common_reverse_iterator<It> operator+(ptrdiff_t) const;
 
-    common_reverse_iterator<It> operator-(ptrdiff_t);
+    common_reverse_iterator<It> operator-(ptrdiff_t) const;
 };
 
 
@@ -85,7 +85,7 @@ common_reverse_iterator<It>& common_reverse_iterator<It>::operator++() {
 
 
 template<typename It>
-common_reverse_iterator<It> common_reverse_iterator<It>::operator++(int) {
+common_reverse_iterator<It> common_reverse_iterator<It>::operator++(int) & {
     common_reverse_iterator<It> iter = *this;
     --_base_iterator;
     return iter;
@@ -107,7 +107,7 @@ common_reverse_iterator<It>& common_reverse_iterator<It>::operator--() {
 
 
 template<typename It>
-common_reverse_iterator<It> common_reverse_iterator<It>::operator--(int) {
+common_reverse_iterator<It> common_reverse_iterator<It>::operator--(int) & {
     common_reverse_iterator iter = *this;
     ++_base_iterator;
     return iter;
@@ -128,14 +128,14 @@ ptrdiff_t common_reverse_iterator<It>::operator-(const common_reverse_iterator<I
 
 
 template<typename It>
-auto common_reverse_iterator<It>::operator*() -> value_type& {
+auto common_reverse_iterator<It>::operator*() const -> value_type& {
     It temp = _base_iterator;
     return *--temp;
 }
 
 
 template<typename It>
-auto common_reverse_iterator<It>::operator->() -> value_type* {
+auto common_reverse_iterator<It>::operator->() const -> value_type* {
     return std::addressof(operator*());
 }
 
@@ -177,14 +177,14 @@ bool common_reverse_iterator<It>::operator>=(const common_reverse_iterator<It>& 
 
 
 template<typename It>
-common_reverse_iterator<It> common_reverse_iterator<It>::operator+(ptrdiff_t n) {
+common_reverse_iterator<It> common_reverse_iterator<It>::operator+(ptrdiff_t n) const {
     auto temp = *this;
     return temp += n;
 }
 
 
 template<typename It>
-common_reverse_iterator<It> common_reverse_iterator<It>::operator-(ptrdiff_t n) {
+common_reverse_iterator<It> common_reverse_iterator<It>::operator-(ptrdiff_t n) const {
     auto temp = *this;
     return temp -= n;
 }
