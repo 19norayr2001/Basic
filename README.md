@@ -1,6 +1,6 @@
 # C++ Basics
 
-`Basics` is a cross platform C++ library based on `CMake`, where are implemented STL data structures, algorithms, etc. Library has unit tests for each module implemented using `gtest`
+`Basics` is a cross platform C++ library based on `CMake`, where are implemented STL data structures, algorithms, etc. Library has unit tests for each module implemented using `gtest`.
 
 ## Linear lists
 
@@ -104,8 +104,10 @@ However, `push_back` and `pop_back` are also working in `O (log size)` complexit
 
 This container provides
 
-- `emplace_back`, which uses perfect forwarding technique
-- `push_back`, `insert`, `erase`, `swap`, `empty`, `size` public functions
+- `emplace_back`, `emplace_front`
+- `push_back`, `pop_back`, `push_front`, `pop_front`
+- `insert`, `erase`
+- `swap`, `empty`, `size`
 - `weak exception safety`, `move semantics` for public functions
 - possibility of using `custom allocators`
 - `iterator`, `reverse iterator`
