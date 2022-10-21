@@ -66,6 +66,79 @@ Provides
 - `push_back`, `push_front`, `pop_back`, `pop_front`, `insert`, `erase` public functions
 - Soon there will be added `iterator` and `template` parameter support
 
+## Trees
+
+### Ordered Set, Ordered Map
+
+`nstd::ordered_set` and `nstd::ordered_map` are class based on `treap` data structure. 
+These classes provide all the functionality, that are providing `std::set` and `std::map`. 
+Lo and behold, they are ordered, so we can find order of any element in `O (log size)` complexity. 
+This fact gives a very huge advantage under STL associative containers.
+Nevertheless, insertion and remove operations are a little slower than STL ones.
+
+These containers provide
+
+- `insert`, `erase`, `emplace`, `contains`, `find`, `swap`, `empty`, `size` public functions
+- `key_of_order`, `order_of_key` functions working in `O (log size)` complexity
+- `weak exception safety`, `move semantics` for public functions
+- possibility of using `custom allocators`
+- `iterator`, `reverse iterator`
+
+Check out some usages of nstd ordered containers
+```c++
+nstd::ordered_set<int, std::greater<>> st {10, 7, 5, 4, 1, -1, -8};
+size_t order = st.order_of_key(4); // order will be 3
+int key = st.key_of_order(3);      // key will be 4
+
+nstd::ordered_map<int, int> mp { {1, 2}, {4, 4}, {5, 6}};
+size_t order = st.order_of_key(4); // order will be 1
+int key = st.key_of_order(1);      // key will be 4
+```
+
+### Vector Tree
+
+`nstd::vector_tree` is a data structure modeled like `std::vector`, but base on `implicit treap`.
+This class provides `std::vector`'s functionality as well.
+The best part is that this structure inserts and removes element in `O(log size)` complexity.
+However, `push_back` and `pop_back` are also working in `O (log size)` complexity
+
+This container provides
+
+- `emplace_back`, which uses perfect forwarding technique
+- `push_back`, `insert`, `erase`, `swap`, `empty`, `size` public functions
+- `weak exception safety`, `move semantics` for public functions
+- possibility of using `custom allocators`
+- `iterator`, `reverse iterator`
+
+Check out some usages of nstd ordered containers
+```c++
+nstd::vector_tree<int> vec {1, 3};
+vec.insert(2, 1); // insert 2 at 1st position, vec = {1, 2, 3}
+vec.push_back(4); // vec = {1, 2, 3, 4}
+vec.erase(0);     // erase 0th element, vec = {2, 3, 4}
+```
+
+### Binary Search Tree
+
+This container is implemented as non-balanced binary search tree and gives following functionality
+
+- `insert`
+- `remove`
+- `find`
+
+All these functions complexity is `O(h)`, where `h` is the height of the tree
+
+### Red Black Tree
+`RBTree` extends from `BinarySearchTree` and provides same interface as `BinarySearchTree`. But through his balance, this container guarantees `O(log n)` complexity for his functions.
+
+### Priority Queue
+
+Priority Queue based on heap providing following API
+
+- `top`, gives top element
+- `insert`, inserts element in priority queue
+- `pop`, removes top element from priority queue
+
 ## Smart pointers
 
 ### Unique pointer
@@ -101,29 +174,6 @@ Soon there will be added `makeUnique`, `makeShared` functions support in order t
 ### Weak Pointer
 
 Not implemented yet.
-
-## Trees
-
-### Binary Search Tree
-
-This container is implemented as non-balanced binary search tree and gives following functionality
-
-- `insert`
-- `remove`
-- `find`
-
-All these functions complexity is `O(h)`, where `h` is the height of the tree
-
-### Red Black Tree
-`RBTree` extends from `BinarySearchTree` and provides same interface as `BinarySearchTree`. But through his balance, this container guarantees `O(log n)` complexity for his functions.
-
-### Priority Queue
-
-Priority Queue based on heap providing following API
-
-- `top`, gives top element
-- `insert`, inserts element in priority queue
-- `pop`, removes top element from priority queue
 
 ## Sorting Algorithms
 
