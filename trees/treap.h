@@ -12,26 +12,26 @@ namespace nstd {
 
 template<typename Node, typename Compare, typename Allocator>
 class treap : public treap_base<Node, Allocator> {
-    using _base = treap_base<Node, Allocator>;
+    using base_type = treap_base<Node, Allocator>;
 public:
-    using key_type = typename _base::key_type;
-    using value_type = typename _base::value_type;
+    using key_type = typename base_type::key_type;
+    using value_type = typename base_type::value_type;
     using key_compare = Compare;
-    using allocator_type = typename _base::allocator_type;
-    using size_type = typename _base::size_type;
+    using allocator_type = typename base_type::allocator_type;
+    using size_type = typename base_type::size_type;
 
 private:
     using treap_node = Node;
-    using node_holder = typename _base::node_holder;
+    using node_holder = typename base_type::node_holder;
 
 public:
-    using iterator = typename _base::iterator;
-    using const_iterator = typename _base::const_iterator;
-    using reverse_iterator = typename _base::reverse_iterator;
-    using const_reverse_iterator = typename _base::const_reverse_iterator;
+    using iterator = typename base_type::iterator;
+    using const_iterator = typename base_type::const_iterator;
+    using reverse_iterator = typename base_type::reverse_iterator;
+    using const_reverse_iterator = typename base_type::const_reverse_iterator;
 
 private:
-    using _base::_root;
+    using base_type::_root;
 
     key_compare _comparator;
 
@@ -132,9 +132,9 @@ public:
      */
     size_type order_of_key(const key_type &key) const;
 
-    using _base::size;
+    using base_type::size;
 
-    using _base::empty;
+    using base_type::empty;
 
 private:
     /**
@@ -148,21 +148,21 @@ private:
     const_iterator iterator_of_key(const key_type &key) const;
 
 public:
-    using _base::begin;
+    using base_type::begin;
 
-    using _base::cbegin;
+    using base_type::cbegin;
 
-    using _base::rbegin;
+    using base_type::rbegin;
 
-    using _base::crbegin;
+    using base_type::crbegin;
 
-    using _base::end;
+    using base_type::end;
 
-    using _base::cend;
+    using base_type::cend;
 
-    using _base::rend;
+    using base_type::rend;
 
-    using _base::crend;
+    using base_type::crend;
 
 private:
     iterator const_cast_iterator(const const_iterator &it);
@@ -170,11 +170,11 @@ private:
 
 template<typename Node, typename Compare, typename Allocator>
 treap<Node, Compare, Allocator>::treap(const key_compare &comparator, const allocator_type &allocator)
-        : _base(allocator), _comparator(comparator) {}
+        : base_type(allocator), _comparator(comparator) {}
 
 template<typename Node, typename Compare, typename Allocator>
 treap<Node, Compare, Allocator>::treap(const treap &other)
-        : _base(other._node_allocator), _comparator(other._comparator) {
+        : base_type(other._node_allocator), _comparator(other._comparator) {
     for (auto it = other.begin(); it != other.end(); ++it) {
         insert(*it);
     }
@@ -182,7 +182,7 @@ treap<Node, Compare, Allocator>::treap(const treap &other)
 
 template<typename Node, typename Compare, typename Allocator>
 treap<Node, Compare, Allocator>::treap(treap &&other) noexcept
-        : _base(std::move(other)), _comparator(std::move(other._comparator)) {}
+        : base_type(std::move(other)), _comparator(std::move(other._comparator)) {}
 
 template<typename Node, typename Compare, typename Allocator>
 treap<Node, Compare, Allocator> &
@@ -300,7 +300,7 @@ treap<Node, Compare, Allocator>::split(treap_node *node,
 
 template<typename Node, typename Compare, typename Allocator>
 void treap<Node, Compare, Allocator>::swap(treap<Node, Compare, Allocator> &other) noexcept {
-    _base::swap(other);
+    base_type::swap(other);
     std::swap(_comparator, other._comparator);
 }
 
@@ -321,7 +321,7 @@ template<typename... Args>
 std::pair<typename treap<Node, Compare, Allocator>::iterator, bool>
 treap<Node, Compare, Allocator>::emplace(Args &&... args) {
     // allocate memory for node and construct value
-    node_holder holder = _base::construct_node(std::forward<Args>(args)...);
+    node_holder holder = base_type::construct_node(std::forward<Args>(args)...);
     // if the tree already contains key, then just return
     auto it = find(holder->get_key());
     if (it != end()) {
@@ -345,7 +345,7 @@ template<typename Node, typename Compare, typename Allocator>
 void treap<Node, Compare, Allocator>::erase(const key_type &key) {
     std::pair<treap_node *, treap_node *> first_split_pair = split(_root, key);
     std::pair<treap_node *, treap_node *> second_split_pair = split<true>(first_split_pair.second, key);
-    _base::destroy_tree(second_split_pair.first);
+    base_type::destroy_tree(second_split_pair.first);
     if (empty()) {
         _root = nullptr;
         return;
@@ -411,7 +411,7 @@ treap<Node, Compare, Allocator>::key_of_order(size_type index) const {
     if (index >= size()) {
         throw std::out_of_range("Index is out of bounds");
     }
-    return _base::node_of_order(index)->get_key();
+    return base_type::node_of_order(index)->get_key();
 }
 
 template<typename Node, typename Compare, typename Allocator>
