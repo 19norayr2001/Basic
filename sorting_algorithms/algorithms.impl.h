@@ -7,7 +7,7 @@
 #include <queue>
 
 template<typename ForwardIt>
-void SortingAlgorithms::bubble_sort(ForwardIt begin, ForwardIt end) {
+void nstd::bubble_sort(ForwardIt begin, ForwardIt end) {
     for (ForwardIt it = begin; it != end; ++it) {
         ForwardIt itj = it;
         ++itj;
@@ -20,7 +20,7 @@ void SortingAlgorithms::bubble_sort(ForwardIt begin, ForwardIt end) {
 }
 
 template<typename ForwardIt>
-void SortingAlgorithms::insertion_sort(ForwardIt begin, ForwardIt end) {
+void nstd::insertion_sort(ForwardIt begin, ForwardIt end) {
     for (ForwardIt it = begin; it != end; ++it) {
         for (ForwardIt itj = it, itPrev = it; itj != begin; --itj) {
             --itPrev;
@@ -31,7 +31,7 @@ void SortingAlgorithms::insertion_sort(ForwardIt begin, ForwardIt end) {
 }
 
 template<typename ForwardIt>
-void SortingAlgorithms::selection_sort(ForwardIt begin, ForwardIt end) {
+void nstd::selection_sort(ForwardIt begin, ForwardIt end) {
     for (ForwardIt it = begin; it != end; ++it) {
         std::iter_swap(it, std::min_element(it, end));
     }
@@ -62,12 +62,12 @@ void quick(RandIt begin, RandIt end) {
 }
 
 template<typename RandIt>
-void SortingAlgorithms::quick_sort(RandIt begin, RandIt end) {
+void nstd::quick_sort(RandIt begin, RandIt end) {
     quick(begin, end);
 }
 
 template<typename ForwardIt, typename K>
-void SortingAlgorithms::radix_sort(ForwardIt begin, ForwardIt end) {
+void nstd::radix_sort(ForwardIt begin, ForwardIt end) {
     using ValueType = typename std::iterator_traits<ForwardIt>::value_type;
     std::queue<ValueType> queues[2];
 
@@ -93,7 +93,7 @@ void SortingAlgorithms::radix_sort(ForwardIt begin, ForwardIt end) {
 }
 
 template<typename ForwardIt>
-void SortingAlgorithms::heap_sort(ForwardIt begin, ForwardIt end) {
+void nstd::heap_sort(ForwardIt begin, ForwardIt end) {
     using ValueType = typename std::iterator_traits<ForwardIt>::value_type;
     // use max heap
     std::priority_queue<ValueType, std::vector<ValueType>, std::greater<ValueType>> pq;
@@ -109,7 +109,7 @@ void SortingAlgorithms::heap_sort(ForwardIt begin, ForwardIt end) {
 }
 
 template<typename InputIt, typename OutIt>
-void AlgorithmUtility::merge(InputIt begin1, InputIt end1, InputIt begin2, InputIt end2, OutIt dest) {
+void nstd::merge(InputIt begin1, InputIt end1, InputIt begin2, InputIt end2, OutIt dest) {
     auto it = begin1, it2 = begin2;
     while (it != end1 && it2 != end2) {
         if (*it < *it2) {
@@ -128,7 +128,7 @@ void AlgorithmUtility::merge(InputIt begin1, InputIt end1, InputIt begin2, Input
 }
 
 template<typename RandIt>
-void SortingAlgorithms::merge_sort(RandIt begin, RandIt end) {
+void nstd::merge_sort(RandIt begin, RandIt end) {
     size_t size = end - begin;
     if (size <= 1) return;
     RandIt middle = begin + size / 2;
@@ -141,7 +141,7 @@ void SortingAlgorithms::merge_sort(RandIt begin, RandIt end) {
     // initialize buffer for merge algorithm
     std::vector<ValueType> buffer(size);
     // merge two sorted half parts
-    AlgorithmUtility::merge(begin, middle, middle, begin + size, buffer.begin());
+    nstd::merge(begin, middle, middle, begin + size, buffer.begin());
     // copy buffer to original destination
     std::copy(buffer.begin(), buffer.end(), begin);
 }
