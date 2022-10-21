@@ -16,53 +16,54 @@ private:
     size_t m_capacity;
     size_t m_size;
     Alloc m_allocator;
-    value_type *m_array;
+    value_type* m_array;
 private:
     template<bool B>
     class common_iterator {
         friend class common_iterator<!B>;
+
     public:
         using value_type = std::conditional_t<B, const Vector::value_type, Vector::value_type>;
     private:
-        value_type *m_ptr;
+        value_type* m_ptr;
     public:
-        explicit common_iterator(value_type *);
+        explicit common_iterator(value_type*);
 
-        common_iterator(const common_iterator<false> &other);
-
-    public:
-        common_iterator<B> &operator++();
-
-        common_iterator<B> operator++(int) &;
-
-        common_iterator<B> &operator+=(ptrdiff_t);
-
-        common_iterator<B> &operator--();
-
-        common_iterator<B> operator--(int) &;
-
-        common_iterator<B> &operator-=(ptrdiff_t);
+        common_iterator(const common_iterator<false>& other);
 
     public:
-        ptrdiff_t operator-(const common_iterator<B> &) const;
+        common_iterator<B>& operator++();
+
+        common_iterator<B> operator++(int)&;
+
+        common_iterator<B>& operator+=(ptrdiff_t);
+
+        common_iterator<B>& operator--();
+
+        common_iterator<B> operator--(int)&;
+
+        common_iterator<B>& operator-=(ptrdiff_t);
 
     public:
-        value_type &operator*() const;
-
-        value_type *operator->() const;
+        ptrdiff_t operator-(const common_iterator<B>&) const;
 
     public:
-        bool operator==(const common_iterator<B> &) const;
+        value_type& operator*() const;
 
-        bool operator!=(const common_iterator<B> &) const;
+        value_type* operator->() const;
 
-        bool operator<(const common_iterator<B> &) const;
+    public:
+        bool operator==(const common_iterator<B>&) const;
 
-        bool operator>(const common_iterator<B> &) const;
+        bool operator!=(const common_iterator<B>&) const;
 
-        bool operator<=(const common_iterator<B> &) const;
+        bool operator<(const common_iterator<B>&) const;
 
-        bool operator>=(const common_iterator<B> &) const;
+        bool operator>(const common_iterator<B>&) const;
+
+        bool operator<=(const common_iterator<B>&) const;
+
+        bool operator>=(const common_iterator<B>&) const;
 
     public:
         common_iterator<B> operator+(ptrdiff_t) const;
@@ -76,34 +77,34 @@ public:
     using reverse_iterator = common_reverse_iterator<iterator>;
     using const_reverse_iterator = common_reverse_iterator<const_iterator>;
 public:
-    Vector(const Alloc & = Alloc());
+    Vector(const Alloc& = Alloc());
 
-    Vector(const Vector<T, Alloc> &);
+    Vector(const Vector<T, Alloc>&);
 
-    Vector(Vector<T, Alloc> &&) noexcept;
+    Vector(Vector<T, Alloc>&&) noexcept;
 
-    Vector &operator=(const Vector<T, Alloc> &) &;
+    Vector& operator=(const Vector<T, Alloc>&)&;
 
-    Vector &operator=(Vector<T, Alloc> &&) & noexcept;
+    Vector& operator=(Vector<T, Alloc>&&)& noexcept;
 
     ~Vector();
 
 public:
     template<typename... Args>
-    void emplace_back(Args &&...);
+    void emplace_back(Args&& ...);
 
-    void push_back(const value_type &);
+    void push_back(const value_type&);
 
-    void push_back(value_type &&);
+    void push_back(value_type&&);
 
     void pop_back();
 
 public:
     void reserve(size_t);
 
-    value_type &back() { return m_array[m_size - 1]; }
+    value_type& back() { return m_array[m_size - 1]; }
 
-    const value_type &back() const { return m_array[m_size - 1]; }
+    const value_type& back() const { return m_array[m_size - 1]; }
 
 public:
     iterator begin();
@@ -132,16 +133,16 @@ public:
     const_reverse_iterator rend() const;
 
 public:
-    value_type &operator[](size_t);
+    value_type& operator[](size_t);
 
-    const value_type &operator[](size_t) const;
+    const value_type& operator[](size_t) const;
 
 public:
     size_t size() const { return m_size; }
 
     bool empty() const { return m_size == 0; }
 
-    void swap(Vector &);
+    void swap(Vector&);
 
 private:
     bool is_full() const { return m_size == m_capacity; }
@@ -153,30 +154,30 @@ private:
 };
 
 template<typename T, typename Alloc>
-std::ostream &operator<<(std::ostream &, const Vector<T, Alloc> &);
+std::ostream& operator<<(std::ostream&, const Vector<T, Alloc>&);
 
 //======================common_iterator implementation==========================================
 
 template<typename T, typename Alloc>
 template<bool B>
-Vector<T, Alloc>::common_iterator<B>::common_iterator(value_type *ptr)
+Vector<T, Alloc>::common_iterator<B>::common_iterator(value_type* ptr)
         :m_ptr(ptr) {}
 
 template<typename T, typename Alloc>
 template<bool B>
-Vector<T, Alloc>::common_iterator<B>::common_iterator(const common_iterator<false> &other)
+Vector<T, Alloc>::common_iterator<B>::common_iterator(const common_iterator<false>& other)
         :m_ptr(other.m_ptr) {}
 
 template<typename T, typename Alloc>
 template<bool B>
-typename Vector<T, Alloc>::template common_iterator<B> &Vector<T, Alloc>::common_iterator<B>::operator++() {
+typename Vector<T, Alloc>::template common_iterator<B>& Vector<T, Alloc>::common_iterator<B>::operator++() {
     ++m_ptr;
     return *this;
 }
 
 template<typename T, typename Alloc>
 template<bool B>
-typename Vector<T, Alloc>::template common_iterator<B> Vector<T, Alloc>::common_iterator<B>::operator++(int) & {
+typename Vector<T, Alloc>::template common_iterator<B> Vector<T, Alloc>::common_iterator<B>::operator++(int)& {
     common_iterator iter = *this;
     ++m_ptr;
     return iter;
@@ -184,21 +185,21 @@ typename Vector<T, Alloc>::template common_iterator<B> Vector<T, Alloc>::common_
 
 template<typename T, typename Alloc>
 template<bool B>
-typename Vector<T, Alloc>::template common_iterator<B> &Vector<T, Alloc>::common_iterator<B>::operator+=(ptrdiff_t n) {
+typename Vector<T, Alloc>::template common_iterator<B>& Vector<T, Alloc>::common_iterator<B>::operator+=(ptrdiff_t n) {
     m_ptr += n;
     return *this;
 }
 
 template<typename T, typename Alloc>
 template<bool B>
-typename Vector<T, Alloc>::template common_iterator<B> &Vector<T, Alloc>::common_iterator<B>::operator--() {
+typename Vector<T, Alloc>::template common_iterator<B>& Vector<T, Alloc>::common_iterator<B>::operator--() {
     --m_ptr;
     return *this;
 }
 
 template<typename T, typename Alloc>
 template<bool B>
-typename Vector<T, Alloc>::template common_iterator<B> Vector<T, Alloc>::common_iterator<B>::operator--(int) & {
+typename Vector<T, Alloc>::template common_iterator<B> Vector<T, Alloc>::common_iterator<B>::operator--(int)& {
     common_iterator iter = *this;
     --m_ptr;
     return iter;
@@ -206,75 +207,77 @@ typename Vector<T, Alloc>::template common_iterator<B> Vector<T, Alloc>::common_
 
 template<typename T, typename Alloc>
 template<bool B>
-typename Vector<T, Alloc>::template common_iterator<B> &Vector<T, Alloc>::common_iterator<B>::operator-=(ptrdiff_t n) {
+typename Vector<T, Alloc>::template common_iterator<B>& Vector<T, Alloc>::common_iterator<B>::operator-=(ptrdiff_t n) {
     m_ptr -= n;
     return *this;
 }
 
 template<typename T, typename Alloc>
 template<bool B>
-ptrdiff_t Vector<T, Alloc>::common_iterator<B>::operator-(const common_iterator<B> &iter) const {
+ptrdiff_t Vector<T, Alloc>::common_iterator<B>::operator-(const common_iterator<B>& iter) const {
     return m_ptr - iter.m_ptr;
 }
 
 template<typename T, typename Alloc>
 template<bool B>
-auto Vector<T, Alloc>::common_iterator<B>::operator*() const -> value_type & {
+auto Vector<T, Alloc>::common_iterator<B>::operator*() const -> value_type& {
     return *m_ptr;
 }
 
 template<typename T, typename Alloc>
 template<bool B>
-auto Vector<T, Alloc>::common_iterator<B>::operator->() const -> value_type * {
+auto Vector<T, Alloc>::common_iterator<B>::operator->() const -> value_type* {
     return m_ptr;
 }
 
 template<typename T, typename Alloc>
 template<bool B>
-bool Vector<T, Alloc>::common_iterator<B>::operator==(const common_iterator<B> &iter) const {
+bool Vector<T, Alloc>::common_iterator<B>::operator==(const common_iterator<B>& iter) const {
     return m_ptr == iter.m_ptr;
 }
 
 template<typename T, typename Alloc>
 template<bool B>
-bool Vector<T, Alloc>::common_iterator<B>::operator!=(const common_iterator<B> &iter) const {
+bool Vector<T, Alloc>::common_iterator<B>::operator!=(const common_iterator<B>& iter) const {
     return m_ptr != iter.m_ptr;
 }
 
 template<typename T, typename Alloc>
 template<bool B>
-bool Vector<T, Alloc>::common_iterator<B>::operator<(const common_iterator<B> &iter) const {
+bool Vector<T, Alloc>::common_iterator<B>::operator<(const common_iterator<B>& iter) const {
     return m_ptr < iter.m_ptr;
 }
 
 template<typename T, typename Alloc>
 template<bool B>
-bool Vector<T, Alloc>::common_iterator<B>::operator>(const common_iterator<B> &iter) const {
+bool Vector<T, Alloc>::common_iterator<B>::operator>(const common_iterator<B>& iter) const {
     return m_ptr > iter.m_ptr;
 }
 
 template<typename T, typename Alloc>
 template<bool B>
-bool Vector<T, Alloc>::common_iterator<B>::operator<=(const common_iterator<B> &iter) const {
+bool Vector<T, Alloc>::common_iterator<B>::operator<=(const common_iterator<B>& iter) const {
     return m_ptr <= iter.m_ptr;
 }
 
 template<typename T, typename Alloc>
 template<bool B>
-bool Vector<T, Alloc>::common_iterator<B>::operator>=(const common_iterator<B> &iter) const {
+bool Vector<T, Alloc>::common_iterator<B>::operator>=(const common_iterator<B>& iter) const {
     return m_ptr >= iter.m_ptr;
 }
 
 template<typename T, typename Alloc>
 template<bool B>
-typename Vector<T, Alloc>::template common_iterator<B> Vector<T, Alloc>::common_iterator<B>::operator+(ptrdiff_t n) const {
+typename Vector<T, Alloc>::template common_iterator<B>
+Vector<T, Alloc>::common_iterator<B>::operator+(ptrdiff_t n) const {
     common_iterator<B> iter = *this;
     return iter += n;
 }
 
 template<typename T, typename Alloc>
 template<bool B>
-typename Vector<T, Alloc>::template common_iterator<B> Vector<T, Alloc>::common_iterator<B>::operator-(ptrdiff_t n) const {
+typename Vector<T, Alloc>::template common_iterator<B>
+Vector<T, Alloc>::common_iterator<B>::operator-(ptrdiff_t n) const {
     common_iterator<B> iter = *this;
     return iter -= n;
 }
@@ -282,12 +285,12 @@ typename Vector<T, Alloc>::template common_iterator<B> Vector<T, Alloc>::common_
 //=================================== Sequential List implementation ===================================
 
 template<typename T, typename Alloc>
-Vector<T, Alloc>::Vector(const Alloc &allocator)
+Vector<T, Alloc>::Vector(const Alloc& allocator)
         : m_capacity(MAX_SIZE), m_size(0), m_allocator(allocator),
           m_array(AllocTraits::allocate(m_allocator, m_capacity)) {}
 
 template<typename T, typename Alloc>
-Vector<T, Alloc>::Vector(const Vector<T, Alloc> &obj)
+Vector<T, Alloc>::Vector(const Vector<T, Alloc>& obj)
         : m_capacity(obj.m_capacity), m_size(obj.m_size), m_allocator(obj.m_allocator),
           m_array(AllocTraits::allocate(m_allocator, m_capacity)) {
     // variable is initialized here for catch block
@@ -312,7 +315,7 @@ Vector<T, Alloc>::Vector(const Vector<T, Alloc> &obj)
 
 
 template<typename T, typename Alloc>
-Vector<T, Alloc>::Vector(Vector<T, Alloc> &&obj) noexcept
+Vector<T, Alloc>::Vector(Vector<T, Alloc>&& obj) noexcept
         :m_capacity(obj.m_capacity), m_size(obj.m_size), m_allocator(obj.m_allocator), m_array(obj.m_array) {
     obj.m_capacity = 0;
     obj.m_size = 0;
@@ -320,7 +323,7 @@ Vector<T, Alloc>::Vector(Vector<T, Alloc> &&obj) noexcept
 }
 
 template<typename T, typename Alloc>
-Vector<T, Alloc> &Vector<T, Alloc>::operator=(const Vector<T, Alloc> &obj) &{
+Vector<T, Alloc>& Vector<T, Alloc>::operator=(const Vector<T, Alloc>& obj)& {
     if (this != &obj) {
         Vector<T, Alloc> copy_obj(obj);
         this->swap(copy_obj);
@@ -329,7 +332,7 @@ Vector<T, Alloc> &Vector<T, Alloc>::operator=(const Vector<T, Alloc> &obj) &{
 }
 
 template<typename T, typename Alloc>
-Vector<T, Alloc> &Vector<T, Alloc>::operator=(Vector<T, Alloc> &&obj) & noexcept {
+Vector<T, Alloc>& Vector<T, Alloc>::operator=(Vector<T, Alloc>&& obj)& noexcept {
     if (this != &obj) {
         Vector<T, Alloc> moved_obj = std::move(obj);
         this->swap(moved_obj);
@@ -344,7 +347,7 @@ Vector<T, Alloc>::~Vector() {
 
 template<typename T, typename Alloc>
 template<typename... Args>
-void Vector<T, Alloc>::emplace_back(Args &&... args) {
+void Vector<T, Alloc>::emplace_back(Args&& ... args) {
     // reserve more capacity if current is fullfilled
     if (is_full()) {
         reserve(2 * m_capacity);
@@ -354,12 +357,12 @@ void Vector<T, Alloc>::emplace_back(Args &&... args) {
 }
 
 template<typename T, typename Alloc>
-void Vector<T, Alloc>::push_back(const value_type &elem) {
+void Vector<T, Alloc>::push_back(const value_type& elem) {
     emplace_back(elem);
 }
 
 template<typename T, typename Alloc>
-void Vector<T, Alloc>::push_back(value_type &&elem) {
+void Vector<T, Alloc>::push_back(value_type&& elem) {
     emplace_back(std::move(elem));
 }
 
@@ -377,7 +380,7 @@ void Vector<T, Alloc>::reserve(size_t n) {
     if (n <= m_capacity) return;
 
     // allocate and construct new memory
-    value_type *new_array = AllocTraits::allocate(m_allocator, n);
+    value_type* new_array = AllocTraits::allocate(m_allocator, n);
     // variable initialized here for catch block
     size_t i = 0;
     try {
@@ -471,17 +474,17 @@ typename Vector<T, Alloc>::const_reverse_iterator Vector<T, Alloc>::rend() const
 }
 
 template<typename T, typename Alloc>
-typename Vector<T, Alloc>::value_type &Vector<T, Alloc>::operator[](size_t ind) {
+typename Vector<T, Alloc>::value_type& Vector<T, Alloc>::operator[](size_t ind) {
     return m_array[ind];
 }
 
 template<typename T, typename Alloc>
-const typename Vector<T, Alloc>::value_type &Vector<T, Alloc>::operator[](size_t ind) const {
+const typename Vector<T, Alloc>::value_type& Vector<T, Alloc>::operator[](size_t ind) const {
     return m_array[ind];
 }
 
 template<typename T, typename Alloc>
-void Vector<T, Alloc>::swap(Vector<T, Alloc> &obj) {
+void Vector<T, Alloc>::swap(Vector<T, Alloc>& obj) {
     std::swap(m_capacity, obj.m_capacity);
     std::swap(m_size, obj.m_size);
     std::swap(m_array, obj.m_array);
@@ -497,7 +500,7 @@ void Vector<T, Alloc>::destroy() {
 }
 
 template<typename T, typename Alloc>
-std::ostream &operator<<(std::ostream &out, const Vector<T, Alloc> &obj) {
+std::ostream& operator<<(std::ostream& out, const Vector<T, Alloc>& obj) {
     for (auto it = obj.cbegin(); it != obj.cend(); ++it) {
         std::cout << *it << ' ';
     }

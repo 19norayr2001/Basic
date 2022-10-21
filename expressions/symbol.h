@@ -18,7 +18,7 @@ private:
         Number
     };
 public:
-    explicit Symbol(const std::string &s);
+    explicit Symbol(const std::string& s);
 
     [[nodiscard]] bool isOpenBracket() const;
 
@@ -30,24 +30,24 @@ public:
 
     [[nodiscard]] bool isNumber() const;
 
-    [[nodiscard]] const std::string &asIdentifier() const;
+    [[nodiscard]] const std::string& asIdentifier() const;
 
     [[nodiscard]] int asNumber() const;
 
     [[nodiscard]] Operation asOperator() const;
 
 private:
-    static SymbolType determineSymbolType(const std::string &str);
+    static SymbolType determineSymbolType(const std::string& str);
 
-    static bool isOpenBracket(const std::string &str);
+    static bool isOpenBracket(const std::string& str);
 
-    static bool isCloseBracket(const std::string &str);
+    static bool isCloseBracket(const std::string& str);
 
-    static bool isIdentifier(const std::string &str);
+    static bool isIdentifier(const std::string& str);
 
-    static bool isOperation(const std::string &str);
+    static bool isOperation(const std::string& str);
 
-    static bool isNumber(const std::string &str);
+    static bool isNumber(const std::string& str);
 
 private:
     SymbolType _type;

@@ -37,11 +37,11 @@ int Operation::calculateOption(int x, int y) const {
 }
 
 bool Operation::isOperation(char ch) {
-    const char *operators = "+-/*";
+    const char* operators = "+-/*";
     constexpr size_t size = 4;
     return std::any_of(operators, operators + size, [ch](char ch2) { return ch == ch2; });
 }
 
-std::ostream &operator<<(std::ostream& out, const Operation& op) {
+std::ostream& operator<<(std::ostream& out, const Operation& op) {
     return (out << op._operation);
 }

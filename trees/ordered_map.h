@@ -13,19 +13,19 @@ public:
     using key_type = Key;
     using value_type = std::pair<const Key, Value>;
 public:
-    explicit ordered_map_node(const value_type &value, priority_type priority = 0, ordered_map_node *left = nullptr,
-                              ordered_map_node *right = nullptr)
+    explicit ordered_map_node(const value_type& value, priority_type priority = 0, ordered_map_node* left = nullptr,
+                              ordered_map_node* right = nullptr)
             : base_type(priority, left, right), _value(value) {}
 
-    const value_type *get_value_address() const { return std::addressof(_value); }
+    const value_type* get_value_address() const { return std::addressof(_value); }
 
-    value_type *get_value_address() { return std::addressof(_value); }
+    value_type* get_value_address() { return std::addressof(_value); }
 
-    const key_type &get_key() const { return _value.first; }
+    const key_type& get_key() const { return _value.first; }
 
-    const value_type &get_value() const { return _value; }
+    const value_type& get_value() const { return _value; }
 
-    value_type &get_value() { return _value; }
+    value_type& get_value() { return _value; }
 
 private:
     value_type _value;
@@ -53,16 +53,16 @@ public:
     using base_type::base_type;
 
     ordered_map(std::initializer_list<std::pair<key_type, value_type>> il,
-                const key_compare &comparator = key_compare(),
-                const allocator_type &allocator = allocator_type())
+                const key_compare& comparator = key_compare(),
+                const allocator_type& allocator = allocator_type())
             : base_type(comparator, allocator) {
-        for (const auto &p: il) {
+        for (const auto& p: il) {
             base_type::emplace(p);
         }
     }
 
 public:
-    value_type &operator[](const key_type &key) {
+    value_type& operator[](const key_type& key) {
         auto it = base_type::find(key);
         if (it == base_type::end()) {
             return base_type::emplace(key, value_type()).first->second;
@@ -70,7 +70,7 @@ public:
         return it->second;
     }
 
-    const value_type &operator[](const key_type &key) const {
+    const value_type& operator[](const key_type& key) const {
         return base_type::find(key)->second;
     }
 };

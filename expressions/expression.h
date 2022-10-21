@@ -12,12 +12,12 @@ class Expression {
 public:
     Expression() = default;
 
-    explicit Expression(const std::string &);
+    explicit Expression(const std::string&);
 
     virtual ~Expression() = default;
 
 public:
-    virtual int calculate(std::unordered_map<std::string, int> &) const = 0;
+    virtual int calculate(std::unordered_map<std::string, int>&) const = 0;
 
 protected:
     std::vector<Symbol> m_infix;

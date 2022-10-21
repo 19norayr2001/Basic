@@ -16,7 +16,7 @@ public:
 
     SharedPtr(const SharedPtr<T>& obj);
 
-    SharedPtr(SharedPtr<T>&& other) noexcept ;
+    SharedPtr(SharedPtr<T>&& other) noexcept;
 
     SharedPtr<T>& operator=(const SharedPtr<T>& other);
 
@@ -60,11 +60,10 @@ SharedPtr<T>::SharedPtr(const SharedPtr<T>& obj)
 
 template<typename T>
 SharedPtr<T>::SharedPtr(SharedPtr<T>&& other) noexcept
-    :m_data(std::exchange(other.m_data, nullptr))
-    , m_count(std::exchange(other.m_data, nullptr)) {}
+        :m_data(std::exchange(other.m_data, nullptr)), m_count(std::exchange(other.m_data, nullptr)) {}
 
 template<typename T>
-SharedPtr<T> &SharedPtr<T>::operator=(const SharedPtr<T>& other) {
+SharedPtr<T>& SharedPtr<T>::operator=(const SharedPtr<T>& other) {
     if (this != &other) {
         SharedPtr<T> copied(other);
         this->swap(copied);
@@ -73,7 +72,7 @@ SharedPtr<T> &SharedPtr<T>::operator=(const SharedPtr<T>& other) {
 }
 
 template<typename T>
-SharedPtr<T> &SharedPtr<T>::operator=(SharedPtr<T>&& other) noexcept{
+SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr<T>&& other) noexcept {
     if (this != &other) {
         SharedPtr<T> moved(std::move(other));
         this->swap(moved);

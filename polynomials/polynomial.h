@@ -9,39 +9,39 @@
 template<typename T>
 class Polynomial {
     template<typename U>
-    friend std::ostream &operator<<(std::ostream &, const Polynomial<U> &);
+    friend std::ostream& operator<<(std::ostream&, const Polynomial<U>&);
 
 private:
     struct Node {
         int pow;
         T coefficient;
-        Node *next;
+        Node* next;
 
-        explicit Node(int p = 0, T c = T(0), Node *ptr = nullptr)
+        explicit Node(int p = 0, T c = T(0), Node* ptr = nullptr)
                 : pow(p), coefficient(c), next(ptr) {}
     };
 
 public:
     explicit Polynomial(T = T(0));
 
-    explicit Polynomial(const std::vector<std::pair<int, T>> &);
+    explicit Polynomial(const std::vector<std::pair<int, T>>&);
 
-    Polynomial(const Polynomial<T> &);
+    Polynomial(const Polynomial<T>&);
 
-    Polynomial<T> &operator=(const Polynomial<T> &);
+    Polynomial<T>& operator=(const Polynomial<T>&);
 
     ~Polynomial();
 
 public:
-    Polynomial<T> &operator+=(const Polynomial<T> &);
+    Polynomial<T>& operator+=(const Polynomial<T>&);
 
-    Polynomial<T> &operator-=(const Polynomial<T> &);
+    Polynomial<T>& operator-=(const Polynomial<T>&);
 
-    Polynomial<T> &operator*=(const Polynomial<T> &);
+    Polynomial<T>& operator*=(const Polynomial<T>&);
 
-    Polynomial<T> &operator/=(const Polynomial<T> &);
+    Polynomial<T>& operator/=(const Polynomial<T>&);
 
-    Polynomial<T> &operator%=(const Polynomial<T> &);
+    Polynomial<T>& operator%=(const Polynomial<T>&);
 
     Polynomial<T> operator-() const;
 
@@ -56,32 +56,32 @@ public:
 private:
     void deallocate();
 
-    void allocate(const Polynomial<T> &);
+    void allocate(const Polynomial<T>&);
 
     void restoreTail();
 
 private:
-    Node *m_head;
-    Node *m_tail;
+    Node* m_head;
+    Node* m_tail;
 };
 
 template<typename T>
-Polynomial<T> operator+(Polynomial<T>, const Polynomial<T> &);
+Polynomial<T> operator+(Polynomial<T>, const Polynomial<T>&);
 
 template<typename T>
-Polynomial<T> operator-(Polynomial<T>, const Polynomial<T> &);
+Polynomial<T> operator-(Polynomial<T>, const Polynomial<T>&);
 
 template<typename T>
-Polynomial<T> operator*(Polynomial<T>, const Polynomial<T> &);
+Polynomial<T> operator*(Polynomial<T>, const Polynomial<T>&);
 
 template<typename T>
-Polynomial<T> operator/(Polynomial<T>, const Polynomial<T> &);
+Polynomial<T> operator/(Polynomial<T>, const Polynomial<T>&);
 
 template<typename T>
-Polynomial<T> operator%(Polynomial<T>, const Polynomial<T> &);
+Polynomial<T> operator%(Polynomial<T>, const Polynomial<T>&);
 
 template<typename T>
-Polynomial<T> gcd(const Polynomial<T> &, const Polynomial<T> &);
+Polynomial<T> gcd(const Polynomial<T>&, const Polynomial<T>&);
 
 template<typename T>
 Polynomial<T>::Polynomial(T elem)
@@ -93,9 +93,9 @@ Polynomial<T>::Polynomial(T elem)
 }
 
 template<typename T>
-Polynomial<T>::Polynomial(const std::vector<std::pair<int, T>> &vec)
+Polynomial<T>::Polynomial(const std::vector<std::pair<int, T>>& vec)
         : m_head(new Node) {
-    Node *ptr = m_head;
+    Node* ptr = m_head;
     for (size_t i = 0; i < vec.size(); ++i) {
         if (vec[i].second == T(0)) {
             continue;
@@ -107,13 +107,13 @@ Polynomial<T>::Polynomial(const std::vector<std::pair<int, T>> &vec)
 }
 
 template<typename T>
-Polynomial<T>::Polynomial(const Polynomial<T> &obj)
+Polynomial<T>::Polynomial(const Polynomial<T>& obj)
         :m_head(nullptr) {
     allocate(obj);
 }
 
 template<typename T>
-Polynomial<T> &Polynomial<T>::operator=(const Polynomial<T> &obj) {
+Polynomial<T>& Polynomial<T>::operator=(const Polynomial<T>& obj) {
     if (this != &obj) {
         deallocate();
         allocate(obj);
@@ -127,20 +127,20 @@ Polynomial<T>::~Polynomial() {
 }
 
 template<typename T>
-Polynomial<T> &Polynomial<T>::operator+=(const Polynomial<T> &obj) {
-    Node *ptr = this->m_head;
-    Node *objptr = obj.m_head->next;
+Polynomial<T>& Polynomial<T>::operator+=(const Polynomial<T>& obj) {
+    Node* ptr = this->m_head;
+    Node* objptr = obj.m_head->next;
     while (objptr != nullptr) {
         while (ptr->next != nullptr && ptr->next->pow < objptr->pow) {
             ptr = ptr->next;
         }
         if (ptr->next == nullptr || ptr->next->pow > objptr->pow) {
-            Node *nx = ptr->next;
+            Node* nx = ptr->next;
             ptr->next = new Node(objptr->pow, objptr->coefficient, nx);
         } else {
             ptr->next->coefficient += objptr->coefficient;
             if (ptr->next->coefficient == 0) {
-                Node *nx = ptr->next->next;
+                Node* nx = ptr->next->next;
                 delete ptr->next;
                 ptr->next = nx;
             }
@@ -152,14 +152,14 @@ Polynomial<T> &Polynomial<T>::operator+=(const Polynomial<T> &obj) {
 }
 
 template<typename T>
-Polynomial<T> &Polynomial<T>::operator-=(const Polynomial<T> &obj) {
+Polynomial<T>& Polynomial<T>::operator-=(const Polynomial<T>& obj) {
     return *this += (-obj);
 }
 
 template<typename T>
 Polynomial<T> Polynomial<T>::operator-() const {
     Polynomial pol = *this;
-    Node *ptr = pol.m_head;
+    Node* ptr = pol.m_head;
     while (ptr->next != nullptr) {
         ptr->next->coefficient = -ptr->next->coefficient;
         ptr = ptr->next;
@@ -168,13 +168,13 @@ Polynomial<T> Polynomial<T>::operator-() const {
 }
 
 template<typename T>
-Polynomial<T> &Polynomial<T>::operator*=(const Polynomial<T> &obj) {
-    Node *objptr = obj.m_head->next;
+Polynomial<T>& Polynomial<T>::operator*=(const Polynomial<T>& obj) {
+    Node* objptr = obj.m_head->next;
     Polynomial ret;
     while (objptr != nullptr) {
         Polynomial plus;
-        Node *ptr = this->m_head->next;
-        Node *plusptr = plus.m_head;
+        Node* ptr = this->m_head->next;
+        Node* plusptr = plus.m_head;
         while (ptr != nullptr) {
             plusptr->next = new Node(ptr->pow + objptr->pow, ptr->coefficient * objptr->coefficient);
             ptr = ptr->next;
@@ -187,7 +187,7 @@ Polynomial<T> &Polynomial<T>::operator*=(const Polynomial<T> &obj) {
 }
 
 template<typename T>
-Polynomial<T> &Polynomial<T>::operator/=(const Polynomial<T> &obj) {
+Polynomial<T>& Polynomial<T>::operator/=(const Polynomial<T>& obj) {
     int deg1 = this->degree(), deg2 = obj.degree();
     if (obj.isZero()) {
         throw DividedByZeroException();
@@ -202,7 +202,7 @@ Polynomial<T> &Polynomial<T>::operator/=(const Polynomial<T> &obj) {
 }
 
 template<typename T>
-Polynomial<T> &Polynomial<T>::operator%=(const Polynomial<T> &obj) {
+Polynomial<T>& Polynomial<T>::operator%=(const Polynomial<T>& obj) {
     return *this = *this - *this / obj * obj;
 }
 
@@ -212,7 +212,7 @@ auto Polynomial<T>::calculate(U x0) -> decltype(std::declval<T>() * std::declval
     decltype(std::declval<T>() * std::declval<U>()) res(0);
     U powx(1);
     int lastpow = 0;
-    Node *ptr = m_head;
+    Node* ptr = m_head;
     while (ptr->next != nullptr) {
         while (lastpow < ptr->next->pow) {
             powx *= x0;
@@ -226,9 +226,9 @@ auto Polynomial<T>::calculate(U x0) -> decltype(std::declval<T>() * std::declval
 
 template<typename T>
 void Polynomial<T>::deallocate() {
-    Node *ptr = m_head;
+    Node* ptr = m_head;
     while (ptr != nullptr) {
-        Node *del = ptr;
+        Node* del = ptr;
         ptr = ptr->next;
         delete del;
     }
@@ -236,10 +236,10 @@ void Polynomial<T>::deallocate() {
 }
 
 template<typename T>
-void Polynomial<T>::allocate(const Polynomial<T> &obj) {
+void Polynomial<T>::allocate(const Polynomial<T>& obj) {
     m_head = new Node;
-    Node *ptr = m_head;
-    Node *objptr = obj.m_head->next;
+    Node* ptr = m_head;
+    Node* objptr = obj.m_head->next;
     while (objptr != nullptr) {
         ptr->next = new Node(objptr->pow, objptr->coefficient);
         ptr = ptr->next;
@@ -250,7 +250,7 @@ void Polynomial<T>::allocate(const Polynomial<T> &obj) {
 
 template<typename T>
 void Polynomial<T>::restoreTail() {
-    Node *ptr = m_head;
+    Node* ptr = m_head;
     while (ptr->next != nullptr) {
         ptr = ptr->next;
     }
@@ -259,38 +259,38 @@ void Polynomial<T>::restoreTail() {
 
 
 template<typename T>
-Polynomial<T> operator+(Polynomial<T> obj1, const Polynomial<T> &obj2) {
+Polynomial<T> operator+(Polynomial<T> obj1, const Polynomial<T>& obj2) {
     return obj1 += obj2;
 }
 
 template<typename T>
-Polynomial<T> operator-(Polynomial<T> obj1, const Polynomial<T> &obj2) {
+Polynomial<T> operator-(Polynomial<T> obj1, const Polynomial<T>& obj2) {
     return obj1 -= obj2;
 }
 
 template<typename T>
-Polynomial<T> operator*(Polynomial<T> obj1, const Polynomial<T> &obj2) {
+Polynomial<T> operator*(Polynomial<T> obj1, const Polynomial<T>& obj2) {
     return obj1 *= obj2;
 }
 
 template<typename T>
-Polynomial<T> operator/(Polynomial<T> obj1, const Polynomial<T> &obj2) {
+Polynomial<T> operator/(Polynomial<T> obj1, const Polynomial<T>& obj2) {
     return obj1 /= obj2;
 }
 
 template<typename T>
-Polynomial<T> operator%(Polynomial<T> obj1, const Polynomial<T> &obj2) {
+Polynomial<T> operator%(Polynomial<T> obj1, const Polynomial<T>& obj2) {
     return obj1 %= obj2;
 }
 
 template<typename T>
-Polynomial<T> gcd(const Polynomial<T> &a, const Polynomial<T> &b) {
+Polynomial<T> gcd(const Polynomial<T>& a, const Polynomial<T>& b) {
     return (b.isZero() ? a : gcd(b, a % b));
 }
 
 template<typename T>
-std::ostream &operator<<(std::ostream &print, const Polynomial<T> &obj) {
-    typename Polynomial<T>::Node *ptr = obj.m_head->next;
+std::ostream& operator<<(std::ostream& print, const Polynomial<T>& obj) {
+    typename Polynomial<T>::Node* ptr = obj.m_head->next;
     if (ptr == nullptr) {
         std::cout << "Empty polynomial" << std::endl;
         return print;

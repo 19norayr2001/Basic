@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <cctype>
 
-Expression::Expression(const std::string &s) {
+Expression::Expression(const std::string& s) {
     std::string str;
     for (char ch: s) {
         if (isspace(ch)) {

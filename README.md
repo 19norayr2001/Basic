@@ -135,7 +135,7 @@ All these functions complexity is `O(h)`, where `h` is the height of the tree
 
 ### Priority Queue
 
-Priority Queue based on heap providing following API
+Priority Queue based on heap data structure, provides following API
 
 - `top`, gives top element
 - `insert`, inserts element in priority queue

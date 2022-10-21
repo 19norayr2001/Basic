@@ -10,16 +10,17 @@ class UniquePtr {
 public:
     explicit UniquePtr(T* ptr = nullptr);
 
-    UniquePtr(UniquePtr<T>&& other) noexcept ;
+    UniquePtr(UniquePtr<T>&& other) noexcept;
 
-    UniquePtr<T> &operator=(UniquePtr<T> && other) noexcept ;
+    UniquePtr<T>& operator=(UniquePtr<T>&& other) noexcept;
 
     ~UniquePtr();
+
 public:
 
-    UniquePtr(const UniquePtr<T> &) = delete;
+    UniquePtr(const UniquePtr<T>&) = delete;
 
-    UniquePtr<T> &operator=(const UniquePtr<T> &) = delete;
+    UniquePtr<T>& operator=(const UniquePtr<T>&) = delete;
 
 public:
     T& operator*();
@@ -35,7 +36,7 @@ public:
     T* get() const noexcept;
 
 private:
-    T *m_data;
+    T* m_data;
 };
 
 template<typename T>
@@ -81,12 +82,12 @@ const T* UniquePtr<T>::operator->() const {
 }
 
 template<typename T>
-void UniquePtr<T>::swap(UniquePtr<T> &other) noexcept {
+void UniquePtr<T>::swap(UniquePtr<T>& other) noexcept {
     std::swap(m_data, other.m_data);
 }
 
 template<typename T>
-T *UniquePtr<T>::get() const noexcept {
+T* UniquePtr<T>::get() const noexcept {
     return m_data;
 }
 

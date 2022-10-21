@@ -14,17 +14,17 @@ public:
     using key_type = Key;
     using value_type = Key;
 public:
-    explicit ordered_set_node(const key_type &key, priority_type priority = 0, ordered_set_node *left = nullptr,
-                              ordered_set_node *right = nullptr)
+    explicit ordered_set_node(const key_type& key, priority_type priority = 0, ordered_set_node* left = nullptr,
+                              ordered_set_node* right = nullptr)
             : base_type(priority, left, right), _key(key) {}
 
-    const value_type *get_value_address() const { return std::addressof(_key); }
+    const value_type* get_value_address() const { return std::addressof(_key); }
 
-    value_type *get_value_address() { return std::addressof(_key); }
+    value_type* get_value_address() { return std::addressof(_key); }
 
-    const key_type &get_key() const { return _key; }
+    const key_type& get_key() const { return _key; }
 
-    const value_type &get_value() const { return _key; }
+    const value_type& get_value() const { return _key; }
 
 private:
     key_type _key;
@@ -48,10 +48,10 @@ public:
     using base_type::base_type;
 
     ordered_set(std::initializer_list<key_type> il,
-                const key_compare &comparator = key_compare(),
-                const allocator_type &allocator = allocator_type())
+                const key_compare& comparator = key_compare(),
+                const allocator_type& allocator = allocator_type())
             : base_type(comparator, allocator) {
-        for (const auto &key: il) {
+        for (const auto& key: il) {
             base_type::emplace(key);
         }
     }

@@ -82,7 +82,7 @@ void SortingAlgorithms::radix_sort(ForwardIt begin, ForwardIt end) {
         }
 
         auto it = begin;
-        for (auto &q: queues) {
+        for (auto& q: queues) {
             while (!q.empty()) {
                 *it = q.front();
                 ++it;

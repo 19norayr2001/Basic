@@ -4,8 +4,8 @@
 class ListSearchTree {
 public:
     struct Node {
-        Node *llink;
-        Node *rlink;
+        Node* llink;
+        Node* rlink;
 
         Node()
                 : llink(nullptr), rlink(nullptr) {}
@@ -29,9 +29,9 @@ public:
 
     ListSearchTree();
 
-    ListSearchTree(const ListSearchTree &);
+    ListSearchTree(const ListSearchTree&);
 
-    ListSearchTree &operator=(const ListSearchTree &);
+    ListSearchTree& operator=(const ListSearchTree&);
 
     ~ListSearchTree();
 
@@ -42,21 +42,21 @@ public:
 
     int find(int k) const;
 
-    void insert(const int &, int k);
+    void insert(const int&, int k);
 
     void remove(int k);
 
 private:
-    bool is_leaf(Node *node) const { return node->llink == nullptr && node->rlink == nullptr; }
+    bool is_leaf(Node* node) const { return node->llink == nullptr && node->rlink == nullptr; }
 
-    void allocate(const ListSearchTree &);
+    void allocate(const ListSearchTree&);
 
-    void deallocate(const Node *const root) const;
+    void deallocate(const Node* const root) const;
 
-    void alloc_help(Node *const root1, Node *const root2) const;
+    void alloc_help(Node* const root1, Node* const root2) const;
 
 private:
-    Node *m_root;
+    Node* m_root;
     int m_size;
 };
 

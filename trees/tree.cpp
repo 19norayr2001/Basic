@@ -5,7 +5,7 @@
 
 #include "tree.h"
 
-int BinaryTree::count_leaf(Node *root) {
+int BinaryTree::count_leaf(Node* root) {
     if (root == nullptr) {
         return 0;
     }
@@ -15,13 +15,13 @@ int BinaryTree::count_leaf(Node *root) {
     return count_leaf(root->llink) + count_leaf(root->rlink);
 }
 
-int BinaryTree::count_node(Node *root) {
+int BinaryTree::count_node(Node* root) {
     if (root == nullptr)
         return 0;
     return 1 + count_node(root->llink) + count_node(root->rlink);
 }
 
-bool BinaryTree::strict(Node *root) {
+bool BinaryTree::strict(Node* root) {
     if (root == nullptr)
         return true;
     bool flag = true;
@@ -32,27 +32,27 @@ bool BinaryTree::strict(Node *root) {
     return flag && strict(root->llink) && strict(root->rlink);
 }
 
-int BinaryTree::height(Node *root) {
+int BinaryTree::height(Node* root) {
     if (root == nullptr) {
         return 0;
     }
     return 1 + std::max(height(root->llink), height(root->rlink));
 }
 
-int BinaryTree::max_value(Node *root) {
+int BinaryTree::max_value(Node* root) {
     if (root == nullptr) {
         return 0;
     }
     return std::max(root->value, std::max(max_value(root->llink), max_value(root->rlink)));
 }
 
-void BinaryTree::bfs(Node *root) {
+void BinaryTree::bfs(Node* root) {
     if (root == nullptr)
         return;
-    std::queue<Node *> q;
+    std::queue<Node*> q;
     q.push(root);
     while (!q.empty()) {
-        Node *ptr = q.front();
+        Node* ptr = q.front();
         std::cout << ptr->value << std::endl;
         if (ptr->llink != nullptr)
             q.push(ptr->llink);
@@ -62,7 +62,7 @@ void BinaryTree::bfs(Node *root) {
     }
 }
 
-void BinaryTree::preorder_traversal(Node *root) {
+void BinaryTree::preorder_traversal(Node* root) {
     if (root == nullptr)
         return;
     preorder_traversal(root->llink);
@@ -70,7 +70,7 @@ void BinaryTree::preorder_traversal(Node *root) {
     preorder_traversal(root->rlink);
 }
 
-void BinaryTree::inorder_traversal(Node *root) {
+void BinaryTree::inorder_traversal(Node* root) {
     if (root == nullptr)
         return;
     std::cout << root->value << std::endl;
@@ -78,7 +78,7 @@ void BinaryTree::inorder_traversal(Node *root) {
     inorder_traversal(root->rlink);
 }
 
-void BinaryTree::postorder_traversal(Node *root) {
+void BinaryTree::postorder_traversal(Node* root) {
     if (root == nullptr)
         return;
     postorder_traversal(root->llink);
@@ -86,17 +86,17 @@ void BinaryTree::postorder_traversal(Node *root) {
     std::cout << root->value << std::endl;
 }
 
-void BinaryTree::preorder_traversal_stack(Node *root) {
+void BinaryTree::preorder_traversal_stack(Node* root) {
     if (root == nullptr) {
         return;
     }
-    std::stack<Node *> st;
+    std::stack<Node*> st;
     st.push(nullptr);
     while (root != nullptr) {
         st.push(root);
         root = root->llink;
     }
-    Node *ptr = st.top();
+    Node* ptr = st.top();
     while (ptr != nullptr) {
         std::cout << ptr->value << std::endl;
         if (ptr->rlink != nullptr) {
@@ -106,7 +106,7 @@ void BinaryTree::preorder_traversal_stack(Node *root) {
                 ptr = ptr->llink;
             }
         } else {
-            Node *topptr = ptr;
+            Node* topptr = ptr;
             do {
                 ptr = topptr;
                 st.pop();
@@ -117,14 +117,14 @@ void BinaryTree::preorder_traversal_stack(Node *root) {
     }
 }
 
-void BinaryTree::inorder_traversal_stack(Node *root) {
+void BinaryTree::inorder_traversal_stack(Node* root) {
     if (root == nullptr) {
         return;
     }
-    std::stack<Node *> st;
+    std::stack<Node*> st;
     st.push(nullptr);
     st.push(root);
-    Node *ptr = st.top();
+    Node* ptr = st.top();
     while (ptr != nullptr) {
         std::cout << ptr->value << std::endl;
         if (ptr->llink != nullptr) {
@@ -132,7 +132,7 @@ void BinaryTree::inorder_traversal_stack(Node *root) {
         } else if (ptr->rlink != nullptr) {
             st.push(ptr->rlink);
         } else {
-            Node *topptr = ptr;
+            Node* topptr = ptr;
             do {
 
                 ptr = topptr;
@@ -147,20 +147,20 @@ void BinaryTree::inorder_traversal_stack(Node *root) {
     }
 }
 
-void BinaryTree::postorder_traversal_stack(Node *root) {
+void BinaryTree::postorder_traversal_stack(Node* root) {
     if (root == nullptr) {
         return;
     }
-    std::stack<Node *> st;
+    std::stack<Node*> st;
     st.push(nullptr);
     while (root != nullptr) {
         st.push(root);
         root = root->llink;
     }
-    Node *ptr = st.top();
+    Node* ptr = st.top();
     while (ptr != nullptr) {
         std::cout << ptr->value << std::endl;
-        Node *topptr = ptr;
+        Node* topptr = ptr;
         do {
             std::cout << topptr->value << std::endl;
             ptr = topptr;

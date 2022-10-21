@@ -24,9 +24,9 @@ public:
     using base_type::base_type;
 
     vector_tree(std::initializer_list<value_type> il,
-                const allocator_type &allocator = allocator_type())
+                const allocator_type& allocator = allocator_type())
             : base_type(allocator) {
-        for (const auto &value: il) {
+        for (const auto& value: il) {
             base_type::emplace_back(value);
         }
     }

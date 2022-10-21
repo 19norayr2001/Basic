@@ -9,6 +9,7 @@
 
 class Operation {
     friend std::ostream& operator<<(std::ostream& out, const Operation& op);
+
 public:
     explicit Operation(char ch = 0)
             : _operation(ch) {

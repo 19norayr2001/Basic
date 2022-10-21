@@ -3,12 +3,12 @@
 RBTree::RBTree()
         : m_root(nullptr), m_size(0) {}
 
-RBTree::RBTree(const RBTree &obj)
+RBTree::RBTree(const RBTree& obj)
         : m_root(nullptr), m_size(obj.m_size) {
     allocate(obj);
 }
 
-RBTree &RBTree::operator=(const RBTree &obj) {
+RBTree& RBTree::operator=(const RBTree& obj) {
     if (this != &obj) {
         deallocate(m_root);
         allocate(obj);
@@ -20,25 +20,25 @@ RBTree::~RBTree() {
     deallocate(m_root);
 }
 
-void RBTree::insert(const int &val) {
+void RBTree::insert(const int& val) {
     m_size++;
     if (m_root == nullptr) {
         get_root() = m_root = new RBNode(val);
         nill(m_root);
         return;
     }
-    RBNode *ptr = dynamic(insert_node(val));
+    RBNode* ptr = dynamic(insert_node(val));
     nill(ptr);
     uncle_part_insert(ptr, val);
 }
 
-void RBTree::remove(const int &val) {
+void RBTree::remove(const int& val) {
 
     if (!find(val)) {
         return;
     }
     m_size--;
-    RBNode *ptr = dynamic(remove_node(val));
+    RBNode* ptr = dynamic(remove_node(val));
     replace_child(ptr);
     if (!ptr->color) {
         ptr->color = true;
@@ -47,7 +47,7 @@ void RBTree::remove(const int &val) {
     remove_part1(ptr);
 }
 
-void RBTree::allocate(const RBTree &obj) {
+void RBTree::allocate(const RBTree& obj) {
     if (obj.empty()) {
         *this = RBTree();
         return;
@@ -56,8 +56,8 @@ void RBTree::allocate(const RBTree &obj) {
     alloc_help(m_root, obj.m_root);
 }
 
-void RBTree::alloc_help(RBNode *root1, RBNode *root2) {
-    RBNode *din = nullptr;
+void RBTree::alloc_help(RBNode* root1, RBNode* root2) {
+    RBNode* din = nullptr;
     if (root2->llink != nullptr) {
         din = dynamic(root2->llink);
         root1->llink = new RBNode(din->value, din->color, root1);
@@ -74,9 +74,9 @@ void RBTree::alloc_help(RBNode *root1, RBNode *root2) {
     }
 }
 
-void RBTree::left_rotate(RBNode *p) {
-    RBNode *din = dynamic(p->rlink);
-    RBNode *p1 = din;
+void RBTree::left_rotate(RBNode* p) {
+    RBNode* din = dynamic(p->rlink);
+    RBNode* p1 = din;
     p1->parent = p->parent;
     p->parent = p1;
     p->rlink = p1->llink;
@@ -92,9 +92,9 @@ void RBTree::left_rotate(RBNode *p) {
     }
 }
 
-void RBTree::right_rotate(RBNode *p) {
-    RBNode *din = dynamic(p->llink);
-    RBNode *p1 = din;
+void RBTree::right_rotate(RBNode* p) {
+    RBNode* din = dynamic(p->llink);
+    RBNode* p1 = din;
     p1->parent = p->parent;
     p->parent = p1;
     p->llink = p1->rlink;
@@ -110,31 +110,31 @@ void RBTree::right_rotate(RBNode *p) {
     }
 }
 
-void RBTree::nill(RBNode *p) {
+void RBTree::nill(RBNode* p) {
     p->llink = new RBNode();
     p->rlink = new RBNode();
-    RBNode *ptr = dynamic(p->llink);
+    RBNode* ptr = dynamic(p->llink);
     ptr->parent = p;
     ptr = dynamic(p->rlink);
     ptr->parent = p;
 }
 
-RBNode *RBTree::uncle(RBNode *p) const {
+RBNode* RBTree::uncle(RBNode* p) const {
     return brother(p->parent);
 }
 
-RBNode *RBTree::brother(RBNode *p) const {
+RBNode* RBTree::brother(RBNode* p) const {
     if (p->parent->llink == p) {
         return dynamic(p->parent->rlink);
     }
     return dynamic(p->parent->llink);
 }
 
-void RBTree::black_uncle(RBNode *ptr, RBNode *father, RBNode *grand, RBNode *uncle) {
+void RBTree::black_uncle(RBNode* ptr, RBNode* father, RBNode* grand, RBNode* uncle) {
     if (grand->llink == father) {
         if (father->rlink == ptr) {
             left_rotate(father);
-            RBNode *temp = ptr;
+            RBNode* temp = ptr;
             ptr = father;
             father = temp;
         }
@@ -142,7 +142,7 @@ void RBTree::black_uncle(RBNode *ptr, RBNode *father, RBNode *grand, RBNode *unc
     } else {
         if (father->llink == ptr) {
             right_rotate(father);
-            RBNode *temp = ptr;
+            RBNode* temp = ptr;
             ptr = father;
             father = temp;
         }
@@ -152,12 +152,12 @@ void RBTree::black_uncle(RBNode *ptr, RBNode *father, RBNode *grand, RBNode *unc
     grand->color = false;
 }
 
-void RBTree::uncle_part_insert(RBNode *ptr, const int &val) {
+void RBTree::uncle_part_insert(RBNode* ptr, const int& val) {
     ptr->color = false;
     while (ptr != m_root && !(ptr->parent->color)) {
-        RBNode *father = ptr->parent;
-        RBNode *grand = father->parent;
-        RBNode *uncl = uncle(ptr);
+        RBNode* father = ptr->parent;
+        RBNode* grand = father->parent;
+        RBNode* uncl = uncle(ptr);
         if (uncl->color == false) {
             father->color = true;
             grand->color = false;
@@ -171,7 +171,7 @@ void RBTree::uncle_part_insert(RBNode *ptr, const int &val) {
     m_root->color = true;
 }
 
-void RBTree::remove_part1(RBNode *ptr) {
+void RBTree::remove_part1(RBNode* ptr) {
     if (ptr->parent == nullptr) {
         if (is_nill(ptr)) {
             get_root() = m_root = nullptr;
@@ -182,9 +182,9 @@ void RBTree::remove_part1(RBNode *ptr) {
     }
 }
 
-void RBTree::remove_part2(RBNode *ptr) {
-    RBNode *bro = brother(ptr);
-    RBNode *father = ptr->parent;
+void RBTree::remove_part2(RBNode* ptr) {
+    RBNode* bro = brother(ptr);
+    RBNode* father = ptr->parent;
     if (!bro->color) {
         if (father->llink == bro) {
             right_rotate(father);
@@ -199,10 +199,10 @@ void RBTree::remove_part2(RBNode *ptr) {
     }
 }
 
-void RBTree::remove_part3(RBNode *ptr) {
-    RBNode *bro = brother(ptr);
-    RBNode *father = ptr->parent;
-    RBNode *din1 = dynamic(bro->llink), *din2 = dynamic(bro->rlink);
+void RBTree::remove_part3(RBNode* ptr) {
+    RBNode* bro = brother(ptr);
+    RBNode* father = ptr->parent;
+    RBNode* din1 = dynamic(bro->llink), * din2 = dynamic(bro->rlink);
     if (din1->color && din2->color) {
         if (father->color) {
             bro->color = false;
@@ -215,22 +215,22 @@ void RBTree::remove_part3(RBNode *ptr) {
     }
 }
 
-void RBTree::remove_part4(RBNode *ptr) {
-    RBNode *bro = brother(ptr);
-    RBNode *father = ptr->parent;
+void RBTree::remove_part4(RBNode* ptr) {
+    RBNode* bro = brother(ptr);
+    RBNode* father = ptr->parent;
     bro->color = false;
     father->color = true;
 }
 
-void RBTree::remove_part5(RBNode *ptr) {
-    RBNode *bro = brother(ptr);
-    RBNode *father = ptr->parent;
-    RBNode *din = nullptr;
+void RBTree::remove_part5(RBNode* ptr) {
+    RBNode* bro = brother(ptr);
+    RBNode* father = ptr->parent;
+    RBNode* din = nullptr;
     if (father->llink == ptr) {
         din = dynamic(bro->rlink);
         if (din->color) {
             din = dynamic(bro->llink);
-            RBNode *left = din;
+            RBNode* left = din;
             right_rotate(father);
             bro->color = false;
             left->color = true;
@@ -239,7 +239,7 @@ void RBTree::remove_part5(RBNode *ptr) {
         din = dynamic(bro->llink);
         if (din->color) {
             din = dynamic(bro->rlink);
-            RBNode *right = din;
+            RBNode* right = din;
             left_rotate(father);
             bro->color = false;
             right->color = true;
@@ -248,18 +248,18 @@ void RBTree::remove_part5(RBNode *ptr) {
     remove_part6(ptr);
 }
 
-void RBTree::remove_part6(RBNode *ptr) {
-    RBNode *bro = brother(ptr);
-    RBNode *father = ptr->parent;
+void RBTree::remove_part6(RBNode* ptr) {
+    RBNode* bro = brother(ptr);
+    RBNode* father = ptr->parent;
     if (father->llink == ptr) {
-        RBNode *right = dynamic(bro->rlink);
+        RBNode* right = dynamic(bro->rlink);
         left_rotate(father);
         bool temp = father->color;
         right->color = true;
         father->color = bro->color;
         bro->color = temp;
     } else {
-        RBNode *left = dynamic(bro->llink);
+        RBNode* left = dynamic(bro->llink);
         right_rotate(father);
         bool temp = father->color;
         left->color = true;
@@ -268,14 +268,14 @@ void RBTree::remove_part6(RBNode *ptr) {
     }
 }
 
-void RBTree::replace_child(RBNode *ptr) {
-    Node *child = is_nill(ptr->llink) ? ptr->rlink : ptr->llink;
-    Node *brother = is_nill(ptr->llink) ? ptr->llink : ptr->rlink;
+void RBTree::replace_child(RBNode* ptr) {
+    Node* child = is_nill(ptr->llink) ? ptr->rlink : ptr->llink;
+    Node* brother = is_nill(ptr->llink) ? ptr->llink : ptr->rlink;
     delete brother;
     ptr->value = child->value;
     ptr->llink = child->llink;
     ptr->rlink = child->rlink;
-    RBNode *din = dynamic(child);
+    RBNode* din = dynamic(child);
     if (!din->color || !ptr->color) {
         din->color = true;
         ptr->color = false;

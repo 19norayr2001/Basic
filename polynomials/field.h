@@ -9,35 +9,35 @@ template<int mod, typename T>
 class Field;
 
 template<int mod, typename T>
-std::istream &operator>>(std::istream &, Field<mod, T> &);
+std::istream& operator>>(std::istream&, Field<mod, T>&);
 
 template<int mod, typename T = int>
 class Field {
 public:
     using integer_type = T;
 
-    friend std::istream &operator>><mod, integer_type>(std::istream &, Field<mod, T> &);
+    friend std::istream& operator>><mod, integer_type>(std::istream&, Field<mod, T>&);
 
 public:
     Field(integer_type x = 0)
             : value((x % mod + mod) % mod) {
     }
 
-    Field<mod, T> &operator=(const Field<mod, T> &);
+    Field<mod, T>& operator=(const Field<mod, T>&);
 
-    Field<mod, T> &operator*=(const Field<mod, T> &);
+    Field<mod, T>& operator*=(const Field<mod, T>&);
 
-    Field<mod, T> &operator/=(const Field<mod, T> &);
+    Field<mod, T>& operator/=(const Field<mod, T>&);
 
-    Field<mod, T> &operator%=(const Field<mod, T> &);
+    Field<mod, T>& operator%=(const Field<mod, T>&);
 
-    Field<mod, T> &operator+=(const Field<mod, T> &);
+    Field<mod, T>& operator+=(const Field<mod, T>&);
 
-    Field<mod, T> &operator-=(const Field<mod, T> &);
+    Field<mod, T>& operator-=(const Field<mod, T>&);
 
-    bool operator==(const Field<mod, T> &) const;
+    bool operator==(const Field<mod, T>&) const;
 
-    bool operator<(const Field<mod, T> &) const;
+    bool operator<(const Field<mod, T>&) const;
 
     Field<mod, T> pow(integer_type) const;
 
@@ -49,7 +49,7 @@ public:
     static Field<mod, T> C(integer_type, integer_type);
 
 private:
-    static Field<mod, T> binpow(const Field<mod, T> &, integer_type);
+    static Field<mod, T> binpow(const Field<mod, T>&, integer_type);
 
 private:
     static constexpr bool checkMod();
@@ -60,49 +60,49 @@ private:
 };
 
 template<int mod, typename T>
-Field<mod, T> operator*(Field<mod, T>, const Field<mod, T> &);
+Field<mod, T> operator*(Field<mod, T>, const Field<mod, T>&);
 
 template<int mod, typename T>
-Field<mod, T> operator/(Field<mod, T>, const Field<mod, T> &);
+Field<mod, T> operator/(Field<mod, T>, const Field<mod, T>&);
 
 template<int mod, typename T>
-Field<mod, T> operator%(Field<mod, T>, const Field<mod, T> &);
+Field<mod, T> operator%(Field<mod, T>, const Field<mod, T>&);
 
 template<int mod, typename T>
-Field<mod, T> operator+(Field<mod, T>, const Field<mod, T> &);
+Field<mod, T> operator+(Field<mod, T>, const Field<mod, T>&);
 
 template<int mod, typename T>
-Field<mod, T> operator-(Field<mod, T>, const Field<mod, T> &);
+Field<mod, T> operator-(Field<mod, T>, const Field<mod, T>&);
 
 template<int mod, typename T>
-Field<mod, T> operator-(const Field<mod, T> &);
+Field<mod, T> operator-(const Field<mod, T>&);
 
 template<int mod, typename T>
-bool operator>=(const Field<mod, T> &, const Field<mod, T> &);
+bool operator>=(const Field<mod, T>&, const Field<mod, T>&);
 
 template<int mod, typename T>
-bool operator>(const Field<mod, T> &, const Field<mod, T> &);
+bool operator>(const Field<mod, T>&, const Field<mod, T>&);
 
 template<int mod, typename T>
-bool operator<=(const Field<mod, T> &, const Field<mod, T> &);
+bool operator<=(const Field<mod, T>&, const Field<mod, T>&);
 
 template<int mod, typename T>
-bool operator!=(const Field<mod, T> &, const Field<mod, T> &);
+bool operator!=(const Field<mod, T>&, const Field<mod, T>&);
 
 template<int mod, typename T>
-std::ostream &operator<<(std::ostream &out, const Field<mod, T> &num) {
+std::ostream& operator<<(std::ostream& out, const Field<mod, T>& num) {
     typename Field<mod, T>::integer_type value(num);
     return out << value;
 }
 
 template<int mod, typename T>
-std::istream &operator>>(std::istream &in, Field<mod, T> &num) {
+std::istream& operator>>(std::istream& in, Field<mod, T>& num) {
     in >> num.value;
     return in;
 }
 
 template<int mod, typename T>
-Field<mod, T> &Field<mod, T>::operator=(const Field<mod, T> &num) {
+Field<mod, T>& Field<mod, T>::operator=(const Field<mod, T>& num) {
     if (this != &num) {
         this->value = num.value;
     }
@@ -110,14 +110,14 @@ Field<mod, T> &Field<mod, T>::operator=(const Field<mod, T> &num) {
 }
 
 template<int mod, typename T>
-Field<mod, T> &Field<mod, T>::operator*=(const Field<mod, T> &num) {
+Field<mod, T>& Field<mod, T>::operator*=(const Field<mod, T>& num) {
     this->value *= num.value;
     this->value %= mod;
     return *this;
 }
 
 template<int mod, typename T>
-Field<mod, T> &Field<mod, T>::operator/=(const Field<mod, T> &num) {
+Field<mod, T>& Field<mod, T>::operator/=(const Field<mod, T>& num) {
     if (num == 0) {
         throw DividedByZeroException();
     }
@@ -125,7 +125,7 @@ Field<mod, T> &Field<mod, T>::operator/=(const Field<mod, T> &num) {
 }
 
 template<int mod, typename T>
-Field<mod, T> &Field<mod, T>::operator%=(const Field<mod, T> &num) {
+Field<mod, T>& Field<mod, T>::operator%=(const Field<mod, T>& num) {
     if (num == 0) {
         throw DividedByZeroException();
     }
@@ -134,14 +134,14 @@ Field<mod, T> &Field<mod, T>::operator%=(const Field<mod, T> &num) {
 }
 
 template<int mod, typename T>
-Field<mod, T> &Field<mod, T>::operator+=(const Field<mod, T> &num) {
+Field<mod, T>& Field<mod, T>::operator+=(const Field<mod, T>& num) {
     this->value += num.value;
     this->value %= mod;
     return *this;
 }
 
 template<int mod, typename T>
-Field<mod, T> &Field<mod, T>::operator-=(const Field<mod, T> &num) {
+Field<mod, T>& Field<mod, T>::operator-=(const Field<mod, T>& num) {
     this->value += (mod - num.value);
     this->value %= mod;
     return *this;
@@ -153,62 +153,62 @@ Field<mod, T> Field<mod, T>::pow(integer_type num) const {
 }
 
 template<int mod, typename T>
-bool Field<mod, T>::operator==(const Field<mod, T> &num) const {
+bool Field<mod, T>::operator==(const Field<mod, T>& num) const {
     return this->value == num.value;
 }
 
 template<int mod, typename T>
-bool Field<mod, T>::operator<(const Field<mod, T> &num) const {
+bool Field<mod, T>::operator<(const Field<mod, T>& num) const {
     return this->value < num.value;
 }
 
 template<int mod, typename T>
-Field<mod, T> operator*(Field<mod, T> num1, const Field<mod, T> &num2) {
+Field<mod, T> operator*(Field<mod, T> num1, const Field<mod, T>& num2) {
     return num1 *= num2;
 }
 
 template<int mod, typename T>
-Field<mod, T> operator/(Field<mod, T> num1, const Field<mod, T> &num2) {
+Field<mod, T> operator/(Field<mod, T> num1, const Field<mod, T>& num2) {
     return num1 /= num2;
 }
 
 template<int mod, typename T>
-Field<mod, T> operator%(Field<mod, T> num1, const Field<mod, T> &num2) {
+Field<mod, T> operator%(Field<mod, T> num1, const Field<mod, T>& num2) {
     return num1 %= num2;
 }
 
 template<int mod, typename T>
-Field<mod, T> operator+(Field<mod, T> num1, const Field<mod, T> &num2) {
+Field<mod, T> operator+(Field<mod, T> num1, const Field<mod, T>& num2) {
     return num1 += num2;
 }
 
 template<int mod, typename T>
-Field<mod, T> operator-(Field<mod, T> num1, const Field<mod, T> &num2) {
+Field<mod, T> operator-(Field<mod, T> num1, const Field<mod, T>& num2) {
     return num1 -= num2;
 }
 
 template<int mod, typename T>
-Field<mod, T> operator-(const Field<mod, T> &num2) {
+Field<mod, T> operator-(const Field<mod, T>& num2) {
     return Field<mod, T>(0) -= num2;
 }
 
 template<int mod, typename T>
-bool operator>=(const Field<mod, T> &num1, const Field<mod, T> &num2) {
+bool operator>=(const Field<mod, T>& num1, const Field<mod, T>& num2) {
     return !(num1 < num2);
 }
 
 template<int mod, typename T>
-bool operator>(const Field<mod, T> &num1, const Field<mod, T> &num2) {
+bool operator>(const Field<mod, T>& num1, const Field<mod, T>& num2) {
     return !(num1 < num2 || num1 == num2);
 }
 
 template<int mod, typename T>
-bool operator<=(const Field<mod, T> &num1, const Field<mod, T> &num2) {
+bool operator<=(const Field<mod, T>& num1, const Field<mod, T>& num2) {
     return (num1 < num2 || num1 == num2);
 }
 
 template<int mod, typename T>
-bool operator!=(const Field<mod, T> &num1, const Field<mod, T> &num2) {
+bool operator!=(const Field<mod, T>& num1, const Field<mod, T>& num2) {
     return !(num1 == num2);
 }
 
@@ -233,7 +233,7 @@ Field<mod, T> Field<mod, T>::C(integer_type n, integer_type k) {
 }
 
 template<int mod, typename T>
-Field<mod, T> Field<mod, T>::binpow(const Field<mod, T> &a, integer_type n) {
+Field<mod, T> Field<mod, T>::binpow(const Field<mod, T>& a, integer_type n) {
     if (n == 0) return 1;
     if (n % 2 == 1) return binpow(a, n - 1) * a;
     else {

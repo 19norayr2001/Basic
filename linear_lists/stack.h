@@ -12,13 +12,13 @@ public:
 
     size_t size() const { return m_container.size(); }
 
-    const value_type &top() const;
+    const value_type& top() const;
 
-    value_type &top();
+    value_type& top();
 
-    void push(const value_type &);
+    void push(const value_type&);
 
-    void push(value_type &&);
+    void push(value_type&&);
 
     void pop();
 
@@ -27,22 +27,22 @@ private:
 };
 
 template<typename T, typename Container>
-T &Stack<T, Container>::top() {
+T& Stack<T, Container>::top() {
     return m_container.back();
 }
 
 template<typename T, typename Container>
-const T &Stack<T, Container>::top() const {
+const T& Stack<T, Container>::top() const {
     return m_container.back();
 }
 
 template<typename T, typename Container>
-void Stack<T, Container>::push(const value_type &value) {
+void Stack<T, Container>::push(const value_type& value) {
     m_container.emplace_back(value);
 }
 
 template<typename T, typename Container>
-void Stack<T, Container>::push(value_type &&value) {
+void Stack<T, Container>::push(value_type&& value) {
     m_container.emplace_back(std::move(value));
 }
 

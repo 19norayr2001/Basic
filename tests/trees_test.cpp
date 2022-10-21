@@ -30,14 +30,14 @@ TEST(TreesTest, OrderedSetInsertErase) {
         st.insert(i);
     }
     EXPECT_EQ(st.size(), size);
-    for(int i = 0; i < size; ++i) {
+    for (int i = 0; i < size; ++i) {
         if (i % 2 == 0) {
             EXPECT_EQ(st.order_of_key(i), i / 2);
         } else {
             EXPECT_EQ(st.order_of_key(i), st.size());
         }
     }
-    for(int i = 0; i < 2 * size; ++i) {
+    for (int i = 0; i < 2 * size; ++i) {
         if (i % 2 == 0) {
             EXPECT_EQ(st.order_of_key(i), 0);
             EXPECT_EQ(st.size(), size - i / 2);
@@ -58,11 +58,11 @@ TEST(TreesTest, OrderedSetCopy) {
 
     nstd::ordered_set<char> st2(st);
     EXPECT_EQ(st.size(), st2.size());
-    for(char ch = 'a'; ch <= 'z'; ++ch) {
+    for (char ch = 'a'; ch <= 'z'; ++ch) {
         EXPECT_TRUE(st2.contains(ch));
     }
 
-    for(auto it = st.begin(); it != st.end(); ++it) {
+    for (auto it = st.begin(); it != st.end(); ++it) {
         EXPECT_EQ(st.order_of_key(*it), st2.order_of_key(*it));
     }
 
@@ -85,7 +85,7 @@ TEST(TreesTest, VectorTree) {
     nstd::vector_tree<int> vec;
     for (int i = 0; i < 1000; ++i) {
         vec.push_back(i);
-        if(i != 0) {
+        if (i != 0) {
             vec.push_front(-i);
         }
     }
