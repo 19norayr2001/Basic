@@ -74,8 +74,8 @@ private:
 public:
     using iterator = common_iterator<false>;
     using const_iterator = common_iterator<true>;
-    using reverse_iterator = common_reverse_iterator<iterator>;
-    using const_reverse_iterator = common_reverse_iterator<const_iterator>;
+    using reverse_iterator = nstd::common_reverse_iterator<iterator>;
+    using const_reverse_iterator = nstd::common_reverse_iterator<const_iterator>;
 public:
     Vector(const Alloc& = Alloc());
 

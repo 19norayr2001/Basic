@@ -16,9 +16,9 @@ TEST(IteratorTest, BackInserter) {
     std::vector<int> vecStl = vecTest;
 
     // using our back_inserter
-    std::copy(vec.begin(), vec.end(), Iterator::back_inserter(vecTest));
+    std::copy(vec.begin(), vec.end(), nstd::back_inserter(vecTest));
     // use STL back_inserter
-    std::copy(vec.begin(), vec.end(), std::back_inserter(vecStl));
+    std::copy(vec.begin(), vec.end(), nstd::back_inserter(vecStl));
 
     EXPECT_EQ(vecTest, vecStl);
 }
@@ -29,7 +29,7 @@ TEST(IteratorTest, Inserter) {
     std::vector<int> vecStl = vecTest;
 
     // using our inserter
-    std::copy(vec.begin(), vec.end(), Iterator::inserter(vecTest, vecTest.begin() + 3));
+    std::copy(vec.begin(), vec.end(), nstd::inserter(vecTest, vecTest.begin() + 3));
     // use STL inserter
     std::copy(vec.begin(), vec.end(), std::inserter(vecStl, vecStl.begin() + 3));
 

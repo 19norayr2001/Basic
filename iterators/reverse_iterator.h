@@ -4,6 +4,8 @@
 #include <cstddef>
 #include <memory>
 
+namespace nstd {
+
 template<typename It>
 class common_reverse_iterator {
 public:
@@ -186,5 +188,7 @@ common_reverse_iterator<It> common_reverse_iterator<It>::operator-(ptrdiff_t n) 
     auto temp = *this;
     return temp -= n;
 }
+
+} // nstd namespace
 
 #endif //BASICS_REVERSE_ITERATOR_H
