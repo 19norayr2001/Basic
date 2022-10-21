@@ -4,9 +4,9 @@
 
 ## Linear lists
 
-### Vector
+### vector
 
-Vector container has the most advanced implementation among linear lists.
+vector container has the most advanced implementation among linear lists.
 
 This container provides
 
@@ -19,7 +19,7 @@ This container provides
 Check out some usages of vector
 ```c++
 // vector with polymorphic allocator
-Vector<int, std::pmr::polymorphic_allocator<int>> vec;
+vector<int, std::pmr::polymorphic_allocator<int>> vec;
 // reserve memory for 100 elements
 vec.reserve(100);
 // add elements in vector
@@ -95,7 +95,7 @@ size_t order = st.order_of_key(4); // order will be 1
 int key = st.key_of_order(1);      // key will be 4
 ```
 
-### Vector Tree
+### vector Tree
 
 `nstd::vector_tree` is a data structure modeled like `std::vector`, but base on `implicit treap`.
 This class provides `std::vector`'s functionality as well.

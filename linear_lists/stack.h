@@ -1,9 +1,9 @@
 #ifndef STACK_H
 #define STACK_H
 
-#include "vector.h"
+#include <vector.h>
 
-template<typename T, typename Container = Vector<T>>
+template<typename T, typename Container = nstd::vector<T>>
 class Stack {
 public:
     typedef T value_type;
