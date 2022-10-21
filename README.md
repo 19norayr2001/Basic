@@ -117,7 +117,7 @@ Check out some usages of nstd ordered containers
 nstd::vector_tree<int> vec {1, 3};
 vec.insert(2, 1); // insert 2 at 1st position, vec = {1, 2, 3}
 vec.push_back(4); // vec = {1, 2, 3, 4}
-vec.erase(0);     // erase 0th element, vec = {2, 3, 4}
+vec.pop_front();     // vec = {2, 3, 4}
 ```
 
 ### Binary Search Tree
