@@ -20,23 +20,26 @@ private:
 private:
     template<bool B>
     class common_iterator {
+        friend class common_iterator<!B>;
     public:
         using value_type = std::conditional_t<B, const Vector::value_type, Vector::value_type>;
     private:
         value_type *m_ptr;
     public:
-        common_iterator(value_type *);
+        explicit common_iterator(value_type *);
+
+        common_iterator(const common_iterator<false> &other);
 
     public:
         common_iterator<B> &operator++();
 
-        common_iterator<B> operator++(int);
+        common_iterator<B> operator++(int) &;
 
         common_iterator<B> &operator+=(ptrdiff_t);
 
         common_iterator<B> &operator--();
 
-        common_iterator<B> operator--(int);
+        common_iterator<B> operator--(int) &;
 
         common_iterator<B> &operator-=(ptrdiff_t);
 
@@ -44,9 +47,9 @@ private:
         ptrdiff_t operator-(const common_iterator<B> &) const;
 
     public:
-        value_type &operator*();
+        value_type &operator*() const;
 
-        value_type *operator->();
+        value_type *operator->() const;
 
     public:
         bool operator==(const common_iterator<B> &) const;
@@ -62,9 +65,9 @@ private:
         bool operator>=(const common_iterator<B> &) const;
 
     public:
-        common_iterator<B> operator+(ptrdiff_t);
+        common_iterator<B> operator+(ptrdiff_t) const;
 
-        common_iterator<B> operator-(ptrdiff_t);
+        common_iterator<B> operator-(ptrdiff_t) const;
     };
 
 public:
@@ -161,6 +164,11 @@ Vector<T, Alloc>::common_iterator<B>::common_iterator(value_type *ptr)
 
 template<typename T, typename Alloc>
 template<bool B>
+Vector<T, Alloc>::common_iterator<B>::common_iterator(const common_iterator<false> &other)
+        :m_ptr(other.m_ptr) {}
+
+template<typename T, typename Alloc>
+template<bool B>
 typename Vector<T, Alloc>::template common_iterator<B> &Vector<T, Alloc>::common_iterator<B>::operator++() {
     ++m_ptr;
     return *this;
@@ -168,7 +176,7 @@ typename Vector<T, Alloc>::template common_iterator<B> &Vector<T, Alloc>::common
 
 template<typename T, typename Alloc>
 template<bool B>
-typename Vector<T, Alloc>::template common_iterator<B> Vector<T, Alloc>::common_iterator<B>::operator++(int) {
+typename Vector<T, Alloc>::template common_iterator<B> Vector<T, Alloc>::common_iterator<B>::operator++(int) & {
     common_iterator iter = *this;
     ++m_ptr;
     return iter;
@@ -190,7 +198,7 @@ typename Vector<T, Alloc>::template common_iterator<B> &Vector<T, Alloc>::common
 
 template<typename T, typename Alloc>
 template<bool B>
-typename Vector<T, Alloc>::template common_iterator<B> Vector<T, Alloc>::common_iterator<B>::operator--(int) {
+typename Vector<T, Alloc>::template common_iterator<B> Vector<T, Alloc>::common_iterator<B>::operator--(int) & {
     common_iterator iter = *this;
     --m_ptr;
     return iter;
@@ -211,13 +219,13 @@ ptrdiff_t Vector<T, Alloc>::common_iterator<B>::operator-(const common_iterator<
 
 template<typename T, typename Alloc>
 template<bool B>
-auto Vector<T, Alloc>::common_iterator<B>::operator*() -> value_type & {
+auto Vector<T, Alloc>::common_iterator<B>::operator*() const -> value_type & {
     return *m_ptr;
 }
 
 template<typename T, typename Alloc>
 template<bool B>
-auto Vector<T, Alloc>::common_iterator<B>::operator->() -> value_type * {
+auto Vector<T, Alloc>::common_iterator<B>::operator->() const -> value_type * {
     return m_ptr;
 }
 
@@ -259,14 +267,14 @@ bool Vector<T, Alloc>::common_iterator<B>::operator>=(const common_iterator<B> &
 
 template<typename T, typename Alloc>
 template<bool B>
-typename Vector<T, Alloc>::template common_iterator<B> Vector<T, Alloc>::common_iterator<B>::operator+(ptrdiff_t n) {
+typename Vector<T, Alloc>::template common_iterator<B> Vector<T, Alloc>::common_iterator<B>::operator+(ptrdiff_t n) const {
     common_iterator<B> iter = *this;
     return iter += n;
 }
 
 template<typename T, typename Alloc>
 template<bool B>
-typename Vector<T, Alloc>::template common_iterator<B> Vector<T, Alloc>::common_iterator<B>::operator-(ptrdiff_t n) {
+typename Vector<T, Alloc>::template common_iterator<B> Vector<T, Alloc>::common_iterator<B>::operator-(ptrdiff_t n) const {
     common_iterator<B> iter = *this;
     return iter -= n;
 }
