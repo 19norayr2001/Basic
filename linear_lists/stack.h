@@ -3,8 +3,10 @@
 
 #include <vector.h>
 
+namespace nstd {
+
 template<typename T, typename Container = nstd::vector<T>>
-class Stack {
+class stack {
 public:
     typedef T value_type;
 public:
@@ -27,28 +29,30 @@ private:
 };
 
 template<typename T, typename Container>
-T& Stack<T, Container>::top() {
+T& stack<T, Container>::top() {
     return m_container.back();
 }
 
 template<typename T, typename Container>
-const T& Stack<T, Container>::top() const {
+const T& stack<T, Container>::top() const {
     return m_container.back();
 }
 
 template<typename T, typename Container>
-void Stack<T, Container>::push(const value_type& value) {
+void stack<T, Container>::push(const value_type& value) {
     m_container.emplace_back(value);
 }
 
 template<typename T, typename Container>
-void Stack<T, Container>::push(value_type&& value) {
+void stack<T, Container>::push(value_type&& value) {
     m_container.emplace_back(std::move(value));
 }
 
 template<typename T, typename Container>
-void Stack<T, Container>::pop() {
+void stack<T, Container>::pop() {
     m_container.pop_back();
 }
+
+} // nstd namespace
 
 #endif // STACK_H

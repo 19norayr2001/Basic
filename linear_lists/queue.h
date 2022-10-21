@@ -3,8 +3,10 @@
 
 #include <deque>
 
+namespace nstd {
+
 template<typename T, typename Container = std::deque<T>>
-class Queue {
+class queue {
 public:
     typedef T value_type;
 public:
@@ -29,29 +31,31 @@ private:
 
 
 template<typename T, typename Container>
-const T& Queue<T, Container>::front() const {
+const T& queue<T, Container>::front() const {
     return m_container.front();
 }
 
 template<typename T, typename Container>
-T& Queue<T, Container>::front() {
+T& queue<T, Container>::front() {
     return m_container.front();
 }
 
 template<typename T, typename Container>
-void Queue<T, Container>::push(const value_type& value) {
+void queue<T, Container>::push(const value_type& value) {
     m_container.emplace_back(value);
 }
 
 template<typename T, typename Container>
-void Queue<T, Container>::push(value_type&& value) {
+void queue<T, Container>::push(value_type&& value) {
     m_container.emplace_back(std::move(value));
 }
 
 template<typename T, typename Container>
-void Queue<T, Container>::pop() {
+void queue<T, Container>::pop() {
     m_container.pop_front();
 }
+
+} // namespace nstd
 
 #endif // QUEUE_H
 

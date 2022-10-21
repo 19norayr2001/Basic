@@ -10,10 +10,10 @@
 
 #include <list>
 
-TEST(LinearListsTest, Vector) {
+TEST(LinearListsTest, vector) {
     const size_t SIZE = 10;
 
-    Vector<int> vec;
+    nstd::vector<int> vec;
     for (size_t i = 0; i < SIZE; ++i) {
         vec.push_back(i);
     }
@@ -25,7 +25,7 @@ TEST(LinearListsTest, Vector) {
 }
 
 TEST(LinearListsTest, SequentialStack) {
-    Stack<int> st;
+    nstd::stack<int> st;
     const int SIZE = 10;
     for (int i = 0; i < SIZE; ++i) {
         st.push(i);
@@ -45,7 +45,7 @@ TEST(LinearListsTest, SequentialStack) {
 }
 
 TEST(LinearListsTest, LinkedStack) {
-    Stack<int, std::list<int>> st;
+    nstd::stack<int, std::list<int>> st;
     const int SIZE = 10;
     for (int i = 0; i < SIZE; ++i) {
         st.push(i);
@@ -65,7 +65,7 @@ TEST(LinearListsTest, LinkedStack) {
 }
 
 TEST(LinearListsTest, SequentialQueue) {
-    Queue<int> q;
+    nstd::queue<int> q;
     const int SIZE = 12;
     for (int i = 0; i < SIZE; ++i) {
         q.push(i);
@@ -84,7 +84,7 @@ TEST(LinearListsTest, SequentialQueue) {
 }
 
 TEST(LinearListsTest, LinkedQueue) {
-    Queue<int, std::list<int>> q;
+    nstd::queue<int, std::list<int>> q;
     const int SIZE = 12;
     for (int i = 0; i < SIZE; ++i) {
         q.push(i);

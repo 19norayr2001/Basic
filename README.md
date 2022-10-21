@@ -4,9 +4,9 @@
 
 ## Linear lists
 
-### vector
+### Vector
 
-vector container has the most advanced implementation among linear lists.
+`nstd::vector` container has the most advanced implementation among linear lists.
 
 This container provides
 
@@ -19,7 +19,7 @@ This container provides
 Check out some usages of vector
 ```c++
 // vector with polymorphic allocator
-vector<int, std::pmr::polymorphic_allocator<int>> vec;
+nstd::vector<int, std::pmr::polymorphic_allocator<int>> vec;
 // reserve memory for 100 elements
 vec.reserve(100);
 // add elements in vector
@@ -34,7 +34,7 @@ for(auto it = vec.rbegin(); it != vec.rend(); ++it) {
 
 ### Stack, Queue
 
-Stack and Queue are implemented as adapter containers, by default they are using std::deque
+`nstd::stack` and `nstd::queue` are implemented as adapter containers, by default they are using std::deque
 
 They provide
 
@@ -43,9 +43,9 @@ They provide
 Here are some usages
 ```c++
 // use stack based on deque
-Stack<char> st;
+nstd::stack<char> st;
 // use queue based on linked list
-Queue<char, std::list<char>> q;
+nstd::queue<char, std::list<char>> q;
 // push some elements in stack and queue
 for(char ch = 'a'; ch <= 'z'; ++ch) {
     st.push(ch);
@@ -95,7 +95,7 @@ size_t order = st.order_of_key(4); // order will be 1
 int key = st.key_of_order(1);      // key will be 4
 ```
 
-### vector Tree
+### Vector Tree
 
 `nstd::vector_tree` is a data structure modeled like `std::vector`, but base on `implicit treap`.
 This class provides `std::vector`'s functionality as well.
