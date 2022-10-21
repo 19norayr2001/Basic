@@ -85,9 +85,12 @@ TEST(TreesTest, VectorTree) {
     nstd::vector_tree<int> vec;
     for (int i = 0; i < 1000; ++i) {
         vec.push_back(i);
+        if(i != 0) {
+            vec.push_front(-i);
+        }
     }
-    for (int i = 0; i < 1000; ++i) {
-        EXPECT_EQ(i, vec[i]);
+    for (int i = -999, j = 0; i < 1000; ++i, ++j) {
+        EXPECT_EQ(i, vec[j]);
     }
 }
 
