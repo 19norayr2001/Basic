@@ -68,7 +68,8 @@ public:
     reverse_iterator rbegin() const { return base_type::crbegin(); }
 
     reverse_iterator rend() const { return base_type::crend(); }
-    };
+
+};
 
 } // namespace nstd
 

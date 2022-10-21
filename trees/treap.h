@@ -51,8 +51,28 @@ public:
 
 private:
 
+    /**
+     * Merges two nodes into one node
+     * Working complexity is O(log size)
+     * Provides strong exception safety
+     * @param node1 node1
+     * @param node2 node2
+     * @return merged node, in case of one of the passed node is nullptr, will be returned second one
+     */
     treap_node *merge(treap_node *node1, treap_node *node2);
 
+    /**
+     * Splits passed node into two nodes with the given key
+     * Working complexity is O(log size)
+     * Provides strong exception safety
+     *
+     * @tparam KeyIncluded In case of KeyIncluded parameter is true, node having passed key will be in left tree, in the right otherwise
+     * @param node splittable node
+     * @param key key to be seperated with
+     * @return node pair, where the first tree will consist of nodes, where key is less than passed key
+     *         And the second tree will consist of nodes, where key is greater than passed key
+     *         The node having passed key will be one of this two trees depending on KeyIncluded template parameter
+     */
     template<bool KeyIncluded = false>
     std::pair<treap_node *, treap_node *> split(treap_node *node, const key_type &key);
 
@@ -63,19 +83,53 @@ public:
 
     std::pair<iterator, bool> insert(key_type &&key);
 
+    /**
+     * Inserts a node in the tree with the key constructed with passed arguments
+     * If the key already exists, key will not be inserted
+     * Working complexity is O (log size)
+     * Provides weak exception safety in case of comparator comparison throws exception
+     * @param key key
+     * @return pair, where the first one is inserted iterator and the second one is boolean showing whether the key was actually inserted or not
+     */
     template<typename... Args>
     std::pair<iterator, bool> emplace(Args &&... args);
 
+    /**
+     * Erases the node with the passed key
+     * If there is no node having passed key, then nothing happens
+     * Working complexity is O (log size)
+     * Provides weak exception safety in case of comparator comparison throws exception
+     * @param key
+     */
     void erase(const key_type &key);
 
     bool contains(const key_type &key) const;
 
+    /**
+     * Returns iterator with the passed key
+     * Returns end iterator with the key wasn't found
+     * @param key
+     * @return
+     */
     iterator find(const key_type &key);
 
     const_iterator find(const key_type &key) const;
 
+    /**
+     * Returns the key, which is located in the passed index
+     * Works in O (log size) complexity
+     * @param index index
+     * @return proper key when index < size
+     * Throws std::out_of_range exception otherwise
+     */
     const key_type &key_of_order(size_type index) const;
 
+    /**
+     * Returns index of the passed key
+     * Works in O (log size) complexity
+     * @param key key
+     * @return proper index, when the tree has the key, size() otherwise
+     */
     size_type order_of_key(const key_type &key) const;
 
     using _base::size;
@@ -83,6 +137,12 @@ public:
     using _base::empty;
 
 private:
+    /**
+     * Returns iterator with the passed key
+     * Works in O (log size) complexity
+     * @param key key
+     * @return proper iterator, when the tree has the key, end iterator otherwise
+     */
     iterator iterator_of_key(const key_type &key);
 
     const_iterator iterator_of_key(const key_type &key) const;
@@ -147,21 +207,53 @@ treap<Node, Compare, Allocator>::operator=(treap &&other) noexcept {
 template<typename Node, typename Compare, typename Allocator>
 typename treap<Node, Compare, Allocator>::treap_node *
 treap<Node, Compare, Allocator>::merge(treap_node *node1, treap_node *node2) {
-    if (node1 == nullptr) {
-        return node2;
+    // return nullptr when both values are null pointers
+    if(node1 == nullptr && node2 == nullptr) {
+        return nullptr;
     }
-    if (node2 == nullptr) {
-        return node1;
+
+    // stack for collecting node values
+    std::stack<treap_node *> nodes;
+    // stack for collecting priority comparisons
+    std::stack<bool> compares;
+    while(node1 != nullptr && node2 != nullptr) {
+        // after this operator we can suppose that node1.key <= node2.key
+        if (_comparator(node2->get_key(), node1->get_key())) {
+            std::swap(node1, node2);
+        }
+        // save comparison result in stack
+        bool compare = node1->get_priority() > node2->get_priority();
+        compares.push(compare);
+        // save corresponding node and update node1 and node2
+        if (compare) {
+            nodes.push(node1);
+            node1 = node1->get_right();
+            continue;
+        }
+        nodes.push(node2);
+        node2 = node2->get_left();
     }
-    if (_comparator(node2->get_key(), node1->get_key())) {
-        std::swap(node1, node2);
+    // child will be non-null node among node1 and node2
+    treap_node* child = (node1 == nullptr ? node2 : node1);
+    // child will be the last merge result
+    while (!compares.empty()){
+        // parent of the child node
+        treap_node* parent_node = nodes.top();
+        nodes.pop();
+        // comparison result
+        bool compare = compares.top();
+        compares.pop();
+        // merge parent_node with child
+        if (compare) {
+            parent_node->set_right(child);
+            child = parent_node;
+            continue;
+        }
+        parent_node->set_left(child);
+        child = parent_node;
     }
-    if (node1->get_priority() > node2->get_priority()) {
-        node1->set_right(merge(node1->get_right(), node2));
-        return node1;
-    }
-    node2->set_left(merge(node1, node2->get_left()));
-    return node2;
+
+    return child;
 }
 
 template<typename Node, typename Compare, typename Allocator>
@@ -316,6 +408,9 @@ treap<Node, Compare, Allocator>::const_cast_iterator(const const_iterator &it) {
 template<typename Node, typename Compare, typename Allocator>
 const typename treap<Node, Compare, Allocator>::key_type &
 treap<Node, Compare, Allocator>::key_of_order(size_type index) const {
+    if (index >= size()) {
+        throw std::out_of_range("Index is out of bounds");
+    }
     return _base::node_of_order(index)->get_key();
 }
 

@@ -156,9 +156,12 @@ private:
     public:
         common_iterator(value_type *value, treap_type *treap, size_type index);
 
+        /**
+         * This constructor serves as copy constructor for iterator
+         * And conversion operator from iterator to const_iterator either
+         * @param other other object
+         */
         common_iterator(const common_iterator<false> &other);
-
-        common_iterator &operator=(const common_iterator<false> &other);
 
     public:
         common_iterator<B> &operator++();
@@ -195,9 +198,9 @@ private:
         bool operator>=(const common_iterator<B> &) const;
 
     public:
-        common_iterator<B> operator+(ptrdiff_t);
+        common_iterator<B> operator+(ptrdiff_t) const;
 
-        common_iterator<B> operator-(ptrdiff_t);
+        common_iterator<B> operator-(ptrdiff_t) const;
     };
 
 public:
@@ -303,18 +306,8 @@ treap_base<Node, Allocator>::common_iterator<B>::common_iterator(value_type *val
 
 template<typename Node, typename Allocator>
 template<bool B>
-typename treap_base<Node, Allocator>::template common_iterator<B> &
-treap_base<Node, Allocator>::common_iterator<B>::operator=(const common_iterator<false> &other) {
-    if constexpr (!B) {
-        if (this == &other) {
-            return *this;
-        }
-    }
-    _value = other._value;
-    _treap = other._treap;
-    _index = other._index;
-    return *this;
-}
+treap_base<Node, Allocator>::common_iterator<B>::common_iterator(const common_iterator<false> &other)
+        :_value(other._value), _treap(other._treap), _index(other._index) {}
 
 template<typename Node, typename Allocator>
 template<bool B>
@@ -324,11 +317,6 @@ treap_base<Node, Allocator>::common_iterator<B>::operator++() {
     _value = (node == nullptr ? nullptr : node->get_value_address());
     return *this;
 }
-
-template<typename Node, typename Allocator>
-template<bool B>
-treap_base<Node, Allocator>::common_iterator<B>::common_iterator(const common_iterator<false> &other)
-        :_value(other._value), _treap(other._treap), _index(other._index) {}
 
 template<typename Node, typename Allocator>
 template<bool B>
@@ -432,7 +420,7 @@ bool treap_base<Node, Allocator>::common_iterator<B>::operator>=(const common_it
 template<typename Node, typename Allocator>
 template<bool B>
 typename treap_base<Node, Allocator>::template common_iterator<B>
-treap_base<Node, Allocator>::common_iterator<B>::operator+(ptrdiff_t n) {
+treap_base<Node, Allocator>::common_iterator<B>::operator+(ptrdiff_t n) const {
     common_iterator<B> iter = *this;
     return iter += n;
 }
@@ -440,7 +428,7 @@ treap_base<Node, Allocator>::common_iterator<B>::operator+(ptrdiff_t n) {
 template<typename Node, typename Allocator>
 template<bool B>
 typename treap_base<Node, Allocator>::template common_iterator<B>
-treap_base<Node, Allocator>::common_iterator<B>::operator-(ptrdiff_t n) {
+treap_base<Node, Allocator>::common_iterator<B>::operator-(ptrdiff_t n) const {
     common_iterator<B> iter = *this;
     return iter -= n;
 }
