@@ -97,7 +97,7 @@ int key = st.key_of_order(1);      // key will be 4
 
 ### Vector Tree
 
-`nstd::vector_tree` is a data structure modeled like `std::vector`, but base on `implicit treap`.
+`nstd::vector_tree` is a data structure modeled like `std::vector`, but based on `implicit treap`.
 This class provides `std::vector`'s functionality as well.
 The best part is that this structure inserts and removes element in `O(log size)` complexity.
 However, `push_back` and `pop_back` are also working in `O (log size)` complexity
