@@ -112,7 +112,7 @@ This container provides
 - possibility of using `custom allocators`
 - `iterator`, `reverse iterator`
 
-Check out some usages of nstd ordered containers
+Here is some usage of nstd vector tree
 ```c++
 nstd::vector_tree<int> vec {1, 3};
 vec.insert(2, 1); // insert 2 at 1st position, vec = {1, 2, 3}
