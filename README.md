@@ -74,7 +74,7 @@ Provides
 These classes provide all the functionality, that are providing `std::set` and `std::map`. 
 Lo and behold, they are ordered, so we can find order of any element in `O (log size)` complexity. 
 This fact gives a very huge advantage under STL associative containers.
-Nevertheless, insertion and remove operations are a little slower than STL ones.
+Nevertheless, insertion and erasure operations are a little slower than STL ones.
 
 These containers provide
 
