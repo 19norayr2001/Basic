@@ -31,9 +31,12 @@ public:
     using const_reverse_iterator = typename base_type::const_reverse_iterator;
 
 private:
-    using base_type::_root;
-
+    using base_type::_end;
     key_compare _comparator;
+
+private:
+    using base_type::end_node;
+    using base_type::root;
 
 public:
     explicit treap(const key_compare& comparator = key_compare(),
@@ -75,6 +78,22 @@ private:
      */
     template <bool KeyIncluded = false>
     std::pair<treap_node*, treap_node*> split(treap_node* node, const key_type& key);
+
+    /**
+     * Using split and merge functions
+     * Inserts node in tree
+     * @param node node to be inserted
+     * @return iterator pointing inserted node
+     */
+    iterator insert_node(treap_node* node);
+
+    /**
+     * Returns node with the passed key
+     * Detaches that node from the tree
+     * @param key key
+     * @return proper node if there exists node with the passed key, nullptr otherwise
+     */
+    treap_node* detach_node_with_key(const key_type& key);
 
 public:
     void swap(treap& other) noexcept;
@@ -252,7 +271,6 @@ treap<Node, Compare, Allocator>::merge(treap_node* node1, treap_node* node2) {
         parent_node->set_left(child);
         child = parent_node;
     }
-
     return child;
 }
 
@@ -299,6 +317,23 @@ treap<Node, Compare, Allocator>::split(treap_node* node,
 }
 
 template <typename Node, typename Compare, typename Allocator>
+typename treap<Node, Compare, Allocator>::iterator treap<Node, Compare, Allocator>::insert_node(treap_node* node) {
+    std::pair<treap_node*, treap_node*> p = split(root(), node->get_key());
+    treap_node* root = merge(p.second, merge(p.first, node));
+    _end.set_left(root);
+    return {node};
+}
+
+template <typename Node, typename Compare, typename Allocator>
+typename treap<Node, Compare, Allocator>::treap_node* treap<Node, Compare, Allocator>::detach_node_with_key(const key_type& key) {
+    auto [left, key_included_tree] = split(root(), key);
+    auto [key_tree, right] = split<true>(key_included_tree, key);
+    treap_node* root = merge(left, right);
+    _end.set_left(root);
+    return key_tree;
+}
+
+template <typename Node, typename Compare, typename Allocator>
 void treap<Node, Compare, Allocator>::swap(treap<Node, Compare, Allocator>& other) noexcept {
     base_type::swap(other);
     std::swap(_comparator, other._comparator);
@@ -328,29 +363,16 @@ treap<Node, Compare, Allocator>::emplace(Args&& ... args) {
         // node holder will automatically deallocate memory and destroy value
         return {it, false};
     }
-    if (_root == nullptr) {
-        _root = holder.release();
-        return {begin(), true};
-    }
-    // insert new constructed node into tree
-    std::pair<treap_node*, treap_node*> p = split(_root, holder->get_key());
-    _root = merge(p.second, merge(p.first, holder.get()));
+    // insert new constructed node into tree and get iterator
+    it = insert_node(holder.get());
     // release node holder, as insertion completed successfully
-    auto* node = holder.release();
-    size_type index = order_of_key(node->get_key());
-    return {iterator(node->get_value_address(), this, index), true};
+    holder.release();
+    return {it, true};
 }
 
 template <typename Node, typename Compare, typename Allocator>
 void treap<Node, Compare, Allocator>::erase(const key_type& key) {
-    std::pair<treap_node*, treap_node*> first_split_pair = split(_root, key);
-    std::pair<treap_node*, treap_node*> second_split_pair = split<true>(first_split_pair.second, key);
-    base_type::destroy_tree(second_split_pair.first);
-    if (empty()) {
-        _root = nullptr;
-        return;
-    }
-    _root = merge(first_split_pair.first, second_split_pair.second);
+    base_type::destroy_tree(detach_node_with_key(key));
 }
 
 template <typename Node, typename Compare, typename Allocator>
@@ -379,19 +401,17 @@ treap<Node, Compare, Allocator>::iterator_of_key(const key_type& key) {
 template <typename Node, typename Compare, typename Allocator>
 typename treap<Node, Compare, Allocator>::const_iterator
 treap<Node, Compare, Allocator>::iterator_of_key(const key_type& key) const {
-    const treap_node* root = _root;
-    size_type pos = 0;
-    while (root != nullptr) {
-        if (_comparator(key, root->get_key())) {
-            root = root->get_left();
+    const treap_node* root_ = root();
+    while (root_ != nullptr) {
+        if (_comparator(key, root_->get_key())) {
+            root_ = root_->get_left();
             continue;
         }
-        if (_comparator(root->get_key(), key)) {
-            pos += 1 + root->left_size();
-            root = root->get_right();
+        if (_comparator(root_->get_key(), key)) {
+            root_ = root_->get_right();
             continue;
         }
-        return {root->get_value_address(), this, pos + root->left_size()};
+        return {root_};
     }
     return end();
 }
@@ -399,10 +419,7 @@ treap<Node, Compare, Allocator>::iterator_of_key(const key_type& key) const {
 template <typename Node, typename Compare, typename Allocator>
 typename treap<Node, Compare, Allocator>::iterator
 treap<Node, Compare, Allocator>::const_cast_iterator(const const_iterator& it) {
-    size_type index = it - const_iterator(nullptr, this, 0);
-    const value_type& const_value = *it;
-    auto* value = const_cast<value_type*>(std::addressof(const_value));
-    return {value, this, index};
+    return {const_cast<treap_node*>(*reinterpret_cast<const treap_node* const *>(&it))};
 }
 
 template <typename Node, typename Compare, typename Allocator>
@@ -411,16 +428,13 @@ treap<Node, Compare, Allocator>::key_of_order(size_type index) const {
     if (index >= size()) {
         throw std::out_of_range("Index is out of bounds");
     }
-    return base_type::node_of_order(index)->get_key();
+    return root()->node_of_order(index)->get_key();
 }
 
 template <typename Node, typename Compare, typename Allocator>
 typename treap<Node, Compare, Allocator>::size_type
 treap<Node, Compare, Allocator>::order_of_key(const key_type& key) const {
-    auto it = iterator_of_key(key);
-    // create dummy iterator in order to avoid additional calculations and improve performance
-    auto dummy_iterator = const_iterator(nullptr, this, 0);
-    return it - dummy_iterator;
+    return iterator_of_key(key) - begin();
 }
 
 } // namespace nstd

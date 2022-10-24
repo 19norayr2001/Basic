@@ -17,7 +17,8 @@ public:
 public:
     explicit implicit_treap_node(const value_type& value, priority_type priority = 0,
                                  implicit_treap_node* left = nullptr,
-                                 implicit_treap_node* right = nullptr)
+                                 implicit_treap_node* right = nullptr,
+                                 implicit_treap_node* parent = nullptr)
             : base_type(priority, left, right), _value(value) {}
 
     const value_type* get_value_address() const { return std::addressof(_value); }
@@ -48,7 +49,8 @@ private:
     using typename base_type::node_holder;
 
 private:
-    using base_type::_root;
+    using base_type::_end;
+    using base_type::root;
 
 public:
     using typename base_type::iterator;
@@ -111,6 +113,23 @@ private:
     treap_node* merge(treap_node* node1, treap_node* node2);
 
     std::pair<treap_node*, treap_node*> split(treap_node* node, size_type index);
+
+    /**
+     * Using split and merge functions
+     * Inserts node in the tree with passed index
+     * @param node node to be inserted
+     * @param index index
+     * @return iterator pointing inserted node
+     */
+    iterator insert_node(treap_node* node, size_type index);
+
+    /**
+     * Returns node with the passed index
+     * Detaches that node from the tree
+     * @param key key
+     * @return detached node
+     */
+    treap_node* detach_node_with_index(size_type index);
 };
 
 template <typename Node, typename Allocator>
@@ -159,10 +178,12 @@ implicit_treap<T, Allocator>::merge(treap_node* node1, treap_node* node2) {
         return node1;
     }
     if (node1->get_priority() > node2->get_priority()) {
-        node1->set_right(merge(node1->get_right(), node2));
+        treap_node* right = merge(node1->get_right(), node2);
+        node1->set_right(right);
         return node1;
     }
-    node2->set_left(merge(node1, node2->get_left()));
+    treap_node* left = merge(node1, node2->get_left());
+    node2->set_left(left);
     return node2;
 }
 
@@ -178,11 +199,29 @@ implicit_treap<T, Allocator>::split(treap_node* node, size_type index) -> std::p
     if (node->left_size() < index) {
         auto right_pair = split(node->get_right(), index - node->left_size() - 1);
         node->set_right(right_pair.first);
+        // return separated nodes
         return {node, right_pair.second};
     }
     auto left_pair = split(node->get_left(), index);
     node->set_left(left_pair.second);
+    // return separated nodes
     return {left_pair.first, node};
+}
+
+template <typename T, typename Allocator>
+typename implicit_treap<T, Allocator>::iterator implicit_treap<T, Allocator>::insert_node(treap_node* node, size_type index) {
+    auto [left, right] = split(root(), index);
+    treap_node* root = merge(merge(left, node), right);
+    _end.set_left(root);
+    return {node};
+}
+
+template <typename T, typename Allocator>
+typename implicit_treap<T, Allocator>::treap_node* implicit_treap<T, Allocator>::detach_node_with_index(size_type index) {
+    auto [left, included_index] = split(root(), index);
+    auto [index_node, right] = split(included_index, 1);
+    _end.set_left(merge(left, right));
+    return index_node;
 }
 
 template <typename T, typename Allocator>
@@ -234,14 +273,7 @@ void implicit_treap<T, Allocator>::erase(size_type index) {
     if (index >= size()) {
         return;
     }
-    auto first_split_pair = split(_root, index);
-    auto second_split_pair = split(first_split_pair.second, 1);
-    base_type::destroy_tree(second_split_pair.first);
-    if (empty()) {
-        _root = nullptr;
-        return;
-    }
-    _root = merge(first_split_pair.first, second_split_pair.second);
+    base_type::destroy_tree(detach_node_with_index(index));
 }
 
 template <typename T, typename Allocator>
@@ -274,16 +306,11 @@ implicit_treap<T, Allocator>::emplace(size_type index, Args&& ...args) {
     }
     // allocate memory for node and construct value
     node_holder holder = base_type::construct_node(std::forward<Args>(args)...);
-    if (empty()) {
-        _root = holder.release();
-        return base_type::begin();
-    }
     // insert new constructed node into tree
-    std::pair<treap_node*, treap_node*> p = split(_root, index);
-    _root = merge(merge(p.first, holder.get()), p.second);
+    auto it = insert_node(holder.get(), index);
     // release node holder, as insertion completed successfully
-    auto* node = holder.release();
-    return {node->get_value_address(), this, index};
+    holder.release();
+    return it;
 }
 
 } // namespace nstd
