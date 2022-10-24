@@ -37,6 +37,7 @@ private:
 private:
     using base_type::end_node;
     using base_type::root;
+    using base_type::set_root;
 
 public:
     explicit treap(const key_compare& comparator = key_compare(),
@@ -318,18 +319,19 @@ treap<Node, Compare, Allocator>::split(treap_node* node,
 
 template <typename Node, typename Compare, typename Allocator>
 typename treap<Node, Compare, Allocator>::iterator treap<Node, Compare, Allocator>::insert_node(treap_node* node) {
-    std::pair<treap_node*, treap_node*> p = split(root(), node->get_key());
-    treap_node* root = merge(p.second, merge(p.first, node));
-    _end.set_left(root);
+    auto [left, right] = split(root(), node->get_key());
+    treap_node* root = merge(merge(left, node), right);
+    set_root(root);
     return {node};
 }
 
 template <typename Node, typename Compare, typename Allocator>
-typename treap<Node, Compare, Allocator>::treap_node* treap<Node, Compare, Allocator>::detach_node_with_key(const key_type& key) {
+typename treap<Node, Compare, Allocator>::treap_node*
+treap<Node, Compare, Allocator>::detach_node_with_key(const key_type& key) {
     auto [left, key_included_tree] = split(root(), key);
     auto [key_tree, right] = split<true>(key_included_tree, key);
     treap_node* root = merge(left, right);
-    _end.set_left(root);
+    set_root(root);
     return key_tree;
 }
 
@@ -419,7 +421,7 @@ treap<Node, Compare, Allocator>::iterator_of_key(const key_type& key) const {
 template <typename Node, typename Compare, typename Allocator>
 typename treap<Node, Compare, Allocator>::iterator
 treap<Node, Compare, Allocator>::const_cast_iterator(const const_iterator& it) {
-    return {const_cast<treap_node*>(*reinterpret_cast<const treap_node* const *>(&it))};
+    return {const_cast<treap_node*>(*reinterpret_cast<const treap_node* const*>(&it))};
 }
 
 template <typename Node, typename Compare, typename Allocator>

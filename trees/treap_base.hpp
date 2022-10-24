@@ -330,6 +330,8 @@ protected:
 
     const treap_node* root() const { return _end.get_left(); }
 
+    void set_root(treap_node* root) { _end.set_left(root); }
+
     treap_node* end_node() { return static_cast<treap_node*>(&_end); }
 
     const treap_node* end_node() const { return static_cast<const treap_node*>(&_end); }
@@ -472,8 +474,8 @@ treap_base<Node, Allocator>::common_iterator<B>::operator-=(difference_type n) {
 template <typename Node, typename Allocator>
 template <bool B>
 auto
-treap_base<Node, Allocator>::common_iterator<B>::operator-(const common_iterator<B>& iter) const -> difference_type {
-    return static_cast<difference_type>(_node->order()) - iter._node->order();
+treap_base<Node, Allocator>::common_iterator<B>::operator-(const common_iterator<B>& other) const -> difference_type {
+    return static_cast<difference_type>(_node->order()) - other._node->order();
 }
 
 template <typename Node, typename Allocator>
@@ -490,44 +492,44 @@ auto treap_base<Node, Allocator>::common_iterator<B>::operator->() const -> valu
 
 template <typename Node, typename Allocator>
 template <bool B>
-bool treap_base<Node, Allocator>::common_iterator<B>::operator==(const common_iterator<B>& iter) const {
-    return _node == iter._node;
+bool treap_base<Node, Allocator>::common_iterator<B>::operator==(const common_iterator<B>& other) const {
+    return _node == other._node;
 }
 
 template <typename Node, typename Allocator>
 template <bool B>
-bool treap_base<Node, Allocator>::common_iterator<B>::operator!=(const common_iterator<B>& iter) const {
-    return _node != iter._node;
+bool treap_base<Node, Allocator>::common_iterator<B>::operator!=(const common_iterator<B>& other) const {
+    return _node != other._node;
 }
 
 template <typename Node, typename Allocator>
 template <bool B>
-bool treap_base<Node, Allocator>::common_iterator<B>::operator<(const common_iterator<B>& iter) const {
-    return _node->order() < iter._node->order();
+bool treap_base<Node, Allocator>::common_iterator<B>::operator<(const common_iterator<B>& other) const {
+    return _node->order() < other._node->order();
 }
 
 template <typename Node, typename Allocator>
 template <bool B>
-bool treap_base<Node, Allocator>::common_iterator<B>::operator>(const common_iterator<B>& iter) const {
-    return _node->order() > iter._node->order();
+bool treap_base<Node, Allocator>::common_iterator<B>::operator>(const common_iterator<B>& other) const {
+    return _node->order() > other._node->order();
 }
 
 template <typename Node, typename Allocator>
 template <bool B>
-bool treap_base<Node, Allocator>::common_iterator<B>::operator<=(const common_iterator<B>& iter) const {
-    return _node->order() <= iter._node->order();
+bool treap_base<Node, Allocator>::common_iterator<B>::operator<=(const common_iterator<B>& other) const {
+    return _node->order() <= other._node->order();
 }
 
 template <typename Node, typename Allocator>
 template <bool B>
-bool treap_base<Node, Allocator>::common_iterator<B>::operator>=(const common_iterator<B>& iter) const {
-    return _node->order() >= iter._node->order();
+bool treap_base<Node, Allocator>::common_iterator<B>::operator>=(const common_iterator<B>& other) const {
+    return _node->order() >= other._node->order();
 }
 
 template <typename Node, typename Allocator>
 template <bool B>
 typename treap_base<Node, Allocator>::template common_iterator<B>
-treap_base<Node, Allocator>::common_iterator<B>::operator+(ptrdiff_t n) const {
+treap_base<Node, Allocator>::common_iterator<B>::operator+(difference_type n) const {
     common_iterator<B> iter = *this;
     return iter += n;
 }
@@ -535,7 +537,7 @@ treap_base<Node, Allocator>::common_iterator<B>::operator+(ptrdiff_t n) const {
 template <typename Node, typename Allocator>
 template <bool B>
 typename treap_base<Node, Allocator>::template common_iterator<B>
-treap_base<Node, Allocator>::common_iterator<B>::operator-(ptrdiff_t n) const {
+treap_base<Node, Allocator>::common_iterator<B>::operator-(difference_type n) const {
     common_iterator<B> iter = *this;
     return iter -= n;
 }

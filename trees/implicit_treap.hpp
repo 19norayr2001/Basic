@@ -51,6 +51,7 @@ private:
 private:
     using base_type::_end;
     using base_type::root;
+    using base_type::set_root;
 
 public:
     using typename base_type::iterator;
@@ -178,12 +179,10 @@ implicit_treap<T, Allocator>::merge(treap_node* node1, treap_node* node2) {
         return node1;
     }
     if (node1->get_priority() > node2->get_priority()) {
-        treap_node* right = merge(node1->get_right(), node2);
-        node1->set_right(right);
+        node1->set_right(merge(node1->get_right(), node2));
         return node1;
     }
-    treap_node* left = merge(node1, node2->get_left());
-    node2->set_left(left);
+    node2->set_left(merge(node1, node2->get_left()));
     return node2;
 }
 
@@ -197,30 +196,32 @@ implicit_treap<T, Allocator>::split(treap_node* node, size_type index) -> std::p
         return std::make_pair(node, nullptr);
     }
     if (node->left_size() < index) {
-        auto right_pair = split(node->get_right(), index - node->left_size() - 1);
-        node->set_right(right_pair.first);
+        auto [first, second] = split(node->get_right(), index - node->left_size() - 1);
+        node->set_right(first);
         // return separated nodes
-        return {node, right_pair.second};
+        return {node, second};
     }
-    auto left_pair = split(node->get_left(), index);
-    node->set_left(left_pair.second);
+    auto [first, second] = split(node->get_left(), index);
+    node->set_left(second);
     // return separated nodes
-    return {left_pair.first, node};
+    return {first, node};
 }
 
 template <typename T, typename Allocator>
-typename implicit_treap<T, Allocator>::iterator implicit_treap<T, Allocator>::insert_node(treap_node* node, size_type index) {
+typename implicit_treap<T, Allocator>::iterator
+implicit_treap<T, Allocator>::insert_node(treap_node* node, size_type index) {
     auto [left, right] = split(root(), index);
     treap_node* root = merge(merge(left, node), right);
-    _end.set_left(root);
+    set_root(root);
     return {node};
 }
 
 template <typename T, typename Allocator>
-typename implicit_treap<T, Allocator>::treap_node* implicit_treap<T, Allocator>::detach_node_with_index(size_type index) {
+typename implicit_treap<T, Allocator>::treap_node*
+implicit_treap<T, Allocator>::detach_node_with_index(size_type index) {
     auto [left, included_index] = split(root(), index);
     auto [index_node, right] = split(included_index, 1);
-    _end.set_left(merge(left, right));
+    set_root(merge(left, right));
     return index_node;
 }
 
