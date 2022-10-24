@@ -108,7 +108,7 @@ This container provides
 - `push_back`, `pop_back`, `push_front`, `pop_front`
 - `insert`, `erase`
 - `swap`, `empty`, `size`
-- `weak exception safety`, `move semantics` for public functions
+- `strong exception safety`, `move semantics` for public functions
 - possibility of using `custom allocators`
 - `iterator`, `reverse iterator`
 
