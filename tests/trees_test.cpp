@@ -92,6 +92,7 @@ TEST(TreesTest, VectorTree) {
     for (int i = -999, j = 0; i < 1000; ++i, ++j) {
         EXPECT_EQ(i, vec[j]);
     }
+    EXPECT_EQ(vec.end() - vec.begin(), vec.size());
 }
 
 #endif // TEST_TREES
