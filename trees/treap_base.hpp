@@ -1,11 +1,13 @@
 #ifndef BASICS_TREAP_BASE_HPP
 #define BASICS_TREAP_BASE_HPP
 
+#include <algorithm>
 #include <cstddef>
 #include <memory>
-#include <reverse_iterator.hpp>
 #include <chrono>
 #include <random>
+
+#include <reverse_iterator.hpp>
 
 namespace nstd {
 
@@ -25,8 +27,19 @@ public:
     explicit treap_end_node(treap_node* left = nullptr)
             : _parent(nullptr), _left(left) {}
 
+    treap_end_node(const treap_end_node& other) = default;
+
     treap_end_node(treap_end_node&& other) noexcept {
         set_left(std::exchange(other._left, nullptr));
+    }
+
+    treap_end_node& operator=(const treap_end_node& other) = default;
+
+    treap_end_node& operator=(treap_end_node&& other) noexcept {
+        if (this != &other) {
+            set_left(std::exchange(other._left, nullptr));
+        }
+        return *this;
     }
 
 protected:
@@ -36,7 +49,7 @@ protected:
 public:
     void set_left(treap_node* left) {
         _left = left;
-        if(_left != nullptr) {
+        if (_left != nullptr) {
             _left->set_parent(static_cast<treap_node*>(this));
         }
     }
@@ -248,6 +261,7 @@ private:
     public:
         using value_type = std::conditional_t<B, const treap_base::value_type, treap_base::value_type>;
         using node_type = std::conditional_t<B, const treap_node, treap_node>;
+        using difference_type = ptrdiff_t;
     private:
         node_type* _node;
 
@@ -266,16 +280,16 @@ private:
 
         common_iterator<B> operator++(int)&;
 
-        common_iterator<B>& operator+=(ptrdiff_t);
+        common_iterator<B>& operator+=(difference_type n);
 
         common_iterator<B>& operator--();
 
         common_iterator<B> operator--(int)&;
 
-        common_iterator<B>& operator-=(ptrdiff_t);
+        common_iterator<B>& operator-=(difference_type n);
 
     public:
-        ptrdiff_t operator-(const common_iterator<B>&) const;
+        difference_type operator-(const common_iterator<B>& other) const;
 
     public:
         value_type& operator*() const;
@@ -283,22 +297,22 @@ private:
         value_type* operator->() const;
 
     public:
-        bool operator==(const common_iterator<B>&) const;
+        bool operator==(const common_iterator<B>& other) const;
 
-        bool operator!=(const common_iterator<B>&) const;
+        bool operator!=(const common_iterator<B>& other) const;
 
-        bool operator<(const common_iterator<B>&) const;
+        bool operator<(const common_iterator<B>& other) const;
 
-        bool operator>(const common_iterator<B>&) const;
+        bool operator>(const common_iterator<B>& other) const;
 
-        bool operator<=(const common_iterator<B>&) const;
+        bool operator<=(const common_iterator<B>& other) const;
 
-        bool operator>=(const common_iterator<B>&) const;
+        bool operator>=(const common_iterator<B>& other) const;
 
     public:
-        common_iterator<B> operator+(ptrdiff_t) const;
+        common_iterator<B> operator+(difference_type n) const;
 
-        common_iterator<B> operator-(ptrdiff_t) const;
+        common_iterator<B> operator-(difference_type n) const;
     };
 
 public:
@@ -425,7 +439,7 @@ treap_base<Node, Allocator>::common_iterator<B>::operator++(int)& {
 template <typename Node, typename Allocator>
 template <bool B>
 typename treap_base<Node, Allocator>::template common_iterator<B>&
-treap_base<Node, Allocator>::common_iterator<B>::operator+=(ptrdiff_t n) {
+treap_base<Node, Allocator>::common_iterator<B>::operator+=(difference_type n) {
     _node = _node->next(n);
     return *this;
 }
@@ -450,15 +464,16 @@ treap_base<Node, Allocator>::common_iterator<B>::operator--(int)& {
 template <typename Node, typename Allocator>
 template <bool B>
 typename treap_base<Node, Allocator>::template common_iterator<B>&
-treap_base<Node, Allocator>::common_iterator<B>::operator-=(ptrdiff_t n) {
+treap_base<Node, Allocator>::common_iterator<B>::operator-=(difference_type n) {
     _node = _node->prev(n);
     return *this;
 }
 
 template <typename Node, typename Allocator>
 template <bool B>
-ptrdiff_t treap_base<Node, Allocator>::common_iterator<B>::operator-(const common_iterator<B>& iter) const {
-    return static_cast<ptrdiff_t>(_node->order()) - iter._node->order();
+auto
+treap_base<Node, Allocator>::common_iterator<B>::operator-(const common_iterator<B>& iter) const -> difference_type {
+    return static_cast<difference_type>(_node->order()) - iter._node->order();
 }
 
 template <typename Node, typename Allocator>
