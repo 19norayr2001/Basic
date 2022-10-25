@@ -27,6 +27,9 @@ public:
 
     value_type& get_value() { return _value; }
 
+public:
+    static const key_type& get_key(const value_type& value) { return value.first; }
+
 private:
     value_type _value;
 };
@@ -52,12 +55,15 @@ public:
 public:
     using base_type::base_type;
 
+    using base_type::find;
+    using base_type::end;
+
     ordered_map(std::initializer_list<std::pair<key_type, value_type>> il,
                 const key_compare& comparator = key_compare(),
                 const allocator_type& allocator = allocator_type())
             : base_type(comparator, allocator) {
         for (const auto& p: il) {
-            base_type::emplace(p);
+            base_type::insert(p);
         }
     }
 

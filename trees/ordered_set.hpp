@@ -26,6 +26,9 @@ public:
 
     const value_type& get_value() const { return _key; }
 
+public:
+    static const key_type& get_key(const value_type& value) { return value; }
+
 private:
     key_type _key;
 };
@@ -52,7 +55,7 @@ public:
                 const allocator_type& allocator = allocator_type())
             : base_type(comparator, allocator) {
         for (const auto& key: il) {
-            base_type::emplace(key);
+            base_type::insert(key);
         }
     }
 };

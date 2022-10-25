@@ -99,21 +99,26 @@ private:
 public:
     void swap(treap& other) noexcept;
 
-    std::pair<iterator, bool> insert(const key_type& key);
+    std::pair<iterator, bool> insert(const value_type& value);
 
-    std::pair<iterator, bool> insert(key_type&& key);
+    std::pair<iterator, bool> insert(value_type&& value);
 
     /**
-     * Inserts a node in the tree with the key constructed with passed arguments
-     * If the key already exists, key will not be inserted
+     * Inserts a node in the tree with the value constructed with passed arguments
+     * If the key already exists, nothing happens
      * Working complexity is O (log size)
      * Provides weak exception safety in case of comparator comparison throws exception
-     * @param key key
+     * @param args args
      * @return pair, where the first one is inserted iterator and the second one is boolean showing whether the key was actually inserted or not
      */
     template <typename... Args>
     std::pair<iterator, bool> emplace(Args&& ... args);
 
+private:
+    template <typename... Args>
+    std::pair<iterator, bool> emplace_with_key(const key_type& key, Args&& ... args);
+
+public:
     /**
      * Erases the node with the passed key
      * If there is no node having passed key, then nothing happens
@@ -343,14 +348,14 @@ void treap<Node, Compare, Allocator>::swap(treap<Node, Compare, Allocator>& othe
 
 template <typename Node, typename Compare, typename Allocator>
 std::pair<typename treap<Node, Compare, Allocator>::iterator, bool>
-treap<Node, Compare, Allocator>::insert(const key_type& key) {
-    return emplace(key);
+treap<Node, Compare, Allocator>::insert(const value_type& value) {
+    return emplace_with_key(treap_node::get_key(value), value);
 }
 
 template <typename Node, typename Compare, typename Allocator>
 std::pair<typename treap<Node, Compare, Allocator>::iterator, bool>
-treap<Node, Compare, Allocator>::insert(key_type&& key) {
-    return emplace(std::move(key));
+treap<Node, Compare, Allocator>::insert(value_type&& value) {
+    return emplace_with_key(treap_node::get_key(value), std::move(value));
 }
 
 template <typename Node, typename Compare, typename Allocator>
@@ -365,6 +370,24 @@ treap<Node, Compare, Allocator>::emplace(Args&& ... args) {
         // node holder will automatically deallocate memory and destroy value
         return {it, false};
     }
+    // insert new constructed node into tree and get iterator
+    it = insert_node(holder.get());
+    // release node holder, as insertion completed successfully
+    holder.release();
+    return {it, true};
+}
+
+template <typename Node, typename Compare, typename Allocator>
+template <typename... Args>
+std::pair<typename treap<Node, Compare, Allocator>::iterator, bool>
+treap<Node, Compare, Allocator>::emplace_with_key(const key_type& key, Args&& ... args) {
+    // if the tree already contains key, then just return
+    auto it = find(key);
+    if (it != end()) {
+        return {it, false};
+    }
+    // allocate memory for node and construct value
+    node_holder holder = base_type::construct_node(std::forward<Args>(args)...);
     // insert new constructed node into tree and get iterator
     it = insert_node(holder.get());
     // release node holder, as insertion completed successfully
