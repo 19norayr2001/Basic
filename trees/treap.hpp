@@ -194,7 +194,7 @@ treap<Node, Compare, Allocator>::treap(const key_compare& comparator, const allo
 
 template <typename Node, typename Compare, typename Allocator>
 treap<Node, Compare, Allocator>::treap(const treap& other)
-        : base_type(other._node_allocator), _comparator(other._comparator) {
+        : base_type(other), _comparator(other._comparator) {
     for (auto it = other.begin(); it != other.end(); ++it) {
         insert(*it);
     }

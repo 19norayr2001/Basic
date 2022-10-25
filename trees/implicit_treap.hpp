@@ -139,7 +139,7 @@ implicit_treap<Node, Allocator>::implicit_treap(const allocator_type& allocator)
 
 template <typename Node, typename Allocator>
 implicit_treap<Node, Allocator>::implicit_treap(const implicit_treap& other)
-        : base_type(other._node_allocator) {
+        : base_type(other) {
     for (auto it = other.begin(); it != other.end(); ++it) {
         emplace_back(*it);
     }

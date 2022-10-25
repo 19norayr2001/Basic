@@ -339,8 +339,13 @@ protected:
 public:
     explicit treap_base(const allocator_type& allocator = allocator_type());
 
-    /** In base treap class we already don't know how to insert elements, so copy constructor is deleted */
-    treap_base(const treap_base& other) = delete;
+    /**
+     * This constructor is created for technical purposes
+     * Constructs end node by default
+     * Calls node_traits::select_on_container_copy_construction with other allocator
+     * @param other
+     */
+    treap_base(const treap_base& other);
 
     treap_base(treap_base&& other) noexcept;
 
@@ -549,10 +554,13 @@ treap_base<Node, Allocator>::treap_base(const allocator_type& allocator)
         : _end(), _node_allocator(allocator) {}
 
 template <typename Node, typename Allocator>
+treap_base<Node, Allocator>::treap_base(const treap_base& other)
+        : _end(), _node_allocator(node_traits::select_on_container_copy_construction(other._node_allocator)) {}
+
+template <typename Node, typename Allocator>
 treap_base<Node, Allocator>::treap_base(treap_base&& other) noexcept
         : _end(std::move(other._end)),
-          _node_allocator(std::move(other._node_allocator)) {
-}
+          _node_allocator(std::move(other._node_allocator)) {}
 
 template <typename Node, typename Allocator>
 treap_base<Node, Allocator>&
@@ -583,6 +591,7 @@ void treap_base<Node, Allocator>::destroy_tree(treap_node* node) {
 template <typename Node, typename Allocator>
 void treap_base<Node, Allocator>::swap(treap_base& other) noexcept {
     std::swap(_end, other._end);
+    std::swap(_node_allocator, other._node_allocator);
 }
 
 template <typename Node, typename Allocator>
