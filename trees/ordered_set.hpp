@@ -36,17 +36,20 @@ private:
 template <typename Key, typename Compare = std::less<Key>, typename Allocator = std::allocator<Key>>
 class ordered_set : public treap<ordered_set_node<const Key>, Compare, Allocator> {
     using base_type = treap<ordered_set_node<const Key>, Compare, Allocator>;
+
 public:
     using key_type = Key;
     using value_type = Key;
     using typename base_type::key_compare;
     using typename base_type::allocator_type;
     using typename base_type::size_type;
+
 public:
     using const_iterator = typename base_type::const_iterator;
     using iterator = typename base_type::iterator;
     using const_reverse_iterator = typename base_type::const_reverse_iterator;
     using reverse_iterator = typename base_type::reverse_iterator;
+
 public:
     using base_type::base_type;
 

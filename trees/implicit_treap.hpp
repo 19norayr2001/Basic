@@ -104,6 +104,105 @@ public:
     const value_type& operator[](size_type index) const;
 
 public:
+    /**
+     * Exchanges intervals not depending on interval lengths
+     * Works in O (log size) complexity
+     * If end1 or end2 > size, function will change them with size
+     * If begin1 > end1 or begin2 > end2 nothing happens
+     * If intervals intersects, nothing happens
+     * @param begin1 begin of first interval (inclusive endpoint)
+     * @param end1 end of first interval (exclusive endpoint)
+     * @param begin2 begin of second interval (inclusive endpoint)
+     * @param end2 end of second interval (exclusive endpoint)
+     */
+    void exchange_intervals(size_type begin1, size_type end1, size_type begin2, size_type end2) noexcept;
+
+    /**
+     * Calls exchange_intervals for indexes
+     * Passed iterators remain showing at the same elements, which they were showing before function call
+     * @param begin begin
+     * @param end end
+     * @param count shift count
+     */
+    void exchange_intervals(const_iterator begin1, const_iterator end1,
+                            const_iterator begin2, const_iterator end2) noexcept;
+
+    /**
+     * Moves passed interval to the index not depending on interval length
+     * Works in O (log size) complexity
+     * If begin >= end nothing happens
+     * If index > size, functions change it with size
+     * If index belongs to passed interval, nothing happens
+     * @param begin begin (inclusive endpoint)
+     * @param end end (exclusive endpoint)
+     * @param index index to be moved interval
+     */
+    void move_interval_to_index(size_type begin, size_type end, size_type index) noexcept;
+
+    /**
+     * Calls move_interval_to_index for indexes
+     * Passed iterators remain showing at the same elements, which they were showing before function call
+     * @param begin begin
+     * @param end end
+     * @param count shift count
+     */
+    void move_interval_to_index(const_iterator begin, const_iterator end, const_iterator it) noexcept;
+
+    /**
+     * Shifts vector content with the passed count
+     * Works in O (log size) complexity non-depending on interval size
+     * @param count shift count
+     */
+    void shift(size_type count = 1) noexcept;
+
+    implicit_treap& operator>>=(size_type count) noexcept;
+
+    /**
+     * Shifts vector interval content with the passed count
+     * Works in O (log size) complexity non-depending on interval size
+     * @param begin interval begin (inclusive endpoint)
+     * @param end interval end (exclusive endpoint)
+     * @param count shift count
+     */
+    void shift_interval(size_type begin, size_type end, size_type count = 1) noexcept;
+
+    /**
+     * Calls shift_interval for indexes
+     * Passed iterators remain showing at the same elements, which they were showing before function call
+     * @param begin begin
+     * @param end end
+     * @param count shift count
+     */
+    void shift_interval(const_iterator begin, const_iterator end, size_type count = 1) noexcept;
+
+    /**
+     * Reverse shifts vector content with the passed count
+     * Works in O (log size) complexity non-depending on interval size
+     * @param count shift count
+     */
+    void reverse_shift(size_type count = 1) noexcept;
+
+    implicit_treap& operator<<=(size_type count) noexcept;
+
+    /**
+     * Reverse shifts vector interval content with the passed count
+     * Works in O (log size) complexity non-depending on interval size
+     * @param begin interval begin (inclusive endpoint)
+     * @param end interval end (exclusive endpoint)
+     * @param count shift count
+     */
+    void reverse_shift_interval(size_type begin, size_type end, size_type count = 1) noexcept;
+
+    /**
+     * Calls reverse_shift_interval for indexes
+     * Passed iterators remain showing at the same elements, which they were showing before function call
+     * @param begin begin
+     * @param end end
+     * @param count shift count
+     */
+    void reverse_shift_interval(const_iterator begin, const_iterator end, size_type count = 1) noexcept;
+
+public:
     using base_type::size;
 
     using base_type::empty;
@@ -112,6 +211,7 @@ private:
     template <typename... Args>
     iterator emplace(size_type index, Args&& ... args);
 
+
 private:
     using base_type::merge_with_index;
     using base_type::split_with_index;
@@ -119,11 +219,11 @@ private:
     /**
      * Using split and merge functions
      * Inserts node in the tree with passed index
-     * @param node node to be inserted
+     * @param tree node to be inserted
      * @param index index
      * @return iterator pointing inserted node
      */
-    iterator insert_node(treap_node* node, size_type index);
+    iterator insert_tree_at(treap_node* tree, size_type index);
 };
 
 template <typename Node, typename Allocator>
@@ -164,11 +264,17 @@ implicit_treap<Node, Allocator>::operator=(implicit_treap&& other) noexcept {
 
 template <typename T, typename Allocator>
 typename implicit_treap<T, Allocator>::iterator
-implicit_treap<T, Allocator>::insert_node(treap_node* node, size_type index) {
+implicit_treap<T, Allocator>::insert_tree_at(treap_node* tree, size_type index) {
     auto [left, right] = split_with_index(root(), index);
-    treap_node* root = merge_with_index(merge_with_index(left, node), right);
+    treap_node* root = merge_with_index(merge_with_index(left, tree), right);
     set_root(root);
-    return {node};
+    if (tree == nullptr) {
+        return base_type::end();
+    }
+    while (tree->get_left() != nullptr) {
+        tree = tree->get_left();
+    }
+    return {tree};
 }
 
 template <typename T, typename Allocator>
@@ -226,14 +332,119 @@ void implicit_treap<T, Allocator>::pop_front() {
 }
 
 template <typename T, typename Allocator>
-typename implicit_treap<T, Allocator>::value_type& implicit_treap<T, Allocator>::operator[](size_type index) {
-    return *(base_type::begin() + index);
+typename implicit_treap<T, Allocator>::value_type& implicit_treap<T, Allocator>::operator[](size_type
+index) {
+return *(
+
+base_type::begin()
+
++ index);
 }
 
 template <typename T, typename Allocator>
 const typename implicit_treap<T, Allocator>::value_type&
 implicit_treap<T, Allocator>::operator[](size_type index) const {
     return *(base_type::cbegin() + index);
+}
+
+template <typename T, typename Allocator>
+void implicit_treap<T, Allocator>::exchange_intervals(size_type begin1, size_type end1,
+                                                      size_type begin2, size_type end2) noexcept {
+    end1 = std::min(end1, size());
+    end2 = std::min(end2, size());
+    if (begin1 > end1 || begin2 > end2) {
+        return;
+    }
+    if (begin1 > begin2) {
+        std::swap(begin1, begin2);
+        std::swap(end1, end2);
+    }
+    // here we have that begin1 <= begin2
+    // check whether the intervals intersect or not
+    if (end1 > begin2) {
+        // interval intersects, then just return
+        return;
+    }
+    // detach intervals from the tree
+    auto* interval2 = base_type::detach_interval(begin2, end2);
+    auto* interval1 = base_type::detach_interval(begin1, end1);
+    // insert second interval in first interval's place
+    insert_tree_at(interval2, begin1);
+    // insert first interval in second interval's place
+    insert_tree_at(interval1, begin2 + (end2 - begin2) - (end1 - begin1));
+}
+
+template <typename T, typename Allocator>
+void implicit_treap<T, Allocator>::exchange_intervals(const_iterator begin1, const_iterator end1,
+                                                      const_iterator begin2, const_iterator end2) noexcept {
+    exchange_intervals(begin1.order(), end1.order(), begin2.order(), end2.order());
+}
+
+template <typename T, typename Allocator>
+void implicit_treap<T, Allocator>::move_interval_to_index(size_type begin, size_type end, size_type index) noexcept {
+    exchange_intervals(begin, end, index, index);
+}
+
+template <typename T, typename Allocator>
+void implicit_treap<T, Allocator>::move_interval_to_index(const_iterator begin, const_iterator end,
+                                                          const_iterator it) noexcept {
+    exchange_intervals(begin, end, it, it);
+}
+
+template <typename T, typename Allocator>
+void implicit_treap<T, Allocator>::shift(size_type count) noexcept {
+    shift_interval(0, size(), count);
+}
+
+template <typename T, typename Allocator>
+implicit_treap<T, Allocator>& implicit_treap<T, Allocator>::operator>>=(size_type count) noexcept {
+    shift(count);
+    return *this;
+}
+
+template <typename T, typename Allocator>
+void implicit_treap<T, Allocator>::shift_interval(size_type begin, size_type end, size_type count) noexcept {
+    if (begin >= end) {
+        return;
+    }
+    count %= end - begin;
+    if (count == 0) {
+        return;
+    }
+    exchange_intervals(begin, end - count, end - count, end);
+}
+
+template <typename T, typename Allocator>
+void implicit_treap<T, Allocator>::shift_interval(const_iterator begin, const_iterator end, size_type count) noexcept {
+    shift_interval(begin.order(), end.order(), count);
+}
+
+template <typename T, typename Allocator>
+void implicit_treap<T, Allocator>::reverse_shift(size_type count) noexcept {
+    reverse_shift_interval(0, size(), count);
+}
+
+template <typename T, typename Allocator>
+implicit_treap<T, Allocator>& implicit_treap<T, Allocator>::operator<<=(size_type count) noexcept {
+    reverse_shift(count);
+    return *this;
+}
+
+template <typename T, typename Allocator>
+void implicit_treap<T, Allocator>::reverse_shift_interval(size_type begin, size_type end, size_type count) noexcept {
+    if (begin >= end) {
+        return;
+    }
+    count %= end - begin;
+    if (count == 0) {
+        return;
+    }
+    exchange_intervals(begin, begin + count, begin + count, end);
+}
+
+template <typename T, typename Allocator>
+void implicit_treap<T, Allocator>::reverse_shift_interval(const_iterator begin, const_iterator end, size_type count) noexcept {
+    reverse_shift_interval(begin.order(), end.order(), count);
 }
 
 template <typename T, typename Allocator>
@@ -246,7 +457,7 @@ implicit_treap<T, Allocator>::emplace(size_type index, Args&& ...args) {
     // allocate memory for node and construct value
     node_holder holder = base_type::construct_node(std::forward<Args>(args)...);
     // insert new constructed node into tree
-    auto it = insert_node(holder.get(), index);
+    auto it = insert_tree_at(holder.get(), index);
     // release node holder, as insertion completed successfully
     holder.release();
     return it;
