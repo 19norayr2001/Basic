@@ -88,9 +88,25 @@ private:
      */
     iterator insert_node(treap_node* node);
 
+
+    /**
+     * Returns tree including all the nodes, which has key between passed key interval
+     * Detaches that tree from the main tree
+     * Works in O(log size) complexity
+     * Provides weak exception guarantee if comparator throws exception during comparisons
+     * @tparam EndIncluded boolean parameter showing node with key_end would be in the returned tree or not
+     * @param begin_key interval begin key (inclusive endpoint)
+     * @param end_key interval end key (inclusive or exclusive endpoint depend on EndIncluded parameter
+     * @return proper tree if there exists any node between interval, nullptr otherwise
+     */
+    template<bool EndIncluded = false>
+    treap_node* detach_node_key_interval(const key_type& begin_key, const key_type& end_key);
+
     /**
      * Returns node with the passed key
      * Detaches that node from the tree
+     * Works in O(log size) complexity
+     * Provides weak exception guarantee if comparator throws exception during comparisons
      * @param key key
      * @return proper node if there exists node with the passed key, nullptr otherwise
      */
@@ -120,13 +136,33 @@ private:
 
 public:
     /**
+     * Erases passed key interval from the main tree
+     * Works in O (end - begin + log size) complexity
+     * Provides weak exception guarantee if comparator comparisons throw exception
+     * @param begin_key begin key (inclusive endpoint)
+     * @param end_key end key (exclusive endpoint)
+     */
+    void erase_key_interval(const key_type& begin_key, const key_type& end_key);
+
+    /**
+     * Erases passed key interval from the main tree
+     * Works in O (end - begin + log size) complexity
+     * Provides weak exception guarantee if comparator comparisons throw exception
+     * @param begin_key begin key (inclusive endpoint)
+     * @param end_key end key (inclusive endpoint)
+     */
+    void erase_key_interval_with_end(const key_type& begin_key, const key_type& end_key);
+
+    /**
      * Erases the node with the passed key
      * If there is no node having passed key, then nothing happens
      * Working complexity is O (log size)
      * Provides weak exception safety in case of comparator comparison throws exception
      * @param key
      */
-    void erase(const key_type& key);
+    void erase_key(const key_type& key);
+
+    using base_type::erase;
 
     bool contains(const key_type& key) const;
 
@@ -331,13 +367,20 @@ typename treap<Node, Compare, Allocator>::iterator treap<Node, Compare, Allocato
 }
 
 template <typename Node, typename Compare, typename Allocator>
+template<bool EndIncluded>
 typename treap<Node, Compare, Allocator>::treap_node*
-treap<Node, Compare, Allocator>::detach_node_with_key(const key_type& key) {
-    auto [left, key_included_tree] = split(root(), key);
-    auto [key_tree, right] = split<true>(key_included_tree, key);
+treap<Node, Compare, Allocator>::detach_node_key_interval(const key_type& begin_key, const key_type& end_key) {
+    auto [left, begin_included_tree] = split(root(), begin_key);
+    auto [interval, right] = split<EndIncluded>(begin_included_tree, end_key);
     treap_node* root = merge(left, right);
     set_root(root);
-    return key_tree;
+    return interval;
+}
+
+template <typename Node, typename Compare, typename Allocator>
+typename treap<Node, Compare, Allocator>::treap_node*
+treap<Node, Compare, Allocator>::detach_node_with_key(const key_type& key) {
+    return detach_node_key_interval<true>(key, key);
 }
 
 template <typename Node, typename Compare, typename Allocator>
@@ -396,7 +439,17 @@ treap<Node, Compare, Allocator>::emplace_with_key(const key_type& key, Args&& ..
 }
 
 template <typename Node, typename Compare, typename Allocator>
-void treap<Node, Compare, Allocator>::erase(const key_type& key) {
+void treap<Node, Compare, Allocator>::erase_key_interval(const key_type& begin_key, const key_type& end_key) {
+    base_type::destroy_tree(detach_node_key_interval(begin_key, end_key));
+}
+
+template <typename Node, typename Compare, typename Allocator>
+void treap<Node, Compare, Allocator>::erase_key_interval_with_end(const key_type& begin_key, const key_type& end_key) {
+    base_type::destroy_tree(detach_node_key_interval<true>(begin_key, end_key));
+}
+
+template <typename Node, typename Compare, typename Allocator>
+void treap<Node, Compare, Allocator>::erase_key(const key_type& key) {
     base_type::destroy_tree(detach_node_with_key(key));
 }
 
@@ -459,7 +512,7 @@ treap<Node, Compare, Allocator>::key_of_order(size_type index) const {
 template <typename Node, typename Compare, typename Allocator>
 typename treap<Node, Compare, Allocator>::size_type
 treap<Node, Compare, Allocator>::order_of_key(const key_type& key) const {
-    return iterator_of_key(key) - begin();
+    return iterator_of_key(key).order();
 }
 
 } // namespace nstd

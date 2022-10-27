@@ -91,7 +91,9 @@ public:
     template <typename... Args>
     iterator emplace_front(Args&& ... args);
 
-    void erase(size_type index);
+    using base_type::erase_interval;
+    using base_type::erase_index;
+    using base_type::erase;
 
     void pop_back();
 
@@ -111,9 +113,8 @@ private:
     iterator emplace(size_type index, Args&& ... args);
 
 private:
-    treap_node* merge(treap_node* node1, treap_node* node2);
-
-    std::pair<treap_node*, treap_node*> split(treap_node* node, size_type index);
+    using base_type::merge_with_index;
+    using base_type::split_with_index;
 
     /**
      * Using split and merge functions
@@ -123,14 +124,6 @@ private:
      * @return iterator pointing inserted node
      */
     iterator insert_node(treap_node* node, size_type index);
-
-    /**
-     * Returns node with the passed index
-     * Detaches that node from the tree
-     * @param key key
-     * @return detached node
-     */
-    treap_node* detach_node_with_index(size_type index);
 };
 
 template <typename Node, typename Allocator>
@@ -170,59 +163,12 @@ implicit_treap<Node, Allocator>::operator=(implicit_treap&& other) noexcept {
 }
 
 template <typename T, typename Allocator>
-typename implicit_treap<T, Allocator>::treap_node*
-implicit_treap<T, Allocator>::merge(treap_node* node1, treap_node* node2) {
-    if (node1 == nullptr) {
-        return node2;
-    }
-    if (node2 == nullptr) {
-        return node1;
-    }
-    if (node1->get_priority() > node2->get_priority()) {
-        node1->set_right(merge(node1->get_right(), node2));
-        return node1;
-    }
-    node2->set_left(merge(node1, node2->get_left()));
-    return node2;
-}
-
-template <typename T, typename Allocator>
-auto
-implicit_treap<T, Allocator>::split(treap_node* node, size_type index) -> std::pair<treap_node*, treap_node*> {
-    if (node == nullptr || index <= 0) {
-        return std::make_pair(nullptr, node);
-    }
-    if (index >= node->size()) {
-        return std::make_pair(node, nullptr);
-    }
-    if (node->left_size() < index) {
-        auto [first, second] = split(node->get_right(), index - node->left_size() - 1);
-        node->set_right(first);
-        // return separated nodes
-        return {node, second};
-    }
-    auto [first, second] = split(node->get_left(), index);
-    node->set_left(second);
-    // return separated nodes
-    return {first, node};
-}
-
-template <typename T, typename Allocator>
 typename implicit_treap<T, Allocator>::iterator
 implicit_treap<T, Allocator>::insert_node(treap_node* node, size_type index) {
-    auto [left, right] = split(root(), index);
-    treap_node* root = merge(merge(left, node), right);
+    auto [left, right] = split_with_index(root(), index);
+    treap_node* root = merge_with_index(merge_with_index(left, node), right);
     set_root(root);
     return {node};
-}
-
-template <typename T, typename Allocator>
-typename implicit_treap<T, Allocator>::treap_node*
-implicit_treap<T, Allocator>::detach_node_with_index(size_type index) {
-    auto [left, included_index] = split(root(), index);
-    auto [index_node, right] = split(included_index, 1);
-    set_root(merge(left, right));
-    return index_node;
 }
 
 template <typename T, typename Allocator>
@@ -267,14 +213,6 @@ template <typename T, typename Allocator>
 template <typename ...Args>
 typename implicit_treap<T, Allocator>::iterator implicit_treap<T, Allocator>::emplace_front(Args&& ...args) {
     return emplace(0, std::forward<Args>(args)...);
-}
-
-template <typename T, typename Allocator>
-void implicit_treap<T, Allocator>::erase(size_type index) {
-    if (index >= size()) {
-        return;
-    }
-    base_type::destroy_tree(detach_node_with_index(index));
 }
 
 template <typename T, typename Allocator>

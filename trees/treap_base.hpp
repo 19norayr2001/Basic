@@ -313,6 +313,9 @@ private:
         common_iterator<B> operator+(difference_type n) const;
 
         common_iterator<B> operator-(difference_type n) const;
+
+    public:
+        size_type order() const;
     };
 
 public:
@@ -404,6 +407,52 @@ public:
     const_reverse_iterator crbegin() const;
 
     const_reverse_iterator crend() const;
+
+protected:
+    treap_node* merge_with_index(treap_node* node1, treap_node* node2);
+
+    std::pair<treap_node*, treap_node*> split_with_index(treap_node* node, size_type index);
+
+    treap_node* detach_interval(size_type begin, size_type end);
+
+public:
+    /**
+     * Erases interval with the passed endpoints from the tree
+     * Working complexity is O(end - begin + log size)
+     * If end <= begin nothing happens
+     * Provides strong exception guarantee
+     * @param begin interval begin (inclusive endpoint)
+     * @param end interval end (exclusive endpoint)
+     */
+    void erase_interval(size_type begin, size_type end);
+
+    /**
+     * Erases index from the tree
+     * Working complexity is O(log size)
+     * If index >= size nothing happens
+     * Provides strong exception guarantee
+     * @param index index to be erased
+     */
+    void erase_index(size_type index);
+
+    /**
+     * Erases iterator from the tree
+     * Working complexity is O(log size)
+     * Function assumes that iterator belongs to this tree and the behaviour is undefined if not so
+     * Provides strong exception guarantee
+     * @param it iterator to be erased
+     */
+    void erase(const_iterator it);
+
+    /**
+     * Erases iterator interval from the tree
+     * Working complexity is O(end - begin + log size)
+     * Function assumes that iterators belong to this tree and the behaviour is undefined if not so
+     * Provides strong exception guarantee
+     * @param begin begin (inclusive endpoint)
+     * @param end end (exclusive endpoint)
+     */
+    void erase(const_iterator begin, const_iterator end);
 
 protected:
     static std::mt19937_64 random_generator;
@@ -545,6 +594,13 @@ typename treap_base<Node, Allocator>::template common_iterator<B>
 treap_base<Node, Allocator>::common_iterator<B>::operator-(difference_type n) const {
     common_iterator<B> iter = *this;
     return iter -= n;
+}
+
+template <typename Node, typename Allocator>
+template <bool B>
+typename treap_base<Node, Allocator>::size_type
+treap_base<Node, Allocator>::common_iterator<B>::order() const {
+    return _node->order();
 }
 
 //==========================================Treap base implementation==========================================
@@ -727,6 +783,78 @@ typename treap_base<Node, Allocator>::const_reverse_iterator treap_base<Node, Al
 template <typename Node, typename Allocator>
 typename treap_base<Node, Allocator>::const_reverse_iterator treap_base<Node, Allocator>::crend() const {
     return {cbegin()};
+}
+
+template <typename Node, typename Allocator>
+typename treap_base<Node, Allocator>::treap_node*
+treap_base<Node, Allocator>::merge_with_index(treap_node* node1, treap_node* node2) {
+    if (node1 == nullptr) {
+        return node2;
+    }
+    if (node2 == nullptr) {
+        return node1;
+    }
+    if (node1->get_priority() > node2->get_priority()) {
+        node1->set_right(merge_with_index(node1->get_right(), node2));
+        return node1;
+    }
+    node2->set_left(merge_with_index(node1, node2->get_left()));
+    return node2;
+}
+
+template <typename Node, typename Allocator>
+auto
+treap_base<Node, Allocator>::split_with_index(treap_node* node, size_type index) -> std::pair<treap_node*, treap_node*> {
+    if (node == nullptr || index <= 0) {
+        return std::make_pair(nullptr, node);
+    }
+    if (index >= node->size()) {
+        return std::make_pair(node, nullptr);
+    }
+    if (node->left_size() < index) {
+        auto [first, second] = split_with_index(node->get_right(), index - node->left_size() - 1);
+        node->set_right(first);
+        // return separated nodes
+        return {node, second};
+    }
+    auto [first, second] = split_with_index(node->get_left(), index);
+    node->set_left(second);
+    // return separated nodes
+    return {first, node};
+}
+
+template <typename Node, typename Allocator>
+typename treap_base<Node, Allocator>::treap_node*
+treap_base<Node, Allocator>::detach_interval(size_type begin, size_type end) {
+    if (end <= begin) {
+        return nullptr;
+    }
+    auto [left, included_begin] = split_with_index(root(), begin);
+    auto [interval, right] = split_with_index(included_begin, end - begin);
+    set_root(merge_with_index(left, right));
+    return interval;
+}
+
+template <typename Node, typename Allocator>
+void treap_base<Node, Allocator>::erase_interval(size_type begin, size_type end) {
+    auto* interval = detach_interval(begin, end);
+    // erase the interval
+    destroy_tree(interval);
+}
+
+template <typename Node, typename Allocator>
+void treap_base<Node, Allocator>::erase_index(size_type index) {
+    erase_interval(index, index + 1);
+}
+
+template <typename Node, typename Allocator>
+void treap_base<Node, Allocator>::erase(const_iterator it) {
+    erase(it.order());
+}
+
+template <typename Node, typename Allocator>
+void treap_base<Node, Allocator>::erase(const_iterator begin, const_iterator end) {
+    erase_interval(begin.order(), end.order());
 }
 
 } // namespace nstd
