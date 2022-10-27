@@ -9,17 +9,35 @@
 #include <algorithm>
 #include <vector_tree.hpp>
 
+template<typename Container1, typename Container2>
+void EXPECT_EQ_WITH_CONTENT(const Container1& cont1, const Container2& cont2) {
+    EXPECT_EQ(cont1.size(), cont2.size());
+    auto itVec = cont2.begin();
+    for (auto it = cont1.begin(); it != cont1.end(); ++it, ++itVec) {
+        EXPECT_EQ(*it, *itVec);
+    }
+}
+
 TEST(TreesTest, OrderedSetIterators) {
     std::initializer_list<int> il{1, 2, -5, 1, 10, 2, 1, 1, 6, 11, -1100};
     nstd::ordered_set<int, std::greater<>> st(il);
     std::vector<int> vec(il);
     std::sort(vec.begin(), vec.end());
     vec.resize(std::unique(vec.begin(), vec.end()) - vec.begin());
-    EXPECT_EQ(vec.size(), st.size());
-    auto itVec = vec.begin();
-    for (auto it = st.rbegin(); it != st.rend(); ++it, ++itVec) {
-        EXPECT_EQ(*it, *itVec);
-    }
+    std::reverse(vec.begin(), vec.end());
+    // st is {11, 10, 6, 2, 1, -5, -1100}
+    EXPECT_EQ_WITH_CONTENT(vec, st);
+    // erase {10, 6} from the set
+    st.erase_interval(1, 3);
+    // erase that interval from vector too
+    vec.erase(vec.begin() + 1, vec.begin() + 3);
+    // st is {11, 2, 1, -5, -1100}
+    EXPECT_EQ_WITH_CONTENT(st, vec);
+    // erase [11, 2], i.e. 11 and 2 from the set
+    st.erase_key_interval_with_end(11, 2);
+    // erase those elements from the vec too
+    vec.erase(std::find(vec.begin(), vec.end(), 11), std::find(vec.begin(), vec.end(), 2) + 1);
+    EXPECT_EQ_WITH_CONTENT(st, vec);
 }
 
 TEST(TreesTest, OrderedSetInsertErase) {
@@ -45,7 +63,7 @@ TEST(TreesTest, OrderedSetInsertErase) {
             EXPECT_EQ(st.order_of_key(i), st.size());
             EXPECT_EQ(st.size(), size - (i + 1) / 2);
         }
-        st.erase(i);
+        st.erase_key(i);
     }
     EXPECT_EQ(st.size(), 0);
 }
