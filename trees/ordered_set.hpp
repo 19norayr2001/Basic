@@ -11,8 +11,10 @@ private:
     using base_type = treap_node_base<ordered_set_node<Key>>;
     using typename base_type::priority_type;
 public:
-    using key_type = Key;
-    using value_type = Key;
+    using key_type = const Key;
+    using value_type = key_type;
+    using raw_key_type = Key;
+    using raw_value_type = Key;
 public:
     explicit ordered_set_node(const key_type& key, priority_type priority = 0, ordered_set_node* left = nullptr,
                               ordered_set_node* right = nullptr)
@@ -34,8 +36,8 @@ private:
 };
 
 template <typename Key, typename Compare = std::less<Key>, typename Allocator = std::allocator<Key>>
-class ordered_set : public treap<ordered_set_node<const Key>, Compare, Allocator> {
-    using base_type = treap<ordered_set_node<const Key>, Compare, Allocator>;
+class ordered_set : public treap<ordered_set_node<Key>, Compare, Allocator> {
+    using base_type = treap<ordered_set_node<Key>, Compare, Allocator>;
 
 public:
     using key_type = Key;

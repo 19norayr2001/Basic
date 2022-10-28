@@ -22,6 +22,7 @@ public:
 
 private:
     using treap_node = Node;
+    using raw_value_type = typename treap_node::raw_value_type;
     using node_holder = typename base_type::node_holder;
 
 public:
@@ -32,12 +33,14 @@ public:
 
 private:
     using base_type::_end;
+    using base_type::_begin;
     key_compare _comparator;
 
 private:
     using base_type::end_node;
     using base_type::root;
     using base_type::set_root;
+    using base_type::adjust_begin;
 
 public:
     explicit treap(const key_compare& comparator = key_compare(),
@@ -115,9 +118,9 @@ private:
 public:
     void swap(treap& other) noexcept;
 
-    std::pair<iterator, bool> insert(const value_type& value);
+    std::pair<iterator, bool> insert(const raw_value_type& value);
 
-    std::pair<iterator, bool> insert(value_type&& value);
+    std::pair<iterator, bool> insert(raw_value_type&& value);
 
     /**
      * Inserts a node in the tree with the value constructed with passed arguments
@@ -141,8 +144,9 @@ public:
      * Provides weak exception guarantee if comparator comparisons throw exception
      * @param begin_key begin key (inclusive endpoint)
      * @param end_key end key (exclusive endpoint)
+     * @returns iterator pointing on first node after interval
      */
-    void erase_key_interval(const key_type& begin_key, const key_type& end_key);
+    iterator erase_key_interval(const key_type& begin_key, const key_type& end_key);
 
     /**
      * Erases passed key interval from the main tree
@@ -150,17 +154,19 @@ public:
      * Provides weak exception guarantee if comparator comparisons throw exception
      * @param begin_key begin key (inclusive endpoint)
      * @param end_key end key (inclusive endpoint)
+     * @returns iterator pointing on first node after interval
      */
-    void erase_key_interval_with_end(const key_type& begin_key, const key_type& end_key);
+    iterator erase_key_interval_with_end(const key_type& begin_key, const key_type& end_key);
 
     /**
      * Erases the node with the passed key
      * If there is no node having passed key, then nothing happens
      * Working complexity is O (log size)
      * Provides weak exception safety in case of comparator comparison throws exception
+     * @returns iterator pointing on node after key
      * @param key
      */
-    void erase_key(const key_type& key);
+    iterator erase_key(const key_type& key);
 
     using base_type::erase;
 
@@ -175,6 +181,24 @@ public:
     iterator find(const key_type& key);
 
     const_iterator find(const key_type& key) const;
+
+    /**
+     * Returns first iterator having greater or equal key than passed key
+     * @param key
+     * @return iterator
+     */
+    iterator lower_bound(const key_type& key);
+
+    const_iterator lower_bound(const key_type& key) const;
+
+    /**
+     * Returns first iterator having greater key than passed key
+     * @param key
+     * @return
+     */
+    iterator upper_bound(const key_type& key);
+
+    const_iterator upper_bound(const key_type& key) const;
 
     /**
      * Returns the key, which is located in the passed index
@@ -207,6 +231,14 @@ private:
     iterator iterator_of_key(const key_type& key);
 
     const_iterator iterator_of_key(const key_type& key) const;
+
+    treap_node* lower_bound_node(const key_type& key);
+
+    const treap_node* lower_bound_node(const key_type& key) const;
+
+    treap_node* upper_bound_node(const key_type& key);
+
+    const treap_node* upper_bound_node(const key_type& key) const;
 
 public:
     using base_type::begin;
@@ -363,6 +395,9 @@ typename treap<Node, Compare, Allocator>::iterator treap<Node, Compare, Allocato
     auto [left, right] = split(root(), node->get_key());
     treap_node* root = merge(merge(left, node), right);
     set_root(root);
+    if (left == nullptr) {
+        _begin = node;
+    }
     return {node};
 }
 
@@ -374,6 +409,9 @@ treap<Node, Compare, Allocator>::detach_node_key_interval(const key_type& begin_
     auto [interval, right] = split<EndIncluded>(begin_included_tree, end_key);
     treap_node* root = merge(left, right);
     set_root(root);
+    if (left == nullptr && interval != nullptr) {
+        adjust_begin();
+    }
     return interval;
 }
 
@@ -391,13 +429,13 @@ void treap<Node, Compare, Allocator>::swap(treap<Node, Compare, Allocator>& othe
 
 template <typename Node, typename Compare, typename Allocator>
 std::pair<typename treap<Node, Compare, Allocator>::iterator, bool>
-treap<Node, Compare, Allocator>::insert(const value_type& value) {
+treap<Node, Compare, Allocator>::insert(const raw_value_type& value) {
     return emplace_with_key(treap_node::get_key(value), value);
 }
 
 template <typename Node, typename Compare, typename Allocator>
 std::pair<typename treap<Node, Compare, Allocator>::iterator, bool>
-treap<Node, Compare, Allocator>::insert(value_type&& value) {
+treap<Node, Compare, Allocator>::insert(raw_value_type&& value) {
     return emplace_with_key(treap_node::get_key(value), std::move(value));
 }
 
@@ -439,18 +477,27 @@ treap<Node, Compare, Allocator>::emplace_with_key(const key_type& key, Args&& ..
 }
 
 template <typename Node, typename Compare, typename Allocator>
-void treap<Node, Compare, Allocator>::erase_key_interval(const key_type& begin_key, const key_type& end_key) {
+typename treap<Node, Compare, Allocator>::iterator
+treap<Node, Compare, Allocator>::erase_key_interval(const key_type& begin_key, const key_type& end_key) {
+    auto it = lower_bound(end_key);
     base_type::destroy_tree(detach_node_key_interval(begin_key, end_key));
+    return it;
 }
 
 template <typename Node, typename Compare, typename Allocator>
-void treap<Node, Compare, Allocator>::erase_key_interval_with_end(const key_type& begin_key, const key_type& end_key) {
+typename treap<Node, Compare, Allocator>::iterator
+treap<Node, Compare, Allocator>::erase_key_interval_with_end(const key_type& begin_key, const key_type& end_key) {
+    auto it = upper_bound(end_key);
     base_type::destroy_tree(detach_node_key_interval<true>(begin_key, end_key));
+    return it;
 }
 
 template <typename Node, typename Compare, typename Allocator>
-void treap<Node, Compare, Allocator>::erase_key(const key_type& key) {
+typename treap<Node, Compare, Allocator>::iterator
+treap<Node, Compare, Allocator>::erase_key(const key_type& key) {
+    auto it = upper_bound(key);
     base_type::destroy_tree(detach_node_with_key(key));
+    return it;
 }
 
 template <typename Node, typename Compare, typename Allocator>
@@ -461,13 +508,45 @@ bool treap<Node, Compare, Allocator>::contains(const key_type& key) const {
 template <typename Node, typename Compare, typename Allocator>
 typename treap<Node, Compare, Allocator>::iterator
 treap<Node, Compare, Allocator>::find(const key_type& key) {
-    return iterator_of_key(key);
+    auto node = lower_bound_node(key);
+    if (node != end_node() && !_comparator(key, node->get_key())) {
+        return {node};
+    }
+    return end();
 }
 
 template <typename Node, typename Compare, typename Allocator>
 typename treap<Node, Compare, Allocator>::const_iterator
 treap<Node, Compare, Allocator>::find(const key_type& key) const {
-    return iterator_of_key(key);
+    auto node = lower_bound_node(key);
+    if (node != end_node() && !_comparator(key, node->get_key())) {
+        return {node};
+    }
+    return end();
+}
+
+template <typename Node, typename Compare, typename Allocator>
+typename treap<Node, Compare, Allocator>::iterator
+treap<Node, Compare, Allocator>::lower_bound(const key_type& key) {
+    return {lower_bound_node(key)};
+}
+
+template <typename Node, typename Compare, typename Allocator>
+typename treap<Node, Compare, Allocator>::const_iterator
+treap<Node, Compare, Allocator>::lower_bound(const key_type& key) const {
+    return {lower_bound_node(key)};
+}
+
+template <typename Node, typename Compare, typename Allocator>
+typename treap<Node, Compare, Allocator>::iterator
+treap<Node, Compare, Allocator>::upper_bound(const key_type& key) {
+    return {upper_bound_node(key)};
+}
+
+template <typename Node, typename Compare, typename Allocator>
+typename treap<Node, Compare, Allocator>::const_iterator
+treap<Node, Compare, Allocator>::upper_bound(const key_type& key) const {
+    return {upper_bound_node(key)};
 }
 
 template <typename Node, typename Compare, typename Allocator>
@@ -479,19 +558,63 @@ treap<Node, Compare, Allocator>::iterator_of_key(const key_type& key) {
 template <typename Node, typename Compare, typename Allocator>
 typename treap<Node, Compare, Allocator>::const_iterator
 treap<Node, Compare, Allocator>::iterator_of_key(const key_type& key) const {
-    const treap_node* root_ = root();
-    while (root_ != nullptr) {
-        if (_comparator(key, root_->get_key())) {
-            root_ = root_->get_left();
+    const treap_node* node = root();
+    while (node != nullptr) {
+        if (_comparator(key, node->get_key())) {
+            node = node->get_left();
             continue;
         }
-        if (_comparator(root_->get_key(), key)) {
-            root_ = root_->get_right();
+        if (_comparator(node->get_key(), key)) {
+            node = node->get_right();
             continue;
         }
-        return {root_};
+        return {node};
     }
     return end();
+}
+
+template <typename Node, typename Compare, typename Allocator>
+typename treap<Node, Compare, Allocator>::treap_node*
+treap<Node, Compare, Allocator>::lower_bound_node(const key_type& key) {
+    return const_cast<treap_node*>(const_cast<const treap*>(this)->lower_bound_node(key));
+}
+
+template <typename Node, typename Compare, typename Allocator>
+const typename treap<Node, Compare, Allocator>::treap_node*
+treap<Node, Compare, Allocator>::lower_bound_node(const key_type& key) const {
+    const treap_node* node = root();
+    const treap_node* result = end_node();
+    while (node != nullptr) {
+        if (_comparator(node->get_key(), key)) {
+            node = node->get_right();
+            continue;
+        }
+        result = node;
+        node = node->get_left();
+    }
+    return result;
+}
+
+template <typename Node, typename Compare, typename Allocator>
+typename treap<Node, Compare, Allocator>::treap_node*
+treap<Node, Compare, Allocator>::upper_bound_node(const key_type& key) {
+    return const_cast<treap_node*>(const_cast<const treap*>(this)->upper_bound_node(key));
+}
+
+template <typename Node, typename Compare, typename Allocator>
+const typename treap<Node, Compare, Allocator>::treap_node*
+treap<Node, Compare, Allocator>::upper_bound_node(const key_type& key) const {
+    const treap_node* node = root();
+    const treap_node* result = end_node();
+    while (node != nullptr) {
+        if (_comparator(key, node->get_key())) {
+            result = node;
+            node = node->get_left();
+            continue;
+        }
+        node = node->get_right();
+    }
+    return result;
 }
 
 template <typename Node, typename Compare, typename Allocator>

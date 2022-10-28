@@ -10,8 +10,10 @@ class ordered_map_node : public treap_node_base<ordered_map_node<Key, Value>> {
     using base_type = treap_node_base<ordered_map_node<Key, Value>>;
     using typename base_type::priority_type;
 public:
-    using key_type = Key;
-    using value_type = std::pair<const Key, Value>;
+    using key_type = const Key;
+    using value_type = std::pair<key_type, Value>;
+    using raw_key_type = Key;
+    using raw_value_type = std::pair<raw_key_type, Value>;
 public:
     explicit ordered_map_node(const value_type& value, priority_type priority = 0, ordered_map_node* left = nullptr,
                               ordered_map_node* right = nullptr)

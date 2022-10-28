@@ -64,6 +64,17 @@ public:
 
     bool is_end_node() const { return _parent == nullptr; }
 
+    treap_node* find_begin() {
+        return const_cast<treap_node*>(const_cast<const treap_end_node*>(this)->find_begin());
+    }
+
+    const treap_node* find_begin() const {
+        const auto* root = static_cast<const treap_node*>(this);
+        while (root->get_left() != nullptr) {
+            root = root->get_left();
+        }
+        return root;
+    }
 };
 
 /**
@@ -326,6 +337,7 @@ public:
 
 protected:
     end_node_t _end;
+    treap_node* _begin;
     node_allocator_type _node_allocator;
 
 protected:
@@ -338,6 +350,8 @@ protected:
     treap_node* end_node() { return static_cast<treap_node*>(&_end); }
 
     const treap_node* end_node() const { return static_cast<const treap_node*>(&_end); }
+
+    void adjust_begin() { _begin = _end.find_begin(); }
 
 public:
     explicit treap_base(const allocator_type& allocator = allocator_type());
@@ -422,24 +436,27 @@ public:
      * If end <= begin nothing happens
      * @param begin interval begin (inclusive endpoint)
      * @param end interval end (exclusive endpoint)
+     * @returns iterator pointing on node after interval
      */
-    void erase_interval(size_type begin, size_type end) noexcept;
+    iterator erase_interval(size_type begin, size_type end) noexcept;
 
     /**
      * Erases index from the tree
      * Working complexity is O(log size)
      * If index >= size nothing happens
      * @param index index to be erased
+     * @returns iterator pointing on node after index
      */
-    void erase_index(size_type index) noexcept;
+    iterator erase_index(size_type index) noexcept;
 
     /**
      * Erases iterator from the tree
      * Working complexity is O(log size)
      * Function assumes that iterator belongs to this tree and the behaviour is undefined if not so
      * @param it iterator to be erased
+     * @returns iterator pointing on node after iterator
      */
-    void erase(const_iterator it) noexcept;
+    iterator erase(const_iterator it) noexcept;
 
     /**
      * Erases iterator interval from the tree
@@ -447,8 +464,9 @@ public:
      * Function assumes that iterators belong to this tree and the behaviour is undefined if not so
      * @param begin begin (inclusive endpoint)
      * @param end end (exclusive endpoint)
+     * @returns iterator pointing on node after iterator interval
      */
-    void erase(const_iterator begin, const_iterator end) noexcept;
+    iterator erase(const_iterator begin, const_iterator end) noexcept;
 
 protected:
     static std::mt19937_64 random_generator;
@@ -603,15 +621,16 @@ treap_base<Node, Allocator>::common_iterator<B>::order() const {
 
 template <typename Node, typename Allocator>
 treap_base<Node, Allocator>::treap_base(const allocator_type& allocator)
-        : _end(), _node_allocator(allocator) {}
+        : _end(), _begin(end_node()), _node_allocator(allocator) {}
 
 template <typename Node, typename Allocator>
 treap_base<Node, Allocator>::treap_base(const treap_base& other)
-        : _end(), _node_allocator(node_traits::select_on_container_copy_construction(other._node_allocator)) {}
+        : _end(), _begin(end_node()), _node_allocator(node_traits::select_on_container_copy_construction(other._node_allocator)) {}
 
 template <typename Node, typename Allocator>
 treap_base<Node, Allocator>::treap_base(treap_base&& other) noexcept
         : _end(std::move(other._end)),
+          _begin(other.empty() ? end() : other._begin),
           _node_allocator(std::move(other._node_allocator)) {}
 
 template <typename Node, typename Allocator>
@@ -642,8 +661,10 @@ void treap_base<Node, Allocator>::destroy_tree(treap_node* node) noexcept {
 
 template <typename Node, typename Allocator>
 void treap_base<Node, Allocator>::swap(treap_base& other) noexcept {
-    std::swap(_end, other._end);
     std::swap(_node_allocator, other._node_allocator);
+    treap_node* begin = (other.empty() ? end() : other._begin);
+    std::swap(_begin, begin);
+    std::swap(_end, other._end);
 }
 
 template <typename Node, typename Allocator>
@@ -723,7 +744,7 @@ typename treap_node_base<Node>::size_type treap_node_base<Node>::order() const {
 
 template <typename Node, typename Allocator>
 typename treap_base<Node, Allocator>::iterator treap_base<Node, Allocator>::begin() {
-    return {end_node()->node_of_order(0)};
+    return {_begin};
 }
 
 template <typename Node, typename Allocator>
@@ -763,7 +784,7 @@ typename treap_base<Node, Allocator>::const_reverse_iterator treap_base<Node, Al
 
 template <typename Node, typename Allocator>
 typename treap_base<Node, Allocator>::const_iterator treap_base<Node, Allocator>::cbegin() const {
-    return {end_node()->node_of_order(0)};
+    return {_begin};
 }
 
 template <typename Node, typename Allocator>
@@ -828,29 +849,39 @@ treap_base<Node, Allocator>::detach_interval(size_type begin, size_type end) noe
     auto [left, included_begin] = split_with_index(root(), begin);
     auto [interval, right] = split_with_index(included_begin, end - begin);
     set_root(merge_with_index(left, right));
+    // if left
+    if (left == nullptr) {
+        adjust_begin();
+    }
     return interval;
 }
 
 template <typename Node, typename Allocator>
-void treap_base<Node, Allocator>::erase_interval(size_type begin, size_type end) noexcept {
+typename treap_base<Node, Allocator>::iterator
+treap_base<Node, Allocator>::erase_interval(size_type begin, size_type end) noexcept {
     auto* interval = detach_interval(begin, end);
     // erase the interval
     destroy_tree(interval);
+    return treap_base::begin() + begin;
 }
 
 template <typename Node, typename Allocator>
-void treap_base<Node, Allocator>::erase_index(size_type index) noexcept {
+typename treap_base<Node, Allocator>::iterator
+treap_base<Node, Allocator>::erase_index(size_type index) noexcept {
     erase_interval(index, index + 1);
+    return treap_base::begin() + index;
 }
 
 template <typename Node, typename Allocator>
-void treap_base<Node, Allocator>::erase(const_iterator it) noexcept {
-    erase(it.order());
+typename treap_base<Node, Allocator>::iterator
+treap_base<Node, Allocator>::erase(const_iterator it) noexcept {
+    return erase_index(it.order());
 }
 
 template <typename Node, typename Allocator>
-void treap_base<Node, Allocator>::erase(const_iterator begin, const_iterator end) noexcept {
-    erase_interval(begin.order(), end.order());
+typename treap_base<Node, Allocator>::iterator
+treap_base<Node, Allocator>::erase(const_iterator begin, const_iterator end) noexcept {
+    return erase_interval(begin.order(), end.order());
 }
 
 } // namespace nstd

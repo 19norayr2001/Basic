@@ -52,6 +52,7 @@ private:
     using base_type::_end;
     using base_type::root;
     using base_type::set_root;
+    using base_type::_begin;
 
 public:
     using typename base_type::iterator;
@@ -265,16 +266,16 @@ implicit_treap<Node, Allocator>::operator=(implicit_treap&& other) noexcept {
 template <typename T, typename Allocator>
 typename implicit_treap<T, Allocator>::iterator
 implicit_treap<T, Allocator>::insert_tree_at(treap_node* tree, size_type index) {
-    auto [left, right] = split_with_index(root(), index);
-    treap_node* root = merge_with_index(merge_with_index(left, tree), right);
-    set_root(root);
     if (tree == nullptr) {
         return base_type::end();
     }
-    while (tree->get_left() != nullptr) {
-        tree = tree->get_left();
+    auto [left, right] = split_with_index(root(), index);
+    treap_node* root = merge_with_index(merge_with_index(left, tree), right);
+    set_root(root);
+    if (index == 0) {
+        return {_begin = tree->find_begin()};
     }
-    return {tree};
+    return {tree->find_begin()};
 }
 
 template <typename T, typename Allocator>
@@ -332,13 +333,8 @@ void implicit_treap<T, Allocator>::pop_front() {
 }
 
 template <typename T, typename Allocator>
-typename implicit_treap<T, Allocator>::value_type& implicit_treap<T, Allocator>::operator[](size_type
-index) {
-return *(
-
-base_type::begin()
-
-+ index);
+typename implicit_treap<T, Allocator>::value_type& implicit_treap<T, Allocator>::operator[](size_type index) {
+    return *(base_type::begin() + index);
 }
 
 template <typename T, typename Allocator>
@@ -443,7 +439,8 @@ void implicit_treap<T, Allocator>::reverse_shift_interval(size_type begin, size_
 }
 
 template <typename T, typename Allocator>
-void implicit_treap<T, Allocator>::reverse_shift_interval(const_iterator begin, const_iterator end, size_type count) noexcept {
+void implicit_treap<T, Allocator>::reverse_shift_interval(const_iterator begin, const_iterator end,
+                                                          size_type count) noexcept {
     reverse_shift_interval(begin.order(), end.order(), count);
 }
 
