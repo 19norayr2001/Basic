@@ -73,8 +73,8 @@ Provides
 `nstd::ordered_set` and `nstd::ordered_map` are class based on `treap` data structure. 
 These classes provide all the functionality, that are providing `std::set` and `std::map`. 
 Lo and behold, they are ordered, so we can find order of any element in `O (log size)` complexity. 
-This fact gives a very huge advantage under STL associative containers.
-Nevertheless, insertion and erasure operations are a little slower than STL ones.
+This fact gives a very huge advantage under STL associative containers. These containers allow `erase_key_interval`, `erase_interval` operations in `O (interval_lenght + log size)` complexity. 
+Nevertheless, single insertion and erasure operations are a little slower than STL ones.
 
 These containers provide
 
@@ -87,12 +87,16 @@ These containers provide
 Check out some usages of nstd ordered containers
 ```c++
 nstd::ordered_set<int, std::greater<>> st {10, 7, 5, 4, 1, -1, -8};
-size_t order = st.order_of_key(4); // order will be 3
-int key = st.key_of_order(3);      // key will be 4
+size_t order = st.order_of_key(4);                 // order will be 3
+int key = st.key_of_order(3);                      // key will be 4
+st.erase_interval(st.begin() + 1, st.begin() + 3); // erase from set [1, 3) indexes
+// here st = {10, 4, 1, -1, -8}
 
-nstd::ordered_map<int, int> mp { {1, 2}, {4, 4}, {5, 6}};
-size_t order = st.order_of_key(4); // order will be 1
-int key = st.key_of_order(1);      // key will be 4
+nstd::ordered_map<int, int> mp { {1, 2}, {4, 4}, {5, 6}, {10, -7}, {15, 6}};
+size_t order = st.order_of_key(4);     // order will be 1
+int key = st.key_of_order(1);          // key will be 4
+mp.erase_key_interval_with_end(4, 10); // erases from map keys between [4, 10] interval
+// here mp = { {1, 2}, {15, 6} }
 ```
 
 ### Vector Tree
