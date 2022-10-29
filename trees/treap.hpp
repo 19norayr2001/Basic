@@ -257,8 +257,6 @@ public:
 
     using base_type::crend;
 
-private:
-    iterator const_cast_iterator(const const_iterator& it);
 };
 
 template <typename Node, typename Compare, typename Allocator>
@@ -615,12 +613,6 @@ treap<Node, Compare, Allocator>::upper_bound_node(const key_type& key) const {
         node = node->get_right();
     }
     return result;
-}
-
-template <typename Node, typename Compare, typename Allocator>
-typename treap<Node, Compare, Allocator>::iterator
-treap<Node, Compare, Allocator>::const_cast_iterator(const const_iterator& it) {
-    return {const_cast<treap_node*>(*reinterpret_cast<const treap_node* const*>(&it))};
 }
 
 template <typename Node, typename Compare, typename Allocator>
