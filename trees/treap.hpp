@@ -223,14 +223,14 @@ public:
 
 private:
     /**
-     * Returns iterator with the passed key
+     * Returns node with the passed key
      * Works in O (log size) complexity
      * @param key key
-     * @return proper iterator, when the tree has the key, end iterator otherwise
+     * @return proper ndoe, when the tree has the key, end node otherwise
      */
-    iterator iterator_of_key(const key_type& key);
+    treap_node* node_of_key(const key_type& key);
 
-    const_iterator iterator_of_key(const key_type& key) const;
+    const treap_node* node_of_key(const key_type& key) const;
 
     treap_node* lower_bound_node(const key_type& key);
 
@@ -502,7 +502,7 @@ treap<Node, Compare, Allocator>::erase_key(const key_type& key) {
 
 template <typename Node, typename Compare, typename Allocator>
 bool treap<Node, Compare, Allocator>::contains(const key_type& key) const {
-    return iterator_of_key(key) != end();
+    return node_of_key(key) != end_node();
 }
 
 template <typename Node, typename Compare, typename Allocator>
@@ -550,14 +550,14 @@ treap<Node, Compare, Allocator>::upper_bound(const key_type& key) const {
 }
 
 template <typename Node, typename Compare, typename Allocator>
-typename treap<Node, Compare, Allocator>::iterator
-treap<Node, Compare, Allocator>::iterator_of_key(const key_type& key) {
-    return const_cast_iterator(const_cast<const treap*>(this)->iterator_of_key(key));
+typename treap<Node, Compare, Allocator>::treap_node*
+treap<Node, Compare, Allocator>::node_of_key(const key_type& key) {
+    return const_cast<treap_node*>(const_cast<const treap*>(this)->node_of_key(key));
 }
 
 template <typename Node, typename Compare, typename Allocator>
-typename treap<Node, Compare, Allocator>::const_iterator
-treap<Node, Compare, Allocator>::iterator_of_key(const key_type& key) const {
+const typename treap<Node, Compare, Allocator>::treap_node*
+treap<Node, Compare, Allocator>::node_of_key(const key_type& key) const {
     const treap_node* node = root();
     while (node != nullptr) {
         if (_comparator(key, node->get_key())) {
@@ -568,9 +568,9 @@ treap<Node, Compare, Allocator>::iterator_of_key(const key_type& key) const {
             node = node->get_right();
             continue;
         }
-        return {node};
+        return node;
     }
-    return end();
+    return end_node();
 }
 
 template <typename Node, typename Compare, typename Allocator>
@@ -635,7 +635,7 @@ treap<Node, Compare, Allocator>::key_of_order(size_type index) const {
 template <typename Node, typename Compare, typename Allocator>
 typename treap<Node, Compare, Allocator>::size_type
 treap<Node, Compare, Allocator>::order_of_key(const key_type& key) const {
-    return iterator_of_key(key).order();
+    return node_of_key(key)->order();
 }
 
 } // namespace nstd
