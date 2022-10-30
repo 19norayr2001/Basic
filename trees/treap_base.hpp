@@ -355,6 +355,8 @@ protected:
 public:
     explicit treap_base(const allocator_type& allocator = allocator_type());
 
+    explicit treap_base(treap_node* tree, const allocator_type& allocator = allocator_type());
+
     /**
      * This constructor is created for technical purposes
      * Constructs end node by default
@@ -621,6 +623,10 @@ treap_base<Node, Allocator>::common_iterator<B>::order() const {
 template <typename Node, typename Allocator>
 treap_base<Node, Allocator>::treap_base(const allocator_type& allocator)
         : _end(), _begin(end_node()), _node_allocator(allocator) {}
+
+template <typename Node, typename Allocator>
+treap_base<Node, Allocator>::treap_base(treap_node* tree, const allocator_type& allocator)
+        : _end(tree), _begin(tree->find_begin()), _node_allocator(allocator) {}
 
 template <typename Node, typename Allocator>
 treap_base<Node, Allocator>::treap_base(const treap_base& other)
