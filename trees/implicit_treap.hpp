@@ -93,6 +93,16 @@ public:
 
     iterator insert(const_iterator position, value_type&& value);
 
+    template <typename InputIterator>
+    iterator insert(size_type index, InputIterator begin, InputIterator end);
+
+    template <typename InputIterator>
+    iterator insert(const_iterator position, InputIterator begin, InputIterator end);
+
+    iterator insert(size_type index, std::initializer_list<value_type> il);
+
+    iterator insert(const_iterator position, std::initializer_list<value_type> il);
+
     template <typename... Args>
     iterator emplace(size_type index, Args&& ... args);
 
@@ -302,6 +312,36 @@ template <typename T, typename Allocator>
 typename implicit_treap<T, Allocator>::iterator
 implicit_treap<T, Allocator>::insert(const_iterator position, value_type&& value) {
     return emplace(position.order(), std::move(value));
+}
+
+template <typename T, typename Allocator>
+template <typename InputIterator>
+typename implicit_treap<T, Allocator>::iterator
+implicit_treap<T, Allocator>::insert(size_type index, InputIterator begin, InputIterator end) {
+    iterator result = base_type::begin() + index;
+    for ( ; begin != end; ++begin, ++index) {
+        result = emplace(index, *begin);
+    }
+    return result;
+}
+
+template <typename T, typename Allocator>
+template <typename InputIterator>
+typename implicit_treap<T, Allocator>::iterator
+implicit_treap<T, Allocator>::insert(const_iterator position, InputIterator begin, InputIterator end) {
+    return insert(position.order(), begin, end);
+}
+
+template <typename T, typename Allocator>
+typename implicit_treap<T, Allocator>::iterator
+implicit_treap<T, Allocator>::insert(size_type index, std::initializer_list<value_type> il) {
+    return insert(index, il.begin(), il.end());
+}
+
+template <typename T, typename Allocator>
+typename implicit_treap<T, Allocator>::iterator
+implicit_treap<T, Allocator>::insert(const_iterator position, std::initializer_list<value_type> il) {
+    return insert(position.order(), il.begin(), il.end());
 }
 
 template <typename T, typename Allocator>

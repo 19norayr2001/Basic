@@ -100,7 +100,7 @@ private:
      * @param end_key interval end key (inclusive or exclusive endpoint depend on EndIncluded parameter
      * @return proper tree if there exists any node between interval, nullptr otherwise
      */
-    template<bool EndIncluded = false>
+    template <bool EndIncluded = false>
     treap_node* detach_node_key_interval(const key_type& begin_key, const key_type& end_key);
 
     /**
@@ -119,6 +119,11 @@ public:
     std::pair<iterator, bool> insert(const value_type& value);
 
     std::pair<iterator, bool> insert(value_type&& value);
+
+    template <typename InputIterator>
+    void insert(InputIterator begin, InputIterator end);
+
+    void insert(std::initializer_list<value_type> il);
 
     /**
      * Inserts a node in the tree with the value constructed with passed arguments
@@ -398,7 +403,7 @@ typename treap<Node, Compare, Allocator>::iterator treap<Node, Compare, Allocato
 }
 
 template <typename Node, typename Compare, typename Allocator>
-template<bool EndIncluded>
+template <bool EndIncluded>
 typename treap<Node, Compare, Allocator>::treap_node*
 treap<Node, Compare, Allocator>::detach_node_key_interval(const key_type& begin_key, const key_type& end_key) {
     auto [left, begin_included_tree] = split(root(), begin_key);
@@ -433,6 +438,19 @@ template <typename Node, typename Compare, typename Allocator>
 std::pair<typename treap<Node, Compare, Allocator>::iterator, bool>
 treap<Node, Compare, Allocator>::insert(value_type&& value) {
     return emplace_with_key(treap_node::get_key(value), std::move(value));
+}
+
+template <typename Node, typename Compare, typename Allocator>
+template <typename InputIterator>
+void treap<Node, Compare, Allocator>::insert(InputIterator begin, InputIterator end) {
+    for (; begin != end; ++begin) {
+        emplace(*begin);
+    }
+}
+
+template <typename Node, typename Compare, typename Allocator>
+void treap<Node, Compare, Allocator>::insert(std::initializer_list<value_type> il) {
+    insert(il.begin(), il.end());
 }
 
 template <typename Node, typename Compare, typename Allocator>
