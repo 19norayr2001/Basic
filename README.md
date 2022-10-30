@@ -10,11 +10,13 @@
 
 This container provides
 
-- `emplace back`, which uses perfect forwarding technique
-- `emplace back`, `push_back`, `pop_back`, `reserve`, `swap`, `empty`, `size` public functions
-- `strong exception safety`, `move semantics` for public functions
-- possibility of using `custom allocators` 
 - `iterator`, `reverse iterator`
+- possibility of using `custom allocators`
+- public functions using `move semantics` and `perfect forwarding`
+- `strong exception safety` guarantee for it's interface
+- `emplace back`, `push_back` back insertion functions
+- `pop_back` back erasure function
+- `reserve`, `swap`, `empty`, `size` functions
 
 Check out some usages of vector
 ```c++
@@ -36,9 +38,9 @@ for(auto it = vec.rbegin(); it != vec.rend(); ++it) {
 
 `nstd::stack` and `nstd::queue` are implemented as adapter containers, by default they are using std::deque
 
-They provide
+Their interface consist of several functions
 
-- `push`, `pop`, `top`, `empty`, `size` public functions
+- `push`, `pop`, `top`, `empty`, `size`
 
 Here are some usages
 ```c++
