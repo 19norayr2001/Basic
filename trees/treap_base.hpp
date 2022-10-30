@@ -636,7 +636,8 @@ treap_base<Node, Allocator>::treap_base(treap_node* tree, const allocator_type& 
 
 template <typename Node, typename Allocator>
 treap_base<Node, Allocator>::treap_base(const treap_base& other)
-        : _end(), _begin(end_node()), _node_allocator(node_traits::select_on_container_copy_construction(other._node_allocator)) {}
+        : _end(), _begin(end_node()),
+          _node_allocator(node_traits::select_on_container_copy_construction(other._node_allocator)) {}
 
 template <typename Node, typename Allocator>
 treap_base<Node, Allocator>::treap_base(treap_base&& other) noexcept
@@ -832,7 +833,8 @@ treap_base<Node, Allocator>::merge_with_index(treap_node* node1, treap_node* nod
 
 template <typename Node, typename Allocator>
 auto
-treap_base<Node, Allocator>::split_with_index(treap_node* node, size_type index) noexcept -> std::pair<treap_node*, treap_node*> {
+treap_base<Node, Allocator>::split_with_index(treap_node* node,
+                                              size_type index) noexcept -> std::pair<treap_node*, treap_node*> {
     if (node == nullptr || index <= 0) {
         return std::make_pair(nullptr, node);
     }

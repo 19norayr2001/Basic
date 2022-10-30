@@ -320,7 +320,7 @@ template <typename InputIterator>
 typename implicit_treap<T, Allocator>::iterator
 implicit_treap<T, Allocator>::insert(size_type index, InputIterator begin, InputIterator end) {
     iterator result = base_type::begin() + index;
-    for ( ; begin != end; ++begin, ++index) {
+    for (; begin != end; ++begin, ++index) {
         result = emplace(index, *begin);
     }
     return result;
