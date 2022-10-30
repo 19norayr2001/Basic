@@ -98,7 +98,7 @@ Provides
 `nstd::ordered_set` and `nstd::ordered_map` are class based on `treap` data structure. 
 These classes provide all the functionality, that are providing `std::set` and `std::map`. 
 Lo and behold, they are ordered, so we can find order of any element in `O (log size)` complexity. 
-This fact gives a very huge advantage under STL associative containers. These containers allow `erase_key_interval`, `erase_interval` operations in `O (interval_lenght + log size)` complexity. 
+This fact gives a huge advantage under STL associative containers. These containers allow `erase_key_interval`, `erase_interval` operations in `O (interval_lenght + log size)` complexity. 
 Nevertheless, single insertion and erasure operations are a little slower than STL ones.
 
 These containers provide
