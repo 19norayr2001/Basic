@@ -281,13 +281,14 @@ implicit_treap<T, Allocator>::insert_tree_at(treap_node* tree, size_type index) 
     if (tree == nullptr) {
         return base_type::end();
     }
+    auto tree_begin = tree->find_begin();
     auto [left, right] = split_with_index(root(), index);
     treap_node* root = merge_with_index(merge_with_index(left, tree), right);
     set_root(root);
     if (index == 0) {
-        return {_begin = tree->find_begin()};
+        _begin = tree_begin;
     }
-    return {tree->find_begin()};
+    return {tree_begin};
 }
 
 template <typename T, typename Allocator>
