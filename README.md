@@ -16,6 +16,10 @@ Modules
 - [Smart Pointers](https://github.com/norayrbaghdasaryan/Basics#smart-pointers)
     - [Unique Pointer](https://github.com/norayrbaghdasaryan/Basics#unique-pointer)
     - [Shared Pointer](https://github.com/norayrbaghdasaryan/Basics#shared-pointer)
+- [Iterators](https://github.com/norayrbaghdasaryan/Basics#iterators)
+  - [Back Insert Iterator](https://github.com/norayrbaghdasaryan/Basics#back-insert-iterator)
+  - [Insert Iterator](https://github.com/norayrbaghdasaryan/Basics#insert-iterator)
+  - [Reverse Iterator](https://github.com/norayrbaghdasaryan/Basics#reverse-iterator)
 - [Sorting Algorithms](https://github.com/norayrbaghdasaryan/Basics#sorting-algorithms)
 
 ## Linear lists
@@ -254,6 +258,8 @@ std::copy(v.begin(), v.end(), nstd::back_inserter(u));
 
 ### Insert Iterator
 
+`nstd::insert_iterator`, `nstd::inserter` implemented and works similar to STL ones
+
 ```c++
 std::vector<int> v {1, 2, 3, 4};
 std::vector<int> u {-2, -1, 0, 5, 6};
@@ -261,8 +267,6 @@ std::vector<int> u {-2, -1, 0, 5, 6};
 std::copy(v.begin(), v.end(), nstd::inserter(u, u.begin() + 3);
 // u = {-2, -1, 0, 1, 2, 3, 4, 5, 6};
 ```
-
-`nstd::insert_iterator`, `nstd::inserter` implemented and works similar to STL ones
 
 ### Reverse Iterator
 
