@@ -1,6 +1,22 @@
 # C++ Basics
 
-`Basics` is a cross platform C++ library based on `CMake`, where are implemented STL data structures, algorithms, etc. Library has unit tests for each module implemented using `gtest`.
+`Basics` is a cross-platform C++ library based on `CMake`, where are implemented STL data structures, algorithms, etc. Library has unit tests for each module implemented using `gtest`.
+
+Modules
+- [Linear Lists](https://github.com/norayrbaghdasaryan/Basics#linear-lists)
+  - [Vector](https://github.com/norayrbaghdasaryan/Basics#vector)
+  - [Stack, Queue](https://github.com/norayrbaghdasaryan/Basics#stack-queue)
+  - [Linked List](https://github.com/norayrbaghdasaryan/Basics#linked-list)
+- [Trees](https://github.com/norayrbaghdasaryan/Basics#trees)
+    - [Ordered Set, Ordered Map](https://github.com/norayrbaghdasaryan/Basics#ordered-set-ordered-map)
+    - [Vector Tree](https://github.com/norayrbaghdasaryan/Basics#vector-tree)
+    - [Binary Search Tree](https://github.com/norayrbaghdasaryan/Basics#binary-search-tree)
+    - [Red Black Tree](https://github.com/norayrbaghdasaryan/Basics#red-black-tree)
+    - [Priority Queue](https://github.com/norayrbaghdasaryan/Basics#priority-queue)
+- [Smart Pointers](https://github.com/norayrbaghdasaryan/Basics#smart-pointers)
+    - [Unique Pointer](https://github.com/norayrbaghdasaryan/Basics#unique-pointer)
+    - [Shared Pointer](https://github.com/norayrbaghdasaryan/Basics#shared-pointer)
+- [Sorting Algorithms](https://github.com/norayrbaghdasaryan/Basics#sorting-algorithms)
 
 ## Linear lists
 
@@ -59,7 +75,7 @@ while(!st.empty() && !q.empty()) {
 }
 ```
 
-### Linked list
+### Linked List
 
 Linked list container in this library is `not template` unlike the others and is not providing API for read operations from list (in other words this implementation is useless for any purposes but educational)
 
@@ -116,7 +132,7 @@ mp.erase_key_interval_with_end(4, 10); // erases from map keys between [4, 10] i
 This class provides `std::vector`'s functionality as well.
 The best part is that this structure can do a lot more than `std::vector`. It inserts and erases elements on any index at `O (log size)`. 
 `nstd::vector_tree` can switch intervals in `O (log size)` complexity (notice that this complexity does not depend on interval sizes), which is amazing. 
-This demon can even shift content (take a look at usages and you'll see).
+This demon can even shift content (take a look at usages).
 The only weakness under `std::vector` is that `push_back` and `pop_back` are also working in `O (log size)` complexity.
 
 This container provides
