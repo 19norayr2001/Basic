@@ -20,6 +20,9 @@ Modules
   - [Back Insert Iterator](https://github.com/norayrbaghdasaryan/Basics#back-insert-iterator)
   - [Insert Iterator](https://github.com/norayrbaghdasaryan/Basics#insert-iterator)
   - [Reverse Iterator](https://github.com/norayrbaghdasaryan/Basics#reverse-iterator)
+- [Expressions](https://github.com/norayrbaghdasaryan/Basics#expressions)
+  - [Postfix](https://github.com/norayrbaghdasaryan/Basics#postfix-expression)
+  - [Prefix](https://github.com/norayrbaghdasaryan/Basics#prefix-expression)
 - [Sorting Algorithms](https://github.com/norayrbaghdasaryan/Basics#sorting-algorithms)
 
 ## Linear lists
@@ -292,7 +295,7 @@ delete expression;
 ```
 
 ### Prefix Expression
-`Prefix` Expression class calculates arithmetical expression using postfix presentation.
+`Prefix` Expression class calculates arithmetical expression using prefix presentation.
 
 ```c++
 std::unordered_map<std::string, int> mp {
