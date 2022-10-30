@@ -13,7 +13,7 @@ This container provides
 - `iterator`, `reverse iterator`
 - possibility of using `custom allocators`
 - public functions using `move semantics` and `perfect forwarding`
-- `strong exception safety` guarantee for it's interface
+- `strong exception safety` guarantee for interface
 - `emplace back`, `push_back` back insertion functions
 - `pop_back` back erasure function
 - `reserve`, `swap`, `empty`, `size` functions
@@ -93,7 +93,7 @@ These containers provide
 - `erase_interval` index interval erasure function
 - `key_of_order`, `order_of_key` functions working in `O (log size)` complexity
 - `find`, `contains`, `lower_bound`, `upper_bound` particular key searching functions
-- `swap`, `size`, `empty`, `clear` functions 
+- `swap`, `size`, `empty`, `clear` functions
 
 Check out some usages of nstd ordered containers
 ```c++
@@ -114,25 +114,55 @@ mp.erase_key_interval_with_end(4, 10); // erases from map keys between [4, 10] i
 
 `nstd::vector_tree` is a data structure modeled like `std::vector`, but based on `implicit treap`.
 This class provides `std::vector`'s functionality as well.
-The best part is that this structure inserts and removes element in `O(log size)` complexity.
-However, `push_back` and `pop_back` are also working in `O (log size)` complexity
+The best part is that this structure can do a lot more than `std::vector`. It inserts and erases elements on any index at `O (log size)`. 
+`nstd::vector` can switch intervals in `O (log size)` complexity (notice that this complexity does not depend on interval sizes), which is amazing. 
+This demon can even shift content (take a look at usages and you'll see).
+The only weakness is that `push_back` and `pop_back` are also working in `O (log size)` complexity.
 
 This container provides
 
-- `emplace_back`, `emplace_front`
-- `push_back`, `pop_back`, `push_front`, `pop_front`
-- `insert`, `erase`
-- `swap`, `empty`, `size`
-- `strong exception safety`, `move semantics` for public functions
-- possibility of using `custom allocators`
 - `iterator`, `reverse iterator`
+- possibility of using `custom allocators`
+- public functions using `move semantics` and `perfect forwarding`
+- `strong exception safety` guarantee for interface
+- Interval erasure functions working in `O (interval_size + log container_size)`
+- `insert`, `emplace` insertion functions
+- `push_back`, `emplace_back` back insertion functions
+- `push_front`, `emplace_front` front insertion functions
+- `erase` iterator and iterator interval erasure functions
+- `erase_index` index erasure function
+- `erase_interval` index interval erasure function
+- `pop_back` back erasure function
+- `pop_front` front erasure function
+- `exchange_intervals`, `move_interval_to_index` interval move and swap functions
+- `shift`, `shift_interval` clockwise shift functions
+- `reverse_shift`, `reverse_shift_interval` counterclockwise shift functions
+- `operator <<=`, `operator >>=` shift operators
+- `swap`, `size`, `empty`, `clear` functions
 
-Here is some usage of nstd vector tree
+Here are usages of nstd vector tree
 ```c++
-nstd::vector_tree<int> vec {1, 3};
-vec.insert(2, 1); // insert 2 at 1st position, vec = {1, 2, 3}
-vec.push_back(4); // vec = {1, 2, 3, 4}
-vec.pop_front();     // vec = {2, 3, 4}
+nstd::vector_tree<int> vec {1, 6};
+vec.insert(vec.begin() + 1, {2, 3, 4, 5});   // vec = {1, 2, 3, 4, 5, 6}
+// clockwise shift vector 2 times
+vec.shift(2);                                // vec = {5, 6, 1, 2, 3, 4}
+// counterclockwise shift vector 3 times
+vec <<= 3;                                   // vec = {2, 3, 4, 5, 6, 1}
+// add 0 at vector front
+vec.push_front(0);                           // vec = {0, 2, 3, 4, 5, 6, 1}
+// exchange [1, 3) and [4, 7) vector intervals
+vec.exchange_intervals(vec.begin() + 1, vec.begin() + 3,
+                       vec.begin() + 4, vec.end());
+                                             // vec = {0, 5, 6, 1, 4, 2, 3}
+// move [0, 4) interval to the end of vector
+vec.move_interval_to_index(vec.begin(), vec.begin() + 4, vec.end());
+                                             // vec = {4, 2, 3, 0, 5, 6, 1}
+// erase [2, 6) interval of the vector
+vec.erase(vec.begin() + 2, vec.begin() + 6); // vec = {4, 2, 1}
+
+for (int elem : vec) {
+    std::cout << elem <<' ';                 // prints 4 2 1
+}
 ```
 
 ### Binary Search Tree
