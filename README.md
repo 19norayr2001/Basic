@@ -277,6 +277,32 @@ using reverse_iterator = typename nstd::common_reverse_iterator<iterator>;
 using const_reverse_iterator = typename nstd::common_reverse_iterator<const_iterator>;
 ```
 
+## Expressions
+
+### Postfix Expression
+`Postfix` Expression class calculates arithmetical expression using postfix presentation.
+
+```c++
+std::unordered_map<std::string, int> mp {
+    {"x", 5}, {"y", 4}
+};
+Expression* expression = new Postfix("((x + y) * (x - y) + 4 * 5) / 8 + 7");
+int result = expression->calculate(mp); // result is 10
+delete expression;
+```
+
+### Prefix Expression
+`Prefix` Expression class calculates arithmetical expression using postfix presentation.
+
+```c++
+std::unordered_map<std::string, int> mp {
+    {"x", 5}, {"y", 4}
+};
+Expression* expression = new Prefix("((x + y) * (x - y) + 4 * 5) / 8 + 7");
+int result = expression->calculate(mp); // result is 10
+delete expression;
+```
+
 ## Sorting Algorithms
 
 In this module, there are implemented several sorting algorithms
