@@ -130,7 +130,7 @@ mp.erase_key_interval_with_end(4, 10); // erases from map keys between [4, 10] i
 
 `nstd::vector_tree` is a data structure modeled like `std::vector`, but based on `implicit treap`.
 This class provides `std::vector`'s functionality as well.
-The best part is that this structure can do a lot more than `std::vector`. It inserts and erases elements on any index at `O (log size)`. 
+The best part is that this structure can do a lot more than `std::vector`. It inserts and erases elements on any index in `O (log size)` complexity. 
 `nstd::vector_tree` can switch intervals in `O (log size)` complexity (notice that this complexity does not depend on interval sizes), which is amazing. 
 This demon can even shift content (take a look at usages).
 The only weakness under `std::vector` is that `push_back` and `pop_back` are also working in `O (log size)` complexity.
