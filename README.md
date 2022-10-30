@@ -238,6 +238,41 @@ Soon there will be added `make_unique`, `make_shared` functions support in order
 
 Not implemented yet.
 
+## Iterators
+
+### Back Insert Iterator
+
+`nstd::back_insert_iterator`, `nstd::back_inserter` implemented and works similar to STL ones
+
+```c++
+std::vector<int> v {1, 2, 3, 4};
+std::vector<int> u {-2, -1, 0};
+// copy v after u
+std::copy(v.begin(), v.end(), nstd::back_inserter(u));
+// u = {-2, -1, 0, 1, 2, 3, 4};
+```
+
+### Insert Iterator
+
+```c++
+std::vector<int> v {1, 2, 3, 4};
+std::vector<int> u {-2, -1, 0, 5, 6};
+// copy v after 0
+std::copy(v.begin(), v.end(), nstd::inserter(u, u.begin() + 3);
+// u = {-2, -1, 0, 1, 2, 3, 4, 5, 6};
+```
+
+`nstd::insert_iterator`, `nstd::inserter` implemented and works similar to STL ones
+
+### Reverse Iterator
+
+`nstd::common_reverse_iterator` is a template common reverse iterator. This iterator stores original base iterator as data member and reverses all operations to opposite direction. This iterator is for defining `nstd::vector`, `nstd::ordered_set`, `nstd::ordered_map`, `nstd::vector_tree` `reverse_iterator` and `const_reverse_iterator`.
+
+```c++
+using reverse_iterator = typename nstd::common_reverse_iterator<iterator>;
+using const_reverse_iterator = typename nstd::common_reverse_iterator<const_iterator>;
+```
+
 ## Sorting Algorithms
 
 In this module, there are implemented several sorting algorithms
