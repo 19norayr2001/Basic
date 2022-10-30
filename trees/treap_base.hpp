@@ -394,9 +394,15 @@ protected:
 public:
     void swap(treap_base& other) noexcept;
 
-    bool empty() const { return size() == 0; }
+    bool empty() const noexcept { return size() == 0; }
 
-    size_type size() const { return _end.left_size(); }
+    size_type size() const noexcept { return _end.left_size(); }
+
+    void clear() noexcept {
+        destroy_tree(root());
+        set_root(nullptr);
+        adjust_begin();
+    }
 
 public:
     iterator begin();
