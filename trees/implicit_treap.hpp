@@ -11,9 +11,10 @@ class implicit_treap_node : public treap_node_base<implicit_treap_node<T>> {
 private:
     using base_type = treap_node_base<implicit_treap_node<T>>;
     using typename base_type::priority_type;
+    using typename base_type::size_type;
 public:
-    using key_type = size_t;
     using value_type = T;
+    using raw_value_type = value_type;
 public:
     explicit implicit_treap_node(const value_type& value, priority_type priority = 0,
                                  implicit_treap_node* left = nullptr,
@@ -24,8 +25,6 @@ public:
     const value_type* get_value_address() const { return std::addressof(_value); }
 
     value_type* get_value_address() { return std::addressof(_value); }
-
-    key_type get_key() const { return base_type::left_size(); }
 
     value_type& get_value() { return _value; }
 
@@ -40,7 +39,6 @@ class implicit_treap : public treap_base<implicit_treap_node<T>, Allocator> {
     using base_type = treap_base<implicit_treap_node<T>, Allocator>;
     using treap_node = implicit_treap_node<T>;
 public:
-    using typename base_type::key_type;
     using typename base_type::value_type;
     using typename base_type::allocator_type;
     using typename base_type::size_type;

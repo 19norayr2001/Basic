@@ -13,17 +13,15 @@ namespace nstd {
 template <typename Node, typename Compare, typename Allocator>
 class treap : public treap_base<Node, Allocator> {
     using base_type = treap_base<Node, Allocator>;
+    using treap_node = Node;
+    using node_holder = typename base_type::node_holder;
+
 public:
-    using key_type = typename base_type::key_type;
+    using key_type = typename treap_node::raw_key_type;
     using value_type = typename base_type::value_type;
     using key_compare = Compare;
     using allocator_type = typename base_type::allocator_type;
     using size_type = typename base_type::size_type;
-
-private:
-    using treap_node = Node;
-    using raw_value_type = typename treap_node::raw_value_type;
-    using node_holder = typename base_type::node_holder;
 
 public:
     using iterator = typename base_type::iterator;
@@ -118,9 +116,9 @@ private:
 public:
     void swap(treap& other) noexcept;
 
-    std::pair<iterator, bool> insert(const raw_value_type& value);
+    std::pair<iterator, bool> insert(const value_type& value);
 
-    std::pair<iterator, bool> insert(raw_value_type&& value);
+    std::pair<iterator, bool> insert(value_type&& value);
 
     /**
      * Inserts a node in the tree with the value constructed with passed arguments
@@ -427,13 +425,13 @@ void treap<Node, Compare, Allocator>::swap(treap<Node, Compare, Allocator>& othe
 
 template <typename Node, typename Compare, typename Allocator>
 std::pair<typename treap<Node, Compare, Allocator>::iterator, bool>
-treap<Node, Compare, Allocator>::insert(const raw_value_type& value) {
+treap<Node, Compare, Allocator>::insert(const value_type& value) {
     return emplace_with_key(treap_node::get_key(value), value);
 }
 
 template <typename Node, typename Compare, typename Allocator>
 std::pair<typename treap<Node, Compare, Allocator>::iterator, bool>
-treap<Node, Compare, Allocator>::insert(raw_value_type&& value) {
+treap<Node, Compare, Allocator>::insert(value_type&& value) {
     return emplace_with_key(treap_node::get_key(value), std::move(value));
 }
 

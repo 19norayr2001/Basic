@@ -244,8 +244,7 @@ public:
 template <typename Node, typename Allocator>
 class treap_base {
 public:
-    using key_type = typename Node::key_type;
-    using value_type = typename Node::value_type;
+    using value_type = typename Node::raw_value_type;
     using allocator_type = Allocator;
     using size_type = size_t;
 
@@ -270,8 +269,8 @@ private:
         friend class common_iterator<!B>;
 
     public:
-        using value_type = std::conditional_t<B, const treap_base::value_type, treap_base::value_type>;
         using node_type = std::conditional_t<B, const treap_node, treap_node>;
+        using value_type = std::conditional_t<B, const typename node_type::value_type, typename node_type::value_type>;
         using difference_type = ptrdiff_t;
     private:
         node_type* _node;
