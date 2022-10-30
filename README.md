@@ -78,11 +78,20 @@ Nevertheless, single insertion and erasure operations are a little slower than S
 
 These containers provide
 
-- `insert`, `erase`, `emplace`, `contains`, `find`, `swap`, `empty`, `size` public functions
-- `key_of_order`, `order_of_key` functions working in `O (log size)` complexity
-- `weak exception safety`, `move semantics` for public functions
-- possibility of using `custom allocators`
 - `iterator`, `reverse iterator`
+- possibility of using `custom allocators`
+- public functions using `move semantics` and `perfect forwarding`
+- `weak exception safety` in case of comparison operation throw exception while insertion and erasure functions 
+- Interval erasure functions working in `O (interval_size + log container_size)`
+- `insert`, `emplace` insertion functions
+- `erase_key` key erasure function 
+- `erase_key_interval`, `erase_key_interval_with_end` key interval erasure functions
+- `erase` iterator and iterator interval erasure functions
+- `erase_index` index erasure function
+- `erase_interval` index interval erasure function
+- `key_of_order`, `order_of_key` functions working in `O (log size)` complexity
+- `find`, `contains`, `lower_bound`, `upper_bound` particular key searching functions
+- `swap`, `size`, `empty`, `clear` functions 
 
 Check out some usages of nstd ordered containers
 ```c++
