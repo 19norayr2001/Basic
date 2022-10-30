@@ -11,11 +11,12 @@
 TEST(ExpressionTest, Postfix) {
     int x = 5;
     int y = 4;
-    std::unordered_map<std::string, int> mp;
-    mp["x"] = x;
-    mp["y"] = y;
-    Expression* pref = new Postfix("((x+y)*(x-y)+4*5)/8+7");
-    EXPECT_EQ(pref->calculate(mp), ((x + y) * (x - y) + 4 * 5) / 8 + 7);
+    std::unordered_map<std::string, int> mp {
+        {"x", x}, {"y", y}
+    };
+    Expression* expression = new Postfix("((x + y) * (x - y) + 4 * 5) / 8 + 7");
+    EXPECT_EQ(expression->calculate(mp), ((x + y) * (x - y) + 4 * 5) / 8 + 7);
+    delete expression;
 }
 
 
